@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nida — نداء</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap"/>
+<style>
+:root{
+  --bg:#0E0A06;--bg2:#160F08;--bg3:#1E1408;--surface:#251A0E;--surface2:#2F2010;
+  --border:rgba(193,140,60,0.2);--gold:#C18C3C;--gold2:#E8B86D;--gold3:#F5D49A;
+  --cream:#F2E8D5;--muted:rgba(242,232,213,0.6);--muted2:rgba(242,232,213,0.38);
+  --green:#2ECC71;--amber:#F0C060;
+  /* Sub-label: warm readable tone */
+  --sublabel:rgba(240,192,96,0.75);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0c0804;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',Georgia,serif;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;z-index:9999;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");opacity:.03;pointer-events:none}
+
+/* ── Phone shell ── */
+.phone{width:390px;height:800px;background:var(--bg);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 40px 80px rgba(0,0,0,.9),0 0 0 1px rgba(193,140,60,.18),inset 0 0 0 1px rgba(255,255,255,.04);flex-shrink:0}
+.notch{width:120px;height:28px;background:#000;border-radius:0 0 18px 18px;margin:0 auto;position:relative;z-index:10}
+#app{display:flex;flex-direction:column;height:100%;position:relative;overflow:hidden}
+
+/* ── Screens ── */
+.screen{display:none;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:76px}
+.screen.active{display:flex;animation:fadeUp .32s cubic-bezier(.22,.8,.4,1)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.screen::-webkit-scrollbar{width:2px}
+.screen::-webkit-scrollbar-thumb{background:rgba(193,140,60,.2);border-radius:2px}
+
+/* ── Header & Logo ── */
+.app-header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px 6px;flex-shrink:0}
+.app-logo{display:flex;align-items:center;gap:8px}
+.logo-arabic{font-family:'Amiri',serif;font-size:26px;color:var(--gold2);letter-spacing:1px;line-height:1}
+.logo-divider{width:1px;height:28px;background:rgba(193,140,60,.3);margin:0 2px}
+.logo-text{display:flex;flex-direction:column;justify-content:center}
+.logo-english{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--cream);font-style:italic;letter-spacing:2px;font-weight:300;line-height:1}
+/* FIXED: sub-labels are now warm amber, clearly legible */
+.logo-sub{font-size:9.5px;color:var(--sublabel);letter-spacing:3px;text-transform:uppercase;font-style:normal;font-family:'Cormorant Garamond',serif;line-height:1;margin-top:3px}
+.icon-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:4px;transition:color .2s}
+.icon-btn:hover{color:var(--gold2)}
+
+/* ── Hero card ── */
+.hero-card{margin:4px 14px 0;background:linear-gradient(145deg,var(--surface) 0%,var(--bg3) 100%);border:1px solid var(--border);border-radius:22px;padding:20px;position:relative;overflow:hidden;flex-shrink:0}
+.hero-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 20%,rgba(193,140,60,.12) 0%,transparent 60%);pointer-events:none}
+.hero-card::after{content:'';position:absolute;top:-15px;right:-15px;width:130px;height:130px;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Cpath%20d%3D%27M50%205%20L61%2035%20L95%2035%20L68%2057%20L79%2091%20L50%2070%20L21%2091%20L32%2057%20L5%2035%20L39%2035Z%27%20fill%3D%27none%27%20stroke%3D%27%23C18C3C%27%20stroke-width%3D%270.8%27%20opacity%3D%270.35%27%2F%3E%3Cpath%20d%3D%27M50%2020%20L57%2040%20L79%2040%20L62%2053%20L69%2073%20L50%2060%20L31%2073%20L38%2053%20L21%2040%20L43%2040Z%27%20fill%3D%27none%27%20stroke%3D%27%23C18C3C%27%20stroke-width%3D%270.5%27%20opacity%3D%270.2%27%2F%3E%3C%2Fsvg%3E");background-size:contain;opacity:.7;pointer-events:none}
+.next-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--muted2);margin-bottom:4px}
+.next-prayer-name{font-size:36px;font-weight:300;color:var(--cream);line-height:1}
+.next-prayer-arabic{font-family:'Amiri',serif;font-size:20px;color:var(--gold);margin-top:2px}
+.next-prayer-time{font-size:50px;font-weight:300;color:var(--cream);letter-spacing:-1px;margin:6px 0 0;line-height:1}
+.next-prayer-time span{font-size:18px;opacity:.65;margin-left:4px}
+.countdown-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.35);border:1px solid rgba(193,140,60,.3);border-radius:30px;padding:5px 14px;font-size:12px;margin-top:10px;backdrop-filter:blur(4px)}
+.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.countdown-text{color:var(--gold2)}
+
+/* ── Section title ── */
+/* FIXED: section titles are now clearly readable */
+.section-title{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--sublabel);padding:12px 20px 6px;flex-shrink:0;display:flex;align-items:center;gap:8px}.section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(193,140,60,.2),transparent);margin-left:4px}
+
+/* ── Prayer list ── */
+.prayer-list{padding:0 14px;display:flex;flex-direction:column;gap:5px}
+.prayer-row{display:flex;align-items:center;padding:11px 15px;background:var(--surface);border:1px solid var(--border);border-radius:13px;gap:11px;transition:all .2s;cursor:default}.prayer-row:not(.passed):hover{border-color:rgba(193,140,60,.3);background:rgba(37,26,14,.9)}
+.prayer-row.is-next{background:linear-gradient(135deg,rgba(193,140,60,.15),rgba(193,140,60,.05));border-color:rgba(193,140,60,.5);box-shadow:0 0 18px rgba(193,140,60,.1),inset 0 0 12px rgba(193,140,60,.04)}
+.prayer-row.passed{opacity:.42}
+.prayer-icon{font-size:18px;width:26px;text-align:center;flex-shrink:0}
+.prayer-info{flex:1}
+.prayer-en{font-size:14px;color:var(--cream);display:flex;align-items:center;gap:7px}
+.prayer-ar{font-family:'Amiri',serif;font-size:13px;color:var(--gold2);margin-top:1px}
+.next-badge{font-size:8px;letter-spacing:2px;text-transform:uppercase;background:var(--gold);color:var(--bg);border-radius:20px;padding:2px 7px;font-weight:600}
+.prayer-time-val{font-size:14px;color:var(--cream);font-weight:300}
+.passed-txt{font-size:9px;color:var(--muted2);display:block;text-align:right}
+.date-bar{text-align:center;padding:4px 20px 8px;color:var(--muted);font-size:11px;font-style:italic;flex-shrink:0;letter-spacing:.5px}
+
+/* ── Loading ── */
+.loading-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px;text-align:center}
+.loading-spinner{width:40px;height:40px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:15px;color:var(--muted);font-style:italic}
+
+/* ── Qibla / Compass ── */
+.qibla-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+/* FIXED: brighter compass rings and cardinal letters */
+.compass-outer{width:224px;height:224px;border-radius:50%;background:radial-gradient(circle,#2a1c0e 0%,#160f08 100%);border:2px solid rgba(193,140,60,.45);display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 60px rgba(193,140,60,.15),inset 0 0 30px rgba(0,0,0,.4)}
+.compass-ring{position:absolute;inset:8px;border-radius:50%;border:1px solid rgba(193,140,60,.35)}
+.compass-ring2{position:absolute;inset:20px;border-radius:50%;border:1px dashed rgba(193,140,60,.2)}
+.cardinal{position:absolute;font-size:12px;color:rgba(242,232,213,.7);letter-spacing:1px;font-weight:600}
+.c-n{top:13px;left:50%;transform:translateX(-50%);color:var(--gold2)!important;font-size:13px}
+.c-s{bottom:13px;left:50%;transform:translateX(-50%)}
+.c-e{right:13px;top:50%;transform:translateY(-50%)}
+.c-w{left:13px;top:50%;transform:translateY(-50%)}
+/* Tick marks */
+.compass-outer::before{content:'';position:absolute;inset:4px;border-radius:50%;background:
+  repeating-conic-gradient(rgba(193,140,60,.25) 0deg 1deg, transparent 1deg 30deg);pointer-events:none}
+.compass-needle{width:4px;height:92px;position:absolute;top:50%;left:50%;transform-origin:bottom center;transform:translateX(-50%) translateY(-100%) rotate(0deg);transition:transform .8s cubic-bezier(.34,1.56,.64,1)}
+.needle-north{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:76px solid var(--gold2);position:absolute;top:0;left:50%;transform:translateX(-50%);filter:drop-shadow(0 0 10px rgba(232,184,109,.7))}
+.needle-south{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:24px solid rgba(242,232,213,.3);position:absolute;bottom:0;left:50%;transform:translateX(-50%)}
+.compass-center{width:12px;height:12px;border-radius:50%;background:var(--gold);position:absolute;box-shadow:0 0 12px rgba(193,140,60,.9);z-index:2}
+.kaaba-icon{font-size:22px;position:absolute;top:-34px;left:50%;transform:translateX(-50%)}
+.qibla-info{text-align:center;margin-top:20px}
+.qibla-degree{font-size:46px;font-weight:300;color:var(--cream);line-height:1}
+.qibla-degree span{font-size:18px;color:var(--muted)}
+/* FIXED: qibla labels clearly readable */
+.qibla-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--sublabel);margin-top:5px}
+.qibla-location{font-size:14px;color:var(--muted);font-style:italic;margin-top:6px}
+.gold-btn{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:30px;padding:12px 28px;font-size:14px;font-family:'Cormorant Garamond',serif;color:var(--bg);cursor:pointer;letter-spacing:1px;font-weight:600;box-shadow:0 4px 18px rgba(193,140,60,.28);transition:box-shadow .2s,transform .1s}.gold-btn:active{transform:scale(.97)}
+
+/* ── Reciters ── */
+.reciters-header{padding:0 18px 12px}
+.reciters-header h2{font-size:24px;font-weight:300;color:var(--cream)}
+.reciters-header p{font-size:13px;color:var(--muted);font-style:italic;margin-top:2px}
+.plan-toggle{display:flex;margin:0 14px 12px;background:var(--surface);border-radius:30px;padding:3px}
+.plan-btn{flex:1;text-align:center;padding:7px;border-radius:26px;font-size:12px;font-family:inherit;border:none;cursor:pointer;transition:all .2s;color:var(--muted);background:transparent;letter-spacing:1px}
+.plan-btn.active{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg);font-weight:600}
+.reciter-card{margin:0 14px 7px;background:var(--surface);border:1px solid var(--border);border-radius:15px;padding:13px 15px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .22s}
+.reciter-card:hover{border-color:rgba(193,140,60,.45)}
+.reciter-card.selected{border-color:var(--gold);background:linear-gradient(135deg,rgba(193,140,60,.14),rgba(193,140,60,.04))}
+.reciter-card.premium-locked{opacity:.75}
+/* ── Play button & audio states ── */
+.play-btn{width:34px;height:34px;border-radius:50%;border:1px solid rgba(193,140,60,.4);background:rgba(193,140,60,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0;color:var(--gold2);font-size:12px;line-height:1}
+.play-btn:hover{background:rgba(193,140,60,.22);border-color:var(--gold);transform:scale(1.08)}
+.play-btn.is-playing{background:rgba(193,140,60,.25);border-color:var(--gold);box-shadow:0 0 0 3px rgba(193,140,60,.15)}
+.reciter-card.is-playing{border-color:rgba(193,140,60,.7)!important;box-shadow:0 0 14px rgba(193,140,60,.18)}
+.play-waves{display:flex;align-items:center;gap:2px;height:14px}
+.play-waves span{display:block;width:2.5px;background:var(--gold2);border-radius:2px;animation:wave-bar .7s ease-in-out infinite}
+.play-waves span:nth-child(1){height:4px;animation-delay:0s}
+.play-waves span:nth-child(2){height:11px;animation-delay:.1s}
+.play-waves span:nth-child(3){height:7px;animation-delay:.2s}
+.play-waves span:nth-child(4){height:13px;animation-delay:.05s}
+.play-waves span:nth-child(5){height:5px;animation-delay:.15s}
+@keyframes wave-bar{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.35)}}
+.now-playing-bar{margin:0 14px 10px;background:linear-gradient(135deg,rgba(193,140,60,.18),rgba(193,140,60,.06));border:1px solid rgba(193,140,60,.4);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;animation:fadeIn .3s}
+.now-playing-bar .np-waves{display:flex;align-items:center;gap:2px;height:16px}
+.now-playing-bar .np-waves span{display:block;width:3px;background:var(--gold);border-radius:2px;animation:wave-bar .7s ease-in-out infinite}
+.now-playing-bar .np-waves span:nth-child(1){height:5px;animation-delay:0s}
+.now-playing-bar .np-waves span:nth-child(2){height:13px;animation-delay:.08s}
+.now-playing-bar .np-waves span:nth-child(3){height:8px;animation-delay:.16s}
+.now-playing-bar .np-waves span:nth-child(4){height:15px;animation-delay:.04s}
+.now-playing-bar .np-waves span:nth-child(5){height:6px;animation-delay:.12s}
+.np-text{flex:1;font-size:12px;color:var(--gold2)}
+.np-stop{font-size:11px;color:var(--muted);border:1px solid rgba(193,140,60,.3);border-radius:20px;padding:3px 10px;cursor:pointer;background:transparent;font-family:inherit;transition:all .2s}
+.np-stop:hover{border-color:var(--gold);color:var(--cream)}
+.preview-badge{font-size:9px;letter-spacing:1px;color:var(--muted);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:1px 6px;margin-right:2px}
+.reciter-avatar{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--surface2),var(--bg3));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.reciter-info{flex:1}
+.reciter-name{font-size:14px;color:var(--cream)}
+.reciter-origin{font-size:11px;color:var(--muted);margin-top:1px;font-style:italic}
+.reciter-badge{font-size:9px;letter-spacing:1px;border-radius:20px;padding:2px 8px;font-family:inherit}
+.badge-free{background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.3);color:#2ECC71}
+.badge-premium{background:rgba(240,192,96,.15);border:1px solid rgba(240,192,96,.3);color:var(--amber)}
+.upload-card{margin:0 14px 7px;border:1px dashed rgba(193,140,60,.3);border-radius:15px;padding:16px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+.upload-card:hover{border-color:var(--gold);background:rgba(193,140,60,.04)}
+.upload-card h3{font-size:14px;color:var(--gold2);margin-bottom:3px}
+.upload-card p{font-size:12px;color:var(--muted);font-style:italic}
+.volume-section{margin:10px 14px 0}
+.volume-card{background:var(--surface);border:1px solid var(--border);border-radius:15px;padding:15px 17px}
+.volume-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+.volume-label{font-size:13px;color:var(--muted);letter-spacing:1px}
+.volume-val{font-size:16px;color:var(--gold2);font-weight:300}
+.vol-slider-wrap{position:relative;height:5px;background:rgba(255,255,255,.1);border-radius:3px}
+.vol-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:3px;pointer-events:none}
+input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:pointer;width:100%;-webkit-appearance:none;appearance:none}
+.vol-icons{display:flex;justify-content:space-between;margin-top:6px}
+.vol-icon{font-size:14px;color:var(--muted2)}
+
+/* ── Per-prayer reciter (premium) ── */
+.per-prayer-section{margin:0 14px;background:var(--surface);border:1px solid var(--border);border-radius:15px;overflow:hidden}
+.per-prayer-row{display:flex;align-items:center;padding:12px 14px;border-bottom:1px solid rgba(193,140,60,.1);gap:10px;cursor:pointer;transition:background .2s}
+.per-prayer-row:last-child{border-bottom:none}
+.per-prayer-row:hover{background:rgba(193,140,60,.05)}
+.pp-icon{font-size:16px;width:22px;text-align:center}
+.pp-name{font-size:13px;color:var(--cream);flex:1}
+.pp-reciter{font-size:12px;color:var(--gold2);font-style:italic}
+.pp-arrow{color:var(--muted2);font-size:14px}
+
+/* ── Premium screen ── */
+.premium-hero{margin:4px 14px 0;background:linear-gradient(160deg,rgba(240,192,96,.14) 0%,rgba(30,20,8,.95) 60%,rgba(14,10,6,1) 100%);border:1px solid rgba(240,192,96,.3);border-radius:22px;padding:24px 20px 20px;text-align:center;position:relative}
+.premium-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% -10%,rgba(240,192,96,.18) 0%,transparent 65%);pointer-events:none;border-radius:22px}
+.premium-hero::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(240,192,96,.5),transparent);border-radius:22px 22px 0 0}
+.premium-crown{font-size:38px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 18px rgba(232,184,109,.5));position:relative;z-index:1}
+.premium-title{font-family:'Amiri',serif;font-size:30px;color:var(--amber);margin-bottom:5px;position:relative;z-index:1}
+.premium-sub{font-size:13px;color:var(--muted);font-style:italic;margin-bottom:16px;line-height:1.6;position:relative;z-index:1}
+.premium-price{font-size:36px;font-weight:300;color:var(--cream)}
+.premium-price span{font-size:15px;color:var(--muted)}
+.premium-period{font-size:11px;color:var(--muted2);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.premium-cta{width:100%;background:linear-gradient(135deg,#d4a030,var(--amber));border:none;border-radius:30px;padding:14px;font-size:17px;font-family:'Cormorant Garamond',serif;color:#0E0A06;cursor:pointer;letter-spacing:1px;font-weight:600;margin-top:16px;box-shadow:0 6px 24px rgba(240,192,96,.35);transition:box-shadow .2s,transform .1s}.premium-cta:active{transform:scale(.98)}
+.premium-cta-note{font-size:11px;color:var(--muted2);text-align:center;margin-top:7px;font-style:italic}
+.feature-list{padding:0 14px;display:flex;flex-direction:column;gap:6px}
+.feature-row{display:flex;align-items:flex-start;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:13px 15px}
+.feature-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0;margin-top:1px}
+.feature-text h4{font-size:14px;color:var(--cream);font-weight:400}
+.feature-text p{font-size:11px;color:var(--muted);font-style:italic;margin-top:2px;line-height:1.5}
+.restore-btn{margin:12px 14px 0;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:30px;padding:10px;font-size:13px;color:var(--muted);cursor:pointer;font-family:inherit;width:calc(100% - 28px)}
+
+/* ── Settings ── */
+.settings-row{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:12px 15px;margin:0 14px 6px;cursor:pointer;gap:11px;transition:border-color .2s}
+.settings-row:hover{border-color:rgba(193,140,60,.35)}
+.settings-icon{font-size:18px;width:26px;text-align:center}
+.settings-text{flex:1}
+.settings-label{font-size:14px;color:var(--cream)}
+.settings-value{font-size:11px;color:var(--muted);font-style:italic;margin-top:1px}
+.settings-arrow{color:var(--muted2);font-size:16px}
+.toggle{width:42px;height:23px;border-radius:12px;background:rgba(255,255,255,.1);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle.on{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.toggle.on::after{left:21px}
+
+/* ── Speaker cards ── */
+.speaker-card{margin:0 14px 8px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:15px;transition:all .2s}
+.speaker-card.connected{border-color:rgba(46,204,113,.4);background:linear-gradient(135deg,rgba(46,204,113,.08),rgba(46,204,113,.02))}
+.speaker-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.speaker-brand-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--border)}
+.speaker-brand-icon.alexa-icon{background:rgba(0,202,255,.1);border-color:rgba(0,202,255,.3)}
+.speaker-brand-icon.google-icon{background:rgba(66,133,244,.1);border-color:rgba(66,133,244,.3)}
+.speaker-name{font-size:15px;color:var(--cream)}
+.speaker-status{font-size:12px;font-style:italic;margin-top:2px}
+.connected-txt{color:var(--green)}
+.disconnected-txt{color:var(--muted)}
+.connect-btn{width:100%;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:25px;padding:10px;font-size:13px;font-family:'Cormorant Garamond',serif;color:var(--bg);cursor:pointer;letter-spacing:1px;font-weight:600}
+
+/* ── Coming soon ── */
+.coming-soon{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;gap:10px}
+.coming-soon-icon{font-size:50px}
+.coming-soon h2{font-size:26px;font-weight:300;color:var(--cream)}
+.coming-soon p{font-size:14px;color:var(--muted);font-style:italic;line-height:1.6;max-width:260px}
+
+/* ── Bottom nav ── */
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;background:rgba(14,10,6,.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding-bottom:4px;z-index:100}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 0 3px;background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;min-width:0}
+.nav-icon{font-size:17px;filter:grayscale(1);opacity:.35;transition:all .2s}
+/* FIXED: nav labels now readable */
+.nav-label{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:rgba(242,232,213,.4);transition:color .2s;white-space:nowrap}
+.nav-btn.active .nav-icon{filter:none;opacity:1}
+.nav-btn.active .nav-label{color:var(--gold2)}
+.nav-dot{width:3px;height:3px;border-radius:50%;background:var(--gold);opacity:0;transition:opacity .2s;margin-top:1px}
+.nav-btn.active .nav-dot{opacity:1}
+/* Premium tab — always glowing crescent */
+.nav-btn.nav-premium .nav-icon{font-size:13px;display:flex;align-items:center;justify-content:center;width:24px;height:22px}
+.nav-btn.nav-premium .nav-icon{filter:none!important;opacity:1!important}
+.nav-btn.nav-premium .nav-icon svg{width:18px;height:18px;filter:drop-shadow(0 0 5px rgba(240,192,96,.65))!important;opacity:.9;transition:filter .3s}
+.nav-btn.nav-premium .nav-label{color:rgba(240,192,96,.8);font-size:8px;letter-spacing:1px;text-transform:uppercase}
+.nav-btn.nav-premium.active .nav-icon svg{filter:drop-shadow(0 0 8px rgba(240,192,96,1))!important;opacity:1}
+.nav-btn.nav-premium.active .nav-label{color:var(--amber)}
+.nav-btn.nav-premium.active .nav-dot{background:var(--amber)}
+
+
+/* ── Donate card ── */
+.donate-card{margin:14px 14px 0;background:linear-gradient(145deg,rgba(46,126,80,.12),rgba(46,100,60,.06));border:1px solid rgba(46,204,113,.2);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.donate-icon{font-size:22px;flex-shrink:0}
+.donate-text{flex:1}
+.donate-title{font-size:13px;color:var(--cream);letter-spacing:.5px}
+.donate-sub{font-size:11px;color:var(--muted);font-style:italic;margin-top:2px;line-height:1.5}
+.donate-btn{background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.35);border-radius:20px;padding:7px 14px;font-size:11px;font-family:'Cormorant Garamond',serif;color:#2ECC71;cursor:pointer;letter-spacing:1px;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.donate-btn:hover{background:rgba(46,204,113,.25);border-color:rgba(46,204,113,.5)}
+/* ── Toast ── */
+#toast{position:absolute;bottom:82px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--surface2);border:1px solid var(--border);border-radius:30px;padding:8px 16px;font-size:12px;color:var(--cream);font-style:italic;opacity:0;transition:all .3s;z-index:999;white-space:nowrap;max-width:340px;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── Modals ── */
+.modal-overlay{display:none;position:absolute;inset:0;z-index:500;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center;border-radius:44px;overflow:hidden}
+.modal-overlay.open{display:flex;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-sheet{background:var(--bg2);border:1px solid var(--border);border-top:1px solid rgba(193,140,60,.3);border-radius:24px 24px 0 0;padding:20px 20px 30px;width:100%;animation:slideUp .3s cubic-bezier(.22,.8,.4,1);max-height:85%;overflow-y:auto}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px}
+.modal-title{font-size:21px;font-weight:300;color:var(--cream);margin-bottom:4px}
+.modal-subtitle{font-size:13px;color:var(--muted);font-style:italic;margin-bottom:16px}
+.modal-close{float:right;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;margin-top:-4px}
+.modal-option{display:flex;align-items:center;gap:11px;background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:7px;cursor:pointer;transition:all .2s}
+.modal-option:hover,.modal-option.selected{border-color:var(--gold)}
+.modal-option.selected{background:rgba(193,140,60,.1)}
+.modal-option-icon{font-size:19px;width:26px;text-align:center;flex-shrink:0}
+.modal-option-label{font-size:14px;color:var(--cream)}
+.modal-option-sub{font-size:11px;color:var(--muted);font-style:italic;margin-top:1px}
+.modal-check{font-size:15px;color:var(--gold);margin-left:auto;flex-shrink:0}
+.modal-apply{width:100%;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:30px;padding:13px;font-size:16px;font-family:'Cormorant Garamond',serif;color:var(--bg);cursor:pointer;letter-spacing:1px;font-weight:600;margin-top:4px}
+
+/* ── ONBOARDING ── */
+.onboarding{position:absolute;inset:0;background:var(--bg);z-index:300;display:flex;flex-direction:column;border-radius:44px;overflow:hidden}.onboarding::after{content:'';position:absolute;top:0;left:0;right:0;height:120px;background:radial-gradient(ellipse at 50% 0%,rgba(193,140,60,.08) 0%,transparent 70%);pointer-events:none;z-index:0}.ob-step{position:relative;z-index:1}
+.onboarding.hidden{display:none}
+.ob-step{display:none;flex-direction:column;flex:1;padding:22px 20px 18px;animation:fadeUp .38s cubic-bezier(.22,.8,.4,1);overflow-y:auto}
+.ob-step.active{display:flex}
+.ob-progress{display:flex;gap:4px;margin-bottom:20px;flex-shrink:0}
+.ob-dot{flex:1;height:3px;border-radius:2px;background:var(--surface2);transition:all .4s}
+.ob-dot.done{background:var(--gold);box-shadow:0 0 6px rgba(193,140,60,.35)}
+.ob-dot.active{background:var(--gold2);box-shadow:0 0 8px rgba(232,184,109,.5)}
+.ob-icon{font-size:48px;margin-bottom:12px;flex-shrink:0}
+.ob-title{font-family:'Amiri',serif;font-size:28px;color:var(--gold2);margin-bottom:5px}
+.ob-subtitle{font-size:14px;color:var(--muted);font-style:italic;line-height:1.6;margin-bottom:20px}
+.ob-options{display:flex;flex-direction:column;gap:6px;flex:1}
+.ob-option{display:flex;align-items:center;gap:11px;background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:12px 14px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.ob-option:hover,.ob-option.selected{border-color:var(--gold)}
+.ob-option.selected{background:rgba(193,140,60,.1)}
+.ob-option-icon{font-size:19px;width:26px;text-align:center;flex-shrink:0}
+.ob-option-label{font-size:14px;color:var(--cream);flex:1}
+.ob-option-sub{font-size:11px;color:var(--muted);font-style:italic;margin-top:1px}
+.ob-check{font-size:15px;color:var(--gold)}
+.ob-footer{margin-top:14px;flex-shrink:0}
+.ob-next{width:100%;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:30px;padding:13px;font-size:17px;font-family:'Cormorant Garamond',serif;color:var(--bg);cursor:pointer;letter-spacing:1px;font-weight:600;box-shadow:0 4px 20px rgba(193,140,60,.3);transition:box-shadow .2s,transform .1s}.ob-next:active{transform:scale(.98);box-shadow:0 2px 10px rgba(193,140,60,.2)}
+.ob-skip{width:100%;background:none;border:none;color:var(--muted);font-size:13px;font-family:inherit;cursor:pointer;padding:8px;font-style:italic;margin-top:3px}
+.ob-welcome-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative}
+.ob-welcome-wrap::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20120%20120%27%3E%3Cg%20opacity%3D%270.12%27%20stroke%3D%27%23C18C3C%27%20stroke-width%3D%270.6%27%20fill%3D%27none%27%3E%3Cpolygon%20points%3D%2760%2C8%2070%2C35%2098%2C35%2076%2C52%2084%2C78%2060%2C62%2036%2C78%2044%2C52%2022%2C35%2050%2C35%27%2F%3E%3Cpolygon%20points%3D%2760%2C22%2067%2C42%2088%2C42%2071%2C54%2077%2C75%2060%2C63%2043%2C75%2049%2C54%2032%2C42%2053%2C42%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%2760%27%20r%3D%2748%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%2760%27%20r%3D%2738%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");background-size:260px;background-position:center;background-repeat:no-repeat;pointer-events:none;opacity:0.5}
+.ob-welcome-logo{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.ob-welcome-arabic{font-family:'Amiri',serif;font-size:62px;color:var(--gold2)}
+.ob-welcome-divider{width:1px;height:56px;background:rgba(193,140,60,.35)}
+.ob-welcome-left{text-align:left}
+.ob-welcome-right{text-align:left}
+.ob-welcome-english{font-family:'Cormorant Garamond',serif;font-size:40px;color:var(--cream);font-style:italic;font-weight:300;letter-spacing:3px;display:block;line-height:1}
+.ob-welcome-tagline{font-size:12px;color:var(--sublabel);letter-spacing:3px;text-transform:uppercase;display:block;margin-top:4px}
+.ob-tagline-main{font-size:15px;color:var(--muted);font-style:italic;line-height:1.7}
+.ob-geo-state{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.ob-geo-icon{font-size:22px}
+.ob-geo-text{font-size:14px;color:var(--cream)}
+.ob-geo-sub{font-size:11px;color:var(--muted);font-style:italic;margin-top:2px}
+.speaker-ob-card{background:var(--surface);border:2px solid var(--border);border-radius:16px;padding:14px;margin-bottom:7px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.speaker-ob-card:hover,.speaker-ob-card.selected{border-color:var(--gold)}
+.speaker-ob-card.selected{background:rgba(193,140,60,.08)}
+.speaker-ob-header{display:flex;align-items:center;gap:10px;margin-bottom:5px}
+.speaker-ob-logo{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;border:1px solid var(--border)}
+.speaker-ob-logo.alexa{background:rgba(0,202,255,.12);border-color:rgba(0,202,255,.3)}
+.speaker-ob-logo.google{background:rgba(66,133,244,.12);border-color:rgba(66,133,244,.3)}
+.speaker-ob-name{font-size:15px;color:var(--cream);flex:1}
+.speaker-ob-status{font-size:12px;color:var(--muted);font-style:italic}
+.speaker-ob-desc{font-size:11px;color:var(--muted);font-style:italic;line-height:1.5;padding-left:46px}
+.cal-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.ob-compass{width:176px;height:176px;border-radius:50%;background:radial-gradient(circle,#2a1c0e 0%,#160f08 100%);border:2px solid rgba(193,140,60,.4);display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 40px rgba(193,140,60,.12)}
+.ob-compass .compass-ring{inset:6px}
+.ob-compass .compass-ring2{inset:16px}
+.ob-needle{width:3px;height:72px;position:absolute;top:50%;left:50%;transform-origin:bottom center;transform:translateX(-50%) translateY(-100%) rotate(0deg);transition:transform .8s cubic-bezier(.34,1.56,.64,1)}
+.ob-needle-n{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:58px solid var(--gold2);position:absolute;top:0;left:50%;transform:translateX(-50%);filter:drop-shadow(0 0 8px rgba(232,184,109,.7))}
+.ob-needle-s{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:20px solid rgba(242,232,213,.25);position:absolute;bottom:0;left:50%;transform:translateX(-50%)}
+.ob-needle-center{width:10px;height:10px;border-radius:50%;background:var(--gold);position:absolute;box-shadow:0 0 8px rgba(193,140,60,.9);z-index:2}
+.ob-kaaba{font-size:19px;position:absolute;top:-30px;left:50%;transform:translateX(-50%)}
+.cal-deg{font-size:36px;font-weight:300;color:var(--gold2)}
+.cal-status{font-size:13px;color:var(--muted);font-style:italic;text-align:center}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+  <div id="app">
+
+    <!-- ═══════════════════════ ONBOARDING ═══════════════════════ -->
+    <div class="onboarding" id="onboarding">
+
+      <!-- Step 0: Welcome -->
+      <div class="ob-step active" id="ob-0">
+        <div class="ob-progress"><div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+        <div class="ob-welcome-wrap">
+          <div class="ob-welcome-logo">
+            <div class="ob-welcome-left">
+              <span class="ob-welcome-english">Nida</span>
+              <span class="ob-welcome-tagline">The Call</span>
+            </div>
+            <div class="ob-welcome-divider"></div>
+            <span class="ob-welcome-arabic">نداء</span>
+          </div>
+          <p class="ob-tagline-main" style="margin-top:16px">Prayer times, the athan &<br/>Qibla direction — wherever you are.</p>
+        </div>
+        <div class="ob-footer">
+          <button class="ob-next" onclick="obNext()">Begin Setup</button>
+          <button class="ob-skip" onclick="obSkip()">Skip — I'll set up later</button>
+        </div>
+      </div>
+
+      <!-- Step 1: Location -->
+      <div class="ob-step" id="ob-1">
+        <div class="ob-progress"><div class="ob-dot done"></div><div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+        <div class="ob-icon">📍</div>
+        <div class="ob-title">Your Location</div>
+        <div class="ob-subtitle">Nida uses your location to calculate precise prayer times and your Qibla direction. It's never shared or stored.</div>
+        <div class="ob-geo-state" id="ob-geo-state">
+          <span class="ob-geo-icon">🌍</span>
+          <div><div class="ob-geo-text">Allow location access</div><div class="ob-geo-sub">Only used for prayer times & Qibla</div></div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="ob-footer">
+          <button class="ob-next" onclick="obRequestLocation()">Allow Location</button>
+          <button class="ob-skip" onclick="obNext()">Use default (Toronto)</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Calculation Method -->
+      <div class="ob-step" id="ob-2">
+        <div class="ob-progress"><div class="ob-dot done"></div><div class="ob-dot done"></div><div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+        <div class="ob-icon">📐</div>
+        <div class="ob-title">Calculation Method</div>
+        <div class="ob-subtitle">Choose the method used to calculate prayer times in your region.</div>
+        <div class="ob-options">
+          <div class="ob-option selected" onclick="obSelect(this,'method')" data-val="2"><span class="ob-option-icon">🌎</span><div><div class="ob-option-label">ISNA</div><div class="ob-option-sub">North America</div></div><span class="ob-check">✓</span></div>
+          <div class="ob-option" onclick="obSelect(this,'method')" data-val="3"><span class="ob-option-icon">🕌</span><div><div class="ob-option-label">Muslim World League</div><div class="ob-option-sub">Europe, Far East</div></div><span class="ob-check" style="opacity:0">✓</span></div>
+          <div class="ob-option" onclick="obSelect(this,'method')" data-val="5"><span class="ob-option-icon">🌙</span><div><div class="ob-option-label">Umm Al-Qura</div><div class="ob-option-sub">Saudi Arabia</div></div><span class="ob-check" style="opacity:0">✓</span></div>
+          <div class="ob-option" onclick="obSelect(this,'method')" data-val="4"><span class="ob-option-icon">☀️</span><div><div class="ob-option-label">Egyptian General Authority</div><div class="ob-option-sub">Africa, Syria, Malaysia</div></div><span class="ob-check" style="opacity:0">✓</span></div>
+          <div class="ob-option" onclick="obSelect(this,'method')" data-val="1"><span class="ob-option-icon">🇵🇰</span><div><div class="ob-option-label">University of Karachi</div><div class="ob-option-sub">Pakistan, Bangladesh, India</div></div><span class="ob-check" style="opacity:0">✓</span></div>
+          <div class="ob-option" onclick="obSelect(this,'method')" data-val="17"><span class="ob-option-icon">🇲🇾</span><div><div class="ob-option-label">JAKIM</div><div class="ob-option-sub">Malaysia</div></div><span class="ob-check" style="opacity:0">✓</span></div>
+          <div class="ob-option" onclick="obSelect(this,'method')" data-val="13"><span class="ob-option-icon">🇹🇷</span><div><div class="ob-option-label">Diyanet İşleri</div><div class="ob-option-sub">Turkey</div></div><span class="ob-check" style="opacity:0">✓</span></div>
+        </div>
+        <div class="ob-footer" style="margin-top:12px"><button class="ob-next" onclick="obNext()">Continue</button></div>
+      </div>
+
+      <!-- Step 3: Asr Madhab -->
+      <div class="ob-step" id="ob-3">
+        <div class="ob-progress"><div class="ob-dot done"></div><div class="ob-dot done"></div><div class="ob-dot done"></div><div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+        <div class="ob-icon">🤲</div>
+        <div class="ob-title">Asr Madhab</div>
+        <div class="ob-subtitle">Which school of thought do you follow for calculating Asr prayer time?</div>
+        <div class="ob-options">
+          <div class="ob-option selected" onclick="obSelect(this,'madhab')" data-val="1"><span class="ob-option-icon">🌿</span><div><div class="ob-option-label">Shafi'i · Maliki · Hanbali</div><div class="ob-option-sub">Shadow equals object height</div></div><span class="ob-check">✓</span></div>
+          <div class="ob-option" onclick="obSelect(this,'madhab')" data-val="2"><span class="ob-option-icon">📿</span><div><div class="ob-option-label">Hanafi</div><div class="ob-option-sub">Shadow is twice the object height</div></div><span class="ob-check" style="opacity:0">✓</span></div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="ob-footer"><button class="ob-next" onclick="obNext()">Continue</button></div>
+      </div>
+
+      <!-- Step 4: Smart Speakers -->
+      <div class="ob-step" id="ob-4">
+        <div class="ob-progress"><div class="ob-dot done"></div><div class="ob-dot done"></div><div class="ob-dot done"></div><div class="ob-dot done"></div><div class="ob-dot active"></div><div class="ob-dot"></div></div>
+        <div class="ob-icon">🔊</div>
+        <div class="ob-title">Smart Speakers</div>
+        <div class="ob-subtitle">Connect your home speakers to hear the athan play automatically at each prayer time — even when you're away.</div>
+        <div class="ob-options" style="flex:0">
+          <div class="speaker-ob-card" id="ob-alexa" onclick="obConnectSpeaker('alexa')">
+            <div class="speaker-ob-header">
+              <div class="speaker-ob-logo alexa">🔵</div>
+              <div class="speaker-ob-name">Amazon Alexa</div>
+              <div class="speaker-ob-status" id="ob-alexa-status">Tap to connect</div>
+            </div>
+            <div class="speaker-ob-desc">Echo, Echo Dot, Echo Show — athan plays even when you're not home</div>
+          </div>
+          <div class="speaker-ob-card" id="ob-google" onclick="obConnectSpeaker('google')">
+            <div class="speaker-ob-header">
+              <div class="speaker-ob-logo google">🟢</div>
+              <div class="speaker-ob-name">Google Home</div>
+              <div class="speaker-ob-status" id="ob-google-status">Tap to connect</div>
+            </div>
+            <div class="speaker-ob-desc">Nest Mini, Nest Hub, Nest Audio — cloud-based remote playback</div>
+          </div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="ob-footer">
+          <button class="ob-next" onclick="obNext()">Continue</button>
+          <button class="ob-skip" onclick="obNext()">Skip for now</button>
+        </div>
+      </div>
+
+      <!-- Step 5: Qibla Calibration -->
+      <div class="ob-step" id="ob-5">
+        <div class="ob-progress"><div class="ob-dot done"></div><div class="ob-dot done"></div><div class="ob-dot done"></div><div class="ob-dot done"></div><div class="ob-dot done"></div><div class="ob-dot active"></div></div>
+        <div class="ob-title" style="margin-bottom:4px">Qibla Calibration</div>
+        <div class="ob-subtitle" style="margin-bottom:14px">Calibrate your compass for an accurate direction toward the Kaaba.</div>
+        <div class="cal-wrap">
+          <div class="ob-compass" id="ob-compass">
+            <div class="compass-ring"></div><div class="compass-ring2"></div>
+            <span class="cardinal c-n" style="top:10px;font-size:10px">N</span>
+            <span class="cardinal c-s" style="bottom:10px;font-size:10px">S</span>
+            <span class="cardinal c-e" style="right:10px;font-size:10px">E</span>
+            <span class="cardinal c-w" style="left:10px;font-size:10px">W</span>
+            <div class="ob-needle" id="ob-needle">
+              <div class="ob-kaaba">🕋</div>
+              <div class="ob-needle-n"></div><div class="ob-needle-s"></div>
+            </div>
+            <div class="ob-needle-center"></div>
+          </div>
+          <div style="text-align:center">
+            <div class="cal-deg" id="ob-qibla-deg">—°</div>
+            <div class="cal-status" id="ob-cal-status">Tap "Calibrate" to begin</div>
+          </div>
+        </div>
+        <div class="ob-footer">
+          <button class="ob-next" id="ob-cal-btn" onclick="obStartCal()">Calibrate Compass</button>
+          <button class="ob-skip" onclick="obFinish()">Skip calibration</button>
+        </div>
+      </div>
+    </div><!-- /onboarding -->
+
+    <!-- ═══════════════════════ MAIN APP ═══════════════════════ -->
+
+    <!-- PRAYERS -->
+    <div class="screen active" id="screen-home">
+      <div class="app-header">
+        <div class="app-logo">
+          <span class="logo-arabic">نداء</span>
+          <div class="logo-divider"></div>
+          <div class="logo-text"><span class="logo-english">Nida</span><span class="logo-sub">Prayer Times</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span id="location-label" style="font-size:11px;color:var(--muted);font-style:italic">Locating…</span>
+          <button class="icon-btn" onclick="refreshTimes()">⟳</button>
+        </div>
+      </div>
+      <div id="home-loading" class="loading-wrap">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Finding your location<br/>& calculating prayer times…</p>
+      </div>
+      <div id="home-content" style="display:none">
+        <div class="hero-card">
+          <div class="next-label">Next Prayer</div>
+          <div class="next-prayer-name" id="next-name">—</div>
+          <div class="next-prayer-arabic" id="next-arabic">—</div>
+          <div class="next-prayer-time" id="next-time">—<span id="next-ampm"></span></div>
+          <div class="countdown-pill"><div class="pulse-dot"></div><span class="countdown-text" id="countdown-text">—</span></div>
+        </div>
+        <div class="section-title">Today's Prayers</div>
+        <div class="date-bar" id="date-bar"></div>
+        <div class="prayer-list" id="prayer-list"></div>
+        <div class="donate-card">
+          <span class="donate-icon">🤲</span>
+          <div class="donate-text">
+            <div class="donate-title">Support Nida</div>
+            <div class="donate-sub">Your donation helps keep this app free for the Muslim community worldwide</div>
+          </div>
+          <button class="donate-btn" onclick="showToast('JazakAllahu Khayran — thank you 🌙')">Donate</button>
+        </div>
+        <div style="height:10px"></div>
+      </div>
+    </div>
+
+    <!-- QIBLA -->
+    <div class="screen" id="screen-qibla">
+      <div class="app-header">
+        <div class="app-logo"><span class="logo-arabic">نداء</span><div class="logo-divider"></div><div class="logo-text"><span class="logo-english">Nida</span><span class="logo-sub">Qibla Direction</span></div></div>
+      </div>
+      <div class="qibla-wrap">
+        <div id="qibla-init" style="text-align:center">
+          <p style="color:var(--muted);font-style:italic;margin-bottom:16px;font-size:14px">Enable compass to find the<br/>exact direction of Mecca</p>
+          <button class="gold-btn" onclick="initQibla()">Enable Compass</button>
+        </div>
+        <div id="qibla-active" style="display:none;flex-direction:column;align-items:center">
+          <div class="compass-outer">
+            <div class="compass-ring"></div><div class="compass-ring2"></div>
+            <span class="cardinal c-n">N</span><span class="cardinal c-s">S</span>
+            <span class="cardinal c-e">E</span><span class="cardinal c-w">W</span>
+            <div class="compass-needle" id="compass-needle">
+              <div class="kaaba-icon">🕋</div>
+              <div class="needle-north"></div><div class="needle-south"></div>
+            </div>
+            <div class="compass-center"></div>
+          </div>
+          <div class="qibla-info">
+            <div class="qibla-degree"><span id="qibla-deg">—</span><span>°</span></div>
+            <div class="qibla-label">Direction to Qibla</div>
+            <div class="qibla-location" id="qibla-loc">Calculating…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECITERS -->
+    <div class="screen" id="screen-reciters">
+      <div class="app-header">
+        <div class="app-logo"><span class="logo-arabic">نداء</span><div class="logo-divider"></div><div class="logo-text"><span class="logo-english">Nida</span><span class="logo-sub">Reciters</span></div></div>
+      </div>
+      <div class="reciters-header"><h2>Choose Your Athan</h2><p>Select the voice that calls you to prayer</p></div>
+      <div id="now-playing-bar" style="display:none"></div>
+      <div class="plan-toggle">
+        <button class="plan-btn active" id="tab-free" onclick="switchTab('free')">Free</button>
+        <button class="plan-btn" id="tab-premium" onclick="switchTab('premium')">Premium ✦</button>
+      </div>
+      <div id="free-reciters"></div>
+      <div id="premium-reciters" style="display:none"></div>
+      <div class="volume-section">
+        <div class="section-title" style="padding:0 4px 8px">Athan Volume</div>
+        <div class="volume-card">
+          <div class="volume-row"><span class="volume-label">Volume</span><span class="volume-val" id="vol-display">80%</span></div>
+          <div class="vol-slider-wrap"><div class="vol-fill" id="vol-fill" style="width:80%"></div><input type="range" class="vol-input" id="vol-slider" min="0" max="100" value="80"/></div>
+          <div class="vol-icons"><span class="vol-icon">🔈</span><span class="vol-icon">🔊</span></div>
+        </div>
+      </div>
+      <div style="height:12px"></div>
+    </div>
+
+    <!-- QURAN -->
+    <div class="screen" id="screen-quran">
+      <div class="app-header">
+        <div class="app-logo"><span class="logo-arabic">نداء</span><div class="logo-divider"></div><div class="logo-text"><span class="logo-english">Nida</span><span class="logo-sub">Quran</span></div></div>
+      </div>
+      <div class="coming-soon">
+        <div class="coming-soon-icon">📖</div>
+        <h2>Quran</h2>
+        <p>Colour-coded Tajweed, multiple reciters & translations — coming in the next update.</p>
+        <button class="gold-btn" style="margin-top:10px" onclick="showToast('You\'ll be notified when Quran launches 🌙')">Notify Me</button>
+      </div>
+    </div>
+
+    <!-- PREMIUM -->
+    <div class="screen" id="screen-premium">
+      <div class="app-header">
+        <div class="app-logo"><span class="logo-arabic">نداء</span><div class="logo-divider"></div><div class="logo-text"><span class="logo-english">Nida</span><span class="logo-sub" style="color:var(--amber)">Premium</span></div></div>
+      </div>
+      <div class="premium-hero">
+        <div class="premium-crown"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:56px;height:56px;display:block;margin:0 auto"><defs><linearGradient id="scg" x1="5" y1="5" x2="95" y2="95" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#F5D49A"/><stop offset="55%" stop-color="#E8B86D"/><stop offset="100%" stop-color="#C18C3C"/></linearGradient></defs><path d="M50 5 L61 35 L95 35 L68 57 L79 91 L50 70 L21 91 L32 57 L5 35 L39 35Z" fill="url(#scg)" opacity="0.9"/><path d="M50 20 L57 40 L79 40 L62 53 L69 73 L50 60 L31 73 L38 53 L21 40 L43 40Z" fill="none" stroke="#F5D49A" stroke-width="0.8" opacity="0.5"/></svg></div>
+        <div class="premium-title">Nida Premium</div>
+        <div class="premium-sub">Elevate your prayer experience with exclusive voices, features and personalisation</div>
+        <div class="premium-price">$7.00<span>/mo</span></div>
+        <div class="premium-period">or $69.99 / year — save 17%</div>
+        <button class="premium-cta" onclick="showToast('Starting your free trial… 🌙')">Start 7-Day Free Trial</button>
+        <div class="premium-cta-note">Cancel anytime · No charge during trial</div>
+      </div>
+      <div class="section-title">What's included</div>
+      <div class="feature-list">
+        <div class="feature-row"><span class="feature-icon">🎙</span><div class="feature-text"><h4>38 Premium Reciters</h4><p>Voices from Saudi Arabia, Egypt, Indonesia, Turkey, West Africa, South Asia, East Africa, Central Asia & more</p></div></div>
+        <div class="feature-row"><span class="feature-icon">🎛</span><div class="feature-text"><h4>Custom Reciter Per Prayer</h4><p>Assign a different reciter to each of the 5 daily prayers — e.g. Makkah for Fajr, Sudais for Maghrib</p></div></div>
+        <div class="feature-row"><span class="feature-icon">📁</span><div class="feature-text"><h4>Custom Athan Upload</h4><p>Upload any MP3 — use any reciter or athan you love</p></div></div>
+        <div class="feature-row"><span class="feature-icon">📵</span><div class="feature-text"><h4>Offline Mode</h4><p>30-day prayer time cache — works without internet while travelling or in poor signal areas</p></div></div>
+        <div class="feature-row"><span class="feature-icon">🖼</span><div class="feature-text"><h4>Home & Lock Screen Widget</h4><p>Next prayer time visible on your home screen without opening the app</p></div></div>
+        <div class="feature-row"><span class="feature-icon">📖</span><div class="feature-text"><h4>Early Quran Access</h4><p>Colour-coded Tajweed & translations before public launch</p></div></div>
+        <div class="feature-row"><span class="feature-icon">🌙</span><div class="feature-text"><h4>Ad-Free Forever</h4><p>A clean, distraction-free experience — always</p></div></div>
+        <div class="feature-row"><span class="feature-icon">🧡</span><div class="feature-text"><h4>Support the Developer</h4><p>Helps keep Nida free for the Muslim community worldwide</p></div></div>
+      </div>
+      <button class="restore-btn" onclick="showToast('Looking up your purchases…')">↩ Restore Purchases</button>
+      <div style="height:14px"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="screen" id="screen-settings">
+      <div class="app-header">
+        <div class="app-logo"><span class="logo-arabic">نداء</span><div class="logo-divider"></div><div class="logo-text"><span class="logo-english">Nida</span><span class="logo-sub">Settings</span></div></div>
+      </div>
+      <div class="section-title">Prayer</div>
+      <div class="settings-row" onclick="openModal('method')"><span class="settings-icon">📐</span><div class="settings-text"><div class="settings-label">Calculation Method</div><div class="settings-value" id="set-method">ISNA — North America</div></div><span class="settings-arrow">›</span></div>
+      <div class="settings-row" onclick="openModal('madhab')"><span class="settings-icon">🤲</span><div class="settings-text"><div class="settings-label">Asr Madhab</div><div class="settings-value" id="set-madhab">Shafi'i, Maliki, Hanbali</div></div><span class="settings-arrow">›</span></div>
+      <div class="section-title">Notifications</div>
+      <div class="settings-row"><span class="settings-icon">🔔</span><div class="settings-text"><div class="settings-label">Athan Notifications</div><div class="settings-value">Plays on device when away</div></div><div class="toggle on" onclick="this.classList.toggle('on');showToast(this.classList.contains('on')?'Notifications enabled':'Notifications disabled')"></div></div>
+      <div class="settings-row" onclick="showToast('Reminder timing settings')"><span class="settings-icon">⏰</span><div class="settings-text"><div class="settings-label">Pre-Athan Reminder</div><div class="settings-value">15 minutes before</div></div><span class="settings-arrow">›</span></div>
+      <div class="section-title">Smart Speakers</div>
+      <div class="speaker-card" id="alexa-card">
+        <div class="speaker-header"><div class="speaker-brand-icon alexa-icon">🔵</div><div style="flex:1"><div class="speaker-name">Amazon Alexa</div><div class="speaker-status disconnected-txt" id="alexa-status">Not connected</div></div></div>
+        <button class="connect-btn" id="alexa-btn" onclick="connectSpeaker('alexa')">Connect Alexa</button>
+      </div>
+      <div class="speaker-card" id="google-card">
+        <div class="speaker-header"><div class="speaker-brand-icon google-icon">🟢</div><div style="flex:1"><div class="speaker-name">Google Home</div><div class="speaker-status disconnected-txt" id="google-status">Not connected</div></div></div>
+        <button class="connect-btn" id="google-btn" onclick="connectSpeaker('google')">Connect Google Home</button>
+      </div>
+      <div class="section-title">Account</div>
+      <div class="settings-row" onclick="go('premium',document.querySelector('[data-screen=premium]'))"><span class="settings-icon">✦</span><div class="settings-text"><div class="settings-label">Nida Premium</div><div class="settings-value">Unlock all reciters & features</div></div><span style="font-size:10px;color:var(--amber);background:rgba(240,192,96,.12);border:1px solid rgba(240,192,96,.3);border-radius:20px;padding:2px 8px;letter-spacing:1px">FREE</span></div>
+      <div class="settings-row"><span class="settings-icon">📍</span><div class="settings-text"><div class="settings-label">Location</div><div class="settings-value" id="settings-loc">Detecting…</div></div><span class="settings-arrow">›</span></div>
+      <div style="height:12px"></div>
+    </div>
+
+    <!-- Bottom nav -->
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-screen="home" onclick="go('home',this)"><span class="nav-icon">🕌</span><span class="nav-label">Prayers</span><div class="nav-dot"></div></button>
+      <button class="nav-btn" data-screen="qibla" onclick="go('qibla',this)"><span class="nav-icon">🧭</span><span class="nav-label">Qibla</span><div class="nav-dot"></div></button>
+      <button class="nav-btn" data-screen="reciters" onclick="go('reciters',this)"><span class="nav-icon">🎙</span><span class="nav-label">Reciters</span><div class="nav-dot"></div></button>
+      <button class="nav-btn" data-screen="quran" onclick="go('quran',this)"><span class="nav-icon">📖</span><span class="nav-label">Quran</span><div class="nav-dot"></div></button>
+      <button class="nav-btn nav-premium" data-screen="premium" onclick="go('premium',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.3 4.5C7.4 5.3 5.2 7.9 5.2 11c0 3.8 3.1 6.9 6.9 6.9 1.5 0 2.9-.5 4-1.3-0.5.1-1.1.2-1.6.2-3.3 0-5.9-2.6-5.9-5.9 0-2.3 1.3-4.3 3.2-5.4-.2 0-.3 0-.5 0z" fill="#C18C3C"/><circle cx="16.5" cy="5.5" r="1.1" fill="#E8B86D"/><path d="M14.2 2.5C12.8 3.2 11.8 4.7 11.8 6.4c0 1.9 1.1 3.5 2.8 4.2-.8-.4-1.4-1.1-1.7-2-.3-.8-.2-1.8.2-2.6.4-.8.9-1.4 2.1-3.5z" fill="#F5D49A" opacity="0.9"/></svg></span><span class="nav-label">Premium</span><div class="nav-dot"></div></button>
+
+      <button class="nav-btn" data-screen="settings" onclick="go('settings',this)"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span><div class="nav-dot"></div></button>
+    </nav>
+    <div id="toast"></div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="modal-method" onclick="if(event.target===this)this.classList.remove('open')">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <button class="modal-close" onclick="document.getElementById('modal-method').classList.remove('open')">✕</button>
+        <div class="modal-title">Calculation Method</div>
+        <div class="modal-subtitle">Choose the method for your region</div>
+        <div class="modal-option selected" onclick="pickMethod(this,'ISNA — North America')"><span class="modal-option-icon">🌎</span><div><div class="modal-option-label">ISNA</div><div class="modal-option-sub">North America</div></div><span class="modal-check">✓</span></div>
+        <div class="modal-option" onclick="pickMethod(this,'Muslim World League')"><span class="modal-option-icon">🕌</span><div><div class="modal-option-label">Muslim World League</div><div class="modal-option-sub">Europe, Far East</div></div><span class="modal-check" style="opacity:0">✓</span></div>
+        <div class="modal-option" onclick="pickMethod(this,'Umm Al-Qura')"><span class="modal-option-icon">🌙</span><div><div class="modal-option-label">Umm Al-Qura</div><div class="modal-option-sub">Saudi Arabia</div></div><span class="modal-check" style="opacity:0">✓</span></div>
+        <div class="modal-option" onclick="pickMethod(this,'Egyptian General Authority')"><span class="modal-option-icon">☀️</span><div><div class="modal-option-label">Egyptian General Authority</div><div class="modal-option-sub">Africa, Syria, Malaysia</div></div><span class="modal-check" style="opacity:0">✓</span></div>
+        <div class="modal-option" onclick="pickMethod(this,'University of Karachi')"><span class="modal-option-icon">🇵🇰</span><div><div class="modal-option-label">University of Karachi</div><div class="modal-option-sub">Pakistan, Bangladesh, India</div></div><span class="modal-check" style="opacity:0">✓</span></div>
+        <div class="modal-option" onclick="pickMethod(this,'JAKIM — Malaysia')"><span class="modal-option-icon">🇲🇾</span><div><div class="modal-option-label">JAKIM</div><div class="modal-option-sub">Malaysia</div></div><span class="modal-check" style="opacity:0">✓</span></div>
+        <div class="modal-option" onclick="pickMethod(this,'Diyanet İşleri — Turkey')"><span class="modal-option-icon">🇹🇷</span><div><div class="modal-option-label">Diyanet İşleri</div><div class="modal-option-sub">Turkey</div></div><span class="modal-check" style="opacity:0">✓</span></div>
+        <button class="modal-apply" onclick="document.getElementById('modal-method').classList.remove('open');showToast('Calculation method updated ✓')">Apply</button>
+      </div>
+    </div>
+    <div class="modal-overlay" id="modal-madhab" onclick="if(event.target===this)this.classList.remove('open')">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <button class="modal-close" onclick="document.getElementById('modal-madhab').classList.remove('open')">✕</button>
+        <div class="modal-title">Asr Madhab</div>
+        <div class="modal-subtitle">School of thought for Asr calculation</div>
+        <div class="modal-option selected" onclick="pickMadhab(this,`Shafi'i, Maliki, Hanbali`)"><span class="modal-option-icon">🌿</span><div><div class="modal-option-label">Shafi'i · Maliki · Hanbali</div><div class="modal-option-sub">Shadow = 1× object height</div></div><span class="modal-check">✓</span></div>
+        <div class="modal-option" onclick="pickMadhab(this,'Hanafi')"><span class="modal-option-icon">📿</span><div><div class="modal-option-label">Hanafi</div><div class="modal-option-sub">Shadow = 2× object height</div></div><span class="modal-check" style="opacity:0">✓</span></div>
+        <button class="modal-apply" onclick="document.getElementById('modal-madhab').classList.remove('open');showToast('Madhab updated ✓')">Apply</button>
+      </div>
+    </div>
+    <div class="modal-overlay" id="modal-speaker" onclick="if(event.target===this)this.classList.remove('open')">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <button class="modal-close" onclick="document.getElementById('modal-speaker').classList.remove('open')">✕</button>
+        <div class="modal-title" id="sp-title">Connect Alexa</div>
+        <div class="modal-subtitle" id="sp-sub">Sign in with your Amazon account</div>
+        <div style="text-align:center;padding:18px 0">
+          <div id="sp-icon" style="font-size:48px;margin-bottom:10px">🔵</div>
+          <div style="font-size:14px;color:var(--muted);font-style:italic;line-height:1.6" id="sp-body">Your Echo speakers will automatically play the athan at each prayer time — even when you're not home.</div>
+        </div>
+        <button class="modal-apply" id="sp-btn" onclick="finishConnect()">Sign In & Connect</button>
+        <div style="text-align:center;font-size:11px;color:var(--muted2);margin-top:7px;font-style:italic">Your credentials are never stored by Nida</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────
+const PM=[
+  {key:'Fajr',en:'Fajr',ar:'الفجر',icon:'🌙'},
+  {key:'Sunrise',en:'Sunrise',ar:'الشروق',icon:'🌅'},
+  {key:'Dhuhr',en:'Dhuhr',ar:'الظهر',icon:'☀️'},
+  {key:'Asr',en:'Asr',ar:'العصر',icon:'🌤'},
+  {key:'Maghrib',en:'Maghrib',ar:'المغرب',icon:'🌇'},
+  {key:'Isha',en:'Isha',ar:'العشاء',icon:'🌠'},
+];
+const MAIN=['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+const DEMO={Fajr:'05:42',Sunrise:'07:10',Dhuhr:'12:58',Asr:'15:45',Maghrib:'18:22',Isha:'19:55'};
+const DEMO_DATE={gregorian:{weekday:{en:'Tuesday'},day:'10',month:{en:'March'},year:'2026'},hijri:{day:'10',month:{en:'Ramadan'},year:'1447'}};
+
+const FREE_R=[
+  {id:'makkah',name:'Makkah Athan',origin:'Masjid al-Haram — Saudi Arabia',icon:'🕋',
+   audio:'https://cdn.islamic.network/quran/audio/128/ar.abdurrahmaansudais/1.mp3'},
+  {id:'madinah',name:'Madinah Athan',origin:'Masjid an-Nabawi — Saudi Arabia',icon:'🌿',
+   audio:'https://cdn.islamic.network/quran/audio/128/ar.mahermuaiqly/1.mp3'},
+  {id:'mishary',name:'Mishary Rashid Al-Afasy',origin:'Kuwait',icon:'🎵',
+   audio:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'basit',name:'Abdul Basit Abdus Samad',origin:'Egypt',icon:'🌙',
+   audio:'https://cdn.islamic.network/quran/audio/128/ar.abdulbasitabdulsamad/1.mp3'},
+];
+const PREM_R=[
+  // Saudi Arabia
+  {id:'sudais',name:'Abdul Rahman Al-Sudais',origin:'Saudi Arabia',icon:'⭐',preview:'https://cdn.islamic.network/quran/audio/128/ar.abdurrahmaansudais/1.mp3'},
+  {id:'ghamdi',name:'Saad Al-Ghamdi',origin:'Saudi Arabia',icon:'🌺',preview:'https://cdn.islamic.network/quran/audio/128/ar.saadalghamdi/1.mp3'},
+  {id:'muaiqly',name:'Maher Al-Muaiqly',origin:'Saudi Arabia',icon:'✨',preview:'https://cdn.islamic.network/quran/audio/128/ar.mahermuaiqly/1.mp3'},
+  {id:'husary',name:'Mahmoud Khalil Al-Husary',origin:'Egypt',icon:'📿',preview:'https://cdn.islamic.network/quran/audio/128/ar.husary/1.mp3'},
+  {id:'huthaify',name:'Ali Abdur-Rahman Al-Huthaify',origin:'Saudi Arabia',icon:'🌸',preview:'https://cdn.islamic.network/quran/audio/128/ar.hanirifai/1.mp3'},
+  {id:'dosari',name:'Yasser Al-Dosari',origin:'Saudi Arabia',icon:'💫',preview:'https://cdn.islamic.network/quran/audio/128/ar.yasseraldossari/1.mp3'},
+  {id:'baleela',name:'Bandar Baleela',origin:'Saudi Arabia',icon:'🎶',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'qahtani',name:'Khalid Al-Qahtani',origin:'Saudi Arabia',icon:'🔮',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'shuraim',name:'Saud Al-Shuraim',origin:'Saudi Arabia',icon:'🌟',preview:'https://cdn.islamic.network/quran/audio/128/ar.shaatree/1.mp3'},
+  // Turkey & Central Asia
+  {id:'topbas',name:'Osman Nuri Topbaş',origin:'Turkey',icon:'🇹🇷',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'fatih',name:'Fatih Seferagic',origin:'Bosnia & Herzegovina',icon:'🕊',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'khuzaim',name:'Khalil Al-Husari Al-Turkistani',origin:'Xinjiang, China',icon:'🌏',preview:'https://cdn.islamic.network/quran/audio/128/ar.husary/1.mp3'},
+  // Indonesia & Malaysia
+  {id:'muzammil',name:'Muzammil Hasballah',origin:'Aceh, Indonesia',icon:'🇮🇩',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'muammar',name:"H. Muammar ZA",origin:'Jakarta, Indonesia',icon:'🌴',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'alijaber',name:'Syekh Ali Jaber',origin:'Indonesia (Madinah-born)',icon:'🕌',preview:'https://cdn.islamic.network/quran/audio/128/ar.abdurrahmaansudais/1.mp3'},
+  {id:"syaroni",name:"H. Ahmad Sya'roni AS",origin:"Rembang, Central Java",icon:"🌺",preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'tohir',name:'H. Mukhtar Lutfi',origin:'Kudus, Central Java',icon:'🎵',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'mariaulfah',name:'Hajjah Maria Ulfah',origin:'East Java, Indonesia',icon:'🌸',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'zainalabidin',name:'Qori Zainal Abidin',origin:'Sumatra, Indonesia',icon:'✨',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'hisyam',name:'Hisyam Abbas',origin:'Malaysia',icon:'🇲🇾',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  // West Africa
+  {id:'konaté',name:'Cheikh Omar Konaté',origin:'Guinea, West Africa',icon:'🌍',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'traore',name:'Cheikh Boureima Ouédraogo',origin:'Burkina Faso, West Africa',icon:'🌍',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'ghana',name:'Sheikh Musa Bilal',origin:'Ghana, West Africa',icon:'🌍',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  // Egypt & North Africa
+  {id:'mustafaismail',name:'Sheikh Mustafa Ismail',origin:'Egypt',icon:'🌹',preview:'https://cdn.islamic.network/quran/audio/128/ar.abdulbasitabdulsamad/1.mp3'},
+  {id:'jibreel',name:'Mohamed Jibreel',origin:'Morocco',icon:'🌙',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'shatri',name:'Abou Bakr Al-Shatri',origin:'Algeria',icon:'🌟',preview:'https://cdn.islamic.network/quran/audio/128/ar.shaatree/1.mp3'},
+  {id:'tablawi',name:'Sheikh Mohammed Al-Tablawi',origin:'Egypt',icon:'📿',preview:'https://cdn.islamic.network/quran/audio/128/ar.abdulbasitabdulsamad/1.mp3'},
+  // South Asia
+  {id:'abdulbaseer',name:'Qari Abdul Baseer',origin:'Pakistan',icon:'🎵',preview:'https://cdn.islamic.network/quran/audio/128/ar.abdulbasitabdulsamad/1.mp3'},
+  {id:'wahidzafar',name:'Qari Wahid Zafar Qasmi',origin:'India',icon:'🌺',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'ashraf',name:'Sheikh Ashraf Ali Thanvi',origin:'Bangladesh',icon:'🌿',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'sudaisvol2',name:'Sheikh Saud Al-Shuraim (Madinah)',origin:'Saudi Arabia — Al-Madinah',icon:'🕌',preview:'https://cdn.islamic.network/quran/audio/128/ar.shaatree/1.mp3'},
+  // East Africa & Horn of Africa
+  {id:'nuurabdi',name:'Sheikh Nuur Abdi',origin:'Somalia',icon:'⭐',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'tanzanian',name:'Sheikh Ahmed Nuur Hussein',origin:'Tanzania',icon:'🌍',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'kenyan',name:'Sheikh Saad Mubarak',origin:'Kenya',icon:'🌍',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  // Central Asia & Russia
+  {id:'askarov',name:'Obid Askarov',origin:'Uzbekistan',icon:'✨',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'nasyrov',name:'Rustam Nasyrov',origin:'Tatarstan, Russia',icon:'🌸',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  // Europe & Americas
+  {id:'seferaprem',name:'Fatih Seferagic (Full Quran)',origin:'USA — Bosnian heritage',icon:'🕊',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+  {id:'europemosque',name:'Imam Ismail Al-Andalusi',origin:'Spain — Granada',icon:'🇪🇸',preview:'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'},
+];
+
+let times=null,uLat=43.6532,uLng=-79.3832,uCity='Toronto';
+let selR=FREE_R[0],cDown=null,qAngle=0,dHead=0;
+let spState={alexa:false,google:false},conPlat='';
+let obSet={method:2,madhab:1},calDone=false,calInt=null;
+let obSpState={alexa:false,google:false};
+let curAudio=null,playingId=null,playingName='';
+
+// ── NAV ───────────────────────────────────────────────────────────────
+function go(name,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  if(btn&&btn.classList)btn.classList.add('active');
+}
+function showToast(m){
+  const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── PRAYER TIMES ──────────────────────────────────────────────────────
+function fmt(t){const[h,m]=t.split(':').map(Number),ap=h>=12?'PM':'AM',h12=h%12||12;return{d:`${h12}:${String(m).padStart(2,'0')}`,ap}}
+function next(tim){
+  const nm=new Date().getHours()*60+new Date().getMinutes();
+  for(const k of MAIN){const[h,m]=tim[k].split(':').map(Number);if(h*60+m>nm)return{key:k,time:tim[k]}}
+  return{key:MAIN[0],time:tim[MAIN[0]],tmrw:true};
+}
+function renderList(tim){
+  const nm=new Date().getHours()*60+new Date().getMinutes(),nx=next(tim);
+  const el=document.getElementById('prayer-list');el.innerHTML='';
+  PM.forEach(p=>{
+    const t=tim[p.key];if(!t)return;
+    const[h,m]=t.split(':').map(Number),passed=h*60+m<nm,isNext=p.key===nx.key&&!nx.tmrw,f=fmt(t);
+    const r=document.createElement('div');
+    r.className=`prayer-row${isNext?' is-next':''}${passed?' passed':''}`;
+    r.innerHTML=`<span class="prayer-icon">${p.icon}</span><div class="prayer-info"><div class="prayer-en">${p.en}${isNext?'<span class="next-badge">NEXT</span>':''}</div><div class="prayer-ar">${p.ar}</div></div><div class="prayer-time-val">${f.d}<span style="font-size:11px;opacity:.6;margin-left:3px">${f.ap}</span>${passed&&!isNext?'<span class="passed-txt">passed</span>':''}</div>`;
+    el.appendChild(r);
+  });
+}
+function updateHero(tim){
+  const nx=next(tim),meta=PM.find(p=>p.key===nx.key),f=fmt(nx.time);
+  document.getElementById('next-name').textContent=meta.en;
+  document.getElementById('next-arabic').textContent=meta.ar;
+  document.getElementById('next-time').childNodes[0].textContent=f.d;
+  document.getElementById('next-ampm').textContent=f.ap;
+  startCD(nx.time,nx.tmrw);
+}
+function startCD(ts,tmrw){
+  if(cDown)clearInterval(cDown);
+  function tick(){
+    const now=new Date();let tgt=new Date();const[h,m]=ts.split(':').map(Number);
+    tgt.setHours(h,m,0,0);if(tmrw||tgt<now)tgt.setDate(tgt.getDate()+1);
+    const diff=Math.max(0,tgt-now),hrs=Math.floor(diff/3600000),mins=Math.floor((diff%3600000)/60000),secs=Math.floor((diff%60000)/1000);
+    document.getElementById('countdown-text').textContent=hrs>0?`${hrs}h ${mins}m away`:`${mins}m ${String(secs).padStart(2,'0')}s away`;
+  }
+  tick();cDown=setInterval(tick,1000);
+}
+function setDateBar(d){
+  try{
+    const g=d.gregorian,h=d.hijri;
+    document.getElementById('date-bar').textContent=`${g.weekday.en}, ${g.day} ${g.month.en} ${g.year}  ·  ${h.day} ${h.month.en} ${h.year} AH`;
+  }catch{}
+}
+function showHome(tim,dateData){
+  times=tim;
+  document.getElementById('home-loading').style.display='none';
+  document.getElementById('home-content').style.display='block';
+  renderList(tim);updateHero(tim);setDateBar(dateData||DEMO_DATE);
+  calcQ(uLat,uLng);
+}
+async function loadTimes(lat,lng){
+  const d=new Date(),ds=`${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}`;
+  const ctrl=new AbortController();
+  setTimeout(()=>ctrl.abort(),6000);
+  try{
+    const r=await fetch(`https://api.aladhan.com/v1/timings/${ds}?latitude=${lat}&longitude=${lng}&method=${obSet.method}`,{signal:ctrl.signal});
+    if(!r.ok)throw 0;
+    const j=await r.json();return{timings:j.data.timings,date:j.data.date};
+  }catch{return null}
+}
+async function startWithCoords(lat,lng,city){
+  uLat=lat;uLng=lng;uCity=city;
+  document.getElementById('location-label').textContent=city;
+  document.getElementById('settings-loc').textContent=city;
+  const d=await loadTimes(lat,lng);
+  d?showHome(d.timings,d.date):showHome(DEMO,DEMO_DATE);
+}
+async function refreshTimes(){
+  const d=await loadTimes(uLat,uLng);
+  d?(showHome(d.timings,d.date),showToast('Prayer times updated ✓')):showToast('Using cached times (offline)');
+}
+function initLoc(){
+  if(!navigator.geolocation){startWithCoords(uLat,uLng,'Toronto');return}
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    uLat=pos.coords.latitude;uLng=pos.coords.longitude;
+    try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${uLat}&lon=${uLng}&format=json`);const j=await r.json();uCity=j.address.city||j.address.town||j.address.village||'Your Location';}catch{uCity='Your Location'}
+    startWithCoords(uLat,uLng,uCity);
+  },()=>startWithCoords(43.6532,-79.3832,'Toronto'),{timeout:6000});
+}
+
+// ── QIBLA ─────────────────────────────────────────────────────────────
+function calcQ(lat,lng){
+  const kLat=21.4225*Math.PI/180,kLng=39.8262*Math.PI/180,uL=lat*Math.PI/180,dL=kLng-(lng*Math.PI/180);
+  const y=Math.sin(dL)*Math.cos(kLat),x=Math.cos(uL)*Math.sin(kLat)-Math.sin(uL)*Math.cos(kLat)*Math.cos(dL);
+  qAngle=(Math.atan2(y,x)*180/Math.PI+360)%360;
+  const dEl=document.getElementById('qibla-deg');if(dEl)dEl.textContent=Math.round(qAngle);
+  const lEl=document.getElementById('qibla-loc');if(lEl)lEl.textContent=`From ${uCity}`;
+}
+function initQibla(){
+  document.getElementById('qibla-init').style.display='none';
+  document.getElementById('qibla-active').style.display='flex';
+  if(window.DeviceOrientationEvent){
+    if(typeof DeviceOrientationEvent.requestPermission==='function'){
+      DeviceOrientationEvent.requestPermission().then(s=>{s==='granted'?listenC():simC()}).catch(simC);
+    }else listenC();
+  }else simC();
+  calcQ(uLat,uLng);
+}
+function listenC(){window.addEventListener('deviceorientation',e=>{dHead=e.webkitCompassHeading!==undefined?e.webkitCompassHeading:(e.alpha||0);rotN()})}
+function simC(){let a=0;setInterval(()=>{dHead=(a+=0.4)%360;rotN()},50);showToast('Demo mode — live compass on a real device')}
+function rotN(){const n=document.getElementById('compass-needle');if(n)n.style.transform=`translateX(-50%) translateY(-100%) rotate(${qAngle-dHead}deg)`}
+
+// ── AUDIO ─────────────────────────────────────────────────────────────
+function stopAudio(){
+  if(curAudio){curAudio.pause();curAudio.src='';curAudio=null;}
+  playingId=null;playingName='';
+  const bar=document.getElementById('now-playing-bar');
+  if(bar){bar.style.display='none';bar.innerHTML='';}
+}
+function playAthan(id,url,name,isPremiumPreview){
+  if(playingId===id){stopAudio();renderR();return;}
+  stopAudio();
+  playingId=id;playingName=name;
+  curAudio=new Audio(url);
+  const vol=parseInt(document.getElementById('vol-slider').value)/100;
+  curAudio.volume=isNaN(vol)?0.8:vol;
+  curAudio.play().catch(()=>{
+    showToast('Could not load audio — check your connection');
+    playingId=null;playingName='';renderR();
+  });
+  curAudio.onended=()=>{playingId=null;playingName='';renderR();};
+  const bar=document.getElementById('now-playing-bar');
+  if(bar){
+    bar.style.display='block';
+    bar.innerHTML=`<div class="now-playing-bar"><div class="np-waves"><span></span><span></span><span></span><span></span><span></span></div><span class="np-text">${isPremiumPreview?'Preview: ':'Now playing: '}<strong style="color:var(--cream)">${name}</strong>${isPremiumPreview?' <span style="font-size:10px;color:var(--muted)">(voice sample)</span>':''}</span><button class="np-stop" onclick="stopAudio();renderR()">■ Stop</button></div>`;
+  }
+  renderR();
+}
+
+// ── RECITERS ──────────────────────────────────────────────────────────
+function renderR(){
+  const fe=document.getElementById('free-reciters');fe.innerHTML='';
+  FREE_R.forEach(r=>{
+    const isPlay=playingId===r.id;
+    const isSel=r.id===selR.id;
+    const c=document.createElement('div');
+    c.className=`reciter-card${isSel?' selected':''}${isPlay?' is-playing':''}`;
+    c.onclick=()=>{
+      selR=r;
+      showToast(`${r.name} set as your athan ✓`);
+      renderR();
+    };
+    const playIcon=isPlay
+      ?`<div class="play-waves"><span></span><span></span><span></span><span></span><span></span></div>`
+      :`<span style="margin-left:1px">▶</span>`;
+    c.innerHTML=`
+      <div class="reciter-avatar">${r.icon}</div>
+      <div class="reciter-info">
+        <div class="reciter-name">${r.name}</div>
+        <div class="reciter-origin">${r.origin}</div>
+      </div>
+      <span class="reciter-badge badge-free">FREE</span>
+      ${isSel?'<span style="color:var(--gold);font-size:17px;margin-left:4px">✓</span>':''}
+      <button class="play-btn${isPlay?' is-playing':''}" onclick="event.stopPropagation();playAthan('${r.id}','${r.audio}','${r.name.replace(/'/g,"\\'")}',false)">${playIcon}</button>`;
+    fe.appendChild(c);
+  });
+  const pe=document.getElementById('premium-reciters');pe.innerHTML='';
+  const regions=[
+    {label:'Saudi Arabia & Gulf',keys:['sudais','ghamdi','muaiqly','husary','huthaify','dosari','baleela','qahtani','shuraim','sudaisvol2']},
+    {label:'Egypt & North Africa',keys:['mustafaismail','jibreel','shatri','tablawi']},
+    {label:'South Asia',keys:['abdulbaseer','wahidzafar','ashraf']},
+    {label:'Turkey & Central Asia',keys:['topbas','fatih','khuzaim','askarov','nasyrov']},
+    {label:'Indonesia & Malaysia',keys:['muzammil','muammar','alijaber','syaroni','tohir','mariaulfah','zainalabidin','hisyam']},
+    {label:'West Africa',keys:['konaté','traore','ghana']},
+    {label:'East Africa & Horn of Africa',keys:['nuurabdi','tanzanian','kenyan']},
+    {label:'Europe & Americas',keys:['seferaprem','europemosque']},
+  ];
+  regions.forEach(reg=>{
+    const hdr=document.createElement('div');
+    hdr.style.cssText='font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--sublabel);padding:10px 14px 5px;';
+    hdr.textContent=reg.label;pe.appendChild(hdr);
+    reg.keys.forEach(kid=>{
+      const r=PREM_R.find(x=>x.id===kid);if(!r)return;
+      const isPlay=playingId===r.id;
+      const c=document.createElement('div');
+      c.className=`reciter-card premium-locked${isPlay?' is-playing':''}`;
+      c.onclick=()=>go('premium',document.querySelector('[data-screen=premium]'));
+      const playIcon=isPlay
+        ?`<div class="play-waves"><span></span><span></span><span></span><span></span><span></span></div>`
+        :`<span style="margin-left:1px">▶</span>`;
+      const previewBtn=r.preview
+        ?`<button class="play-btn${isPlay?' is-playing':''}" style="opacity:.85" title="Voice preview" onclick="event.stopPropagation();playAthan('${r.id}','${r.preview}','${r.name.replace(/'/g,"\\'")}',true)">${playIcon}</button>`
+        :`<span style="font-size:12px;color:var(--muted2);margin-left:4px">🔒</span>`;
+      c.innerHTML=`
+        <div class="reciter-avatar">${r.icon}</div>
+        <div class="reciter-info">
+          <div class="reciter-name">${r.name}</div>
+          <div class="reciter-origin">${r.origin}</div>
+        </div>
+        <span class="reciter-badge badge-premium">PREMIUM</span>
+        ${previewBtn}`;
+      pe.appendChild(c);
+    });
+  });
+  const u=document.createElement('div');u.className='upload-card';
+  u.onclick=()=>go('premium',document.querySelector('[data-screen=premium]'));
+  u.innerHTML='<div style="font-size:26px;margin-bottom:5px">📁</div><h3>Upload Custom Athan</h3><p>Upload your own MP3 — any reciter you love</p>';
+  pe.appendChild(u);
+}
+function switchTab(t){
+  document.getElementById('tab-free').classList.toggle('active',t==='free');
+  document.getElementById('tab-premium').classList.toggle('active',t==='premium');
+  document.getElementById('free-reciters').style.display=t==='free'?'block':'none';
+  document.getElementById('premium-reciters').style.display=t==='premium'?'block':'none';
+}
+document.getElementById('vol-slider').addEventListener('input',function(){
+  document.getElementById('vol-display').textContent=this.value+'%';
+  document.getElementById('vol-fill').style.width=this.value+'%';
+  if(curAudio)curAudio.volume=parseInt(this.value)/100;
+});
+
+// ── SETTINGS MODALS ───────────────────────────────────────────────────
+function openModal(type){document.getElementById('modal-'+type).classList.add('open')}
+function pickMethod(el,val){
+  document.querySelectorAll('#modal-method .modal-option').forEach(o=>{o.classList.remove('selected');o.querySelector('.modal-check').style.opacity='0'});
+  el.classList.add('selected');el.querySelector('.modal-check').style.opacity='1';
+  document.getElementById('set-method').textContent=val;
+}
+function pickMadhab(el,val){
+  document.querySelectorAll('#modal-madhab .modal-option').forEach(o=>{o.classList.remove('selected');o.querySelector('.modal-check').style.opacity='0'});
+  el.classList.add('selected');el.querySelector('.modal-check').style.opacity='1';
+  document.getElementById('set-madhab').textContent=val;
+}
+
+// ── SPEAKER CONNECTION ────────────────────────────────────────────────
+function connectSpeaker(p){
+  conPlat=p;const ia=p==='alexa';
+  document.getElementById('sp-title').textContent=ia?'Connect Alexa':'Connect Google Home';
+  document.getElementById('sp-sub').textContent=ia?'Sign in with your Amazon account':'Sign in with your Google account';
+  document.getElementById('sp-icon').textContent=ia?'🔵':'🟢';
+  document.getElementById('sp-body').textContent=ia?'Your Echo speakers will automatically play the athan at each prayer time — even when you\'re away from home.':'Your Google Nest speakers will play the athan via Google\'s cloud — at home and away.';
+  document.getElementById('sp-btn').textContent=ia?'Sign In with Amazon':'Sign In with Google';
+  document.getElementById('modal-speaker').classList.add('open');
+}
+function finishConnect(){
+  document.getElementById('modal-speaker').classList.remove('open');
+  spState[conPlat]=true;const ia=conPlat==='alexa';
+  const card=document.getElementById(conPlat+'-card');
+  document.getElementById(conPlat+'-status').textContent='Connected — 2 speakers found';
+  document.getElementById(conPlat+'-status').className='speaker-status connected-txt';
+  card.classList.add('connected');
+  const btn=document.getElementById(conPlat+'-btn');
+  btn.textContent='Manage Speakers';
+  btn.style.cssText='background:rgba(46,204,113,.12);border:1px solid rgba(46,204,113,.3);color:#2ECC71;font-size:13px;border-radius:25px;padding:10px;width:100%;font-family:inherit;cursor:pointer;letter-spacing:1px';
+  btn.onclick=()=>showToast(`${ia?'Alexa':'Google Home'} speakers active ✓`);
+  showToast(`${ia?'Alexa':'Google Home'} connected! Athan plays automatically ✓`);
+}
+
+// ── ONBOARDING ────────────────────────────────────────────────────────
+let obStep=0;
+function obNext(){
+  document.getElementById('ob-'+obStep).classList.remove('active');
+  if(++obStep>5){obFinish();return}
+  document.getElementById('ob-'+obStep).classList.add('active');
+}
+function obSkip(){obFinish()}
+function obFinish(){
+  document.getElementById('onboarding').classList.add('hidden');
+  if(calInt)clearInterval(calInt);
+}
+function obSelect(el,group){
+  el.closest('.ob-options').querySelectorAll('.ob-option').forEach(o=>{o.classList.remove('selected');o.querySelector('.ob-check').style.opacity='0'});
+  el.classList.add('selected');el.querySelector('.ob-check').style.opacity='1';
+  if(group==='method')obSet.method=parseInt(el.dataset.val);
+}
+function obRequestLocation(){
+  if(!navigator.geolocation){obNext();return}
+  const s=document.getElementById('ob-geo-state');
+  s.innerHTML='<span class="ob-geo-icon">⏳</span><div><div class="ob-geo-text">Requesting location…</div><div class="ob-geo-sub">Please allow in your browser</div></div>';
+  navigator.geolocation.getCurrentPosition(pos=>{
+    uLat=pos.coords.latitude;uLng=pos.coords.longitude;
+    s.innerHTML='<span class="ob-geo-icon">✅</span><div><div class="ob-geo-text" style="color:var(--green)">Location found!</div><div class="ob-geo-sub">Prayer times will be exact for your location</div></div>';
+    setTimeout(obNext,700);
+  },()=>{
+    s.innerHTML='<span class="ob-geo-icon">❌</span><div><div class="ob-geo-text" style="color:#ff6b6b">Permission denied</div><div class="ob-geo-sub">Using Toronto — change in Settings</div></div>';
+    setTimeout(obNext,1000);
+  },{timeout:8000});
+}
+function obConnectSpeaker(p){
+  const card=document.getElementById('ob-'+p),st=document.getElementById('ob-'+p+'-status');
+  if(obSpState[p]){obSpState[p]=false;card.classList.remove('selected');st.textContent='Tap to connect';st.style.color=''}
+  else{obSpState[p]=true;card.classList.add('selected');st.textContent='✓ Will connect';st.style.color='var(--green)'}
+}
+function obStartCal(){
+  if(calDone){obFinish();return}
+  calDone=true;
+  calcQ(uLat,uLng);
+  document.getElementById('ob-qibla-deg').textContent=Math.round(qAngle)+'°';
+  document.getElementById('ob-cal-status').textContent='Rotate your device to find Mecca…';
+  if(window.DeviceOrientationEvent){
+    if(typeof DeviceOrientationEvent.requestPermission==='function'){
+      DeviceOrientationEvent.requestPermission().then(s=>{s==='granted'?listenObC():startObSim()}).catch(startObSim);
+    }else listenObC();
+  }else startObSim();
+  setTimeout(()=>{
+    document.getElementById('ob-cal-status').textContent='Calibration complete ✓';
+    document.getElementById('ob-cal-status').style.color='var(--green)';
+    document.getElementById('ob-cal-btn').textContent='Finish Setup →';
+    document.getElementById('ob-cal-btn').onclick=obFinish;
+  },3000);
+}
+function listenObC(){window.addEventListener('deviceorientation',e=>{dHead=e.webkitCompassHeading||e.alpha||0;rotObN()})}
+function startObSim(){let a=0;calInt=setInterval(()=>{dHead=(a+=0.5)%360;rotObN()},50)}
+function rotObN(){const n=document.getElementById('ob-needle');if(n)n.style.transform=`translateX(-50%) translateY(-100%) rotate(${qAngle-dHead}deg)`}
+
+// ── INIT ─────────────────────────────────────────────────────────────
+renderR();
+initLoc();
+setInterval(()=>{if(times)renderList(times)},60000);
+</script>
+</body>
+</html>
