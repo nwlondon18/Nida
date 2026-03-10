@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Nida — نداء</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&family=Scheherazade+New:wght@400;700&display=swap"/>
 <style>
 :root{
   --bg:#0E0A06;--bg2:#160F08;--bg3:#1E1408;--surface:#251A0E;--surface2:#2F2010;
@@ -232,9 +232,11 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 .ayah-card:hover{border-color:rgba(193,140,60,.4)}
 .ayah-card.active-ayah{border-color:var(--gold);background:linear-gradient(135deg,rgba(193,140,60,.14),rgba(193,140,60,.04))}
 .ayah-arabic{font-family:'Amiri',serif;font-size:22px;color:var(--cream);text-align:right;line-height:1.9;direction:rtl}
+.ayah-arabic.script-indopak{font-family:'Scheherazade New','Amiri',serif;line-height:2.1;font-size:inherit}
 .ayah-translation{font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px;font-style:italic;border-top:1px solid rgba(193,140,60,.12);padding-top:8px}
 .ayah-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(193,140,60,.15);border:1px solid rgba(193,140,60,.3);font-size:10px;color:var(--gold2);flex-shrink:0;margin-right:8px}
 .surah-bismillah{text-align:center;font-family:'Amiri',serif;font-size:20px;color:var(--gold2);padding:10px 0 16px;letter-spacing:1px}
+.surah-bismillah.script-indopak{font-family:'Scheherazade New','Amiri',serif;line-height:2.1}
 /* Quran mode toggle */
 .q-mode-bar{display:flex;margin:0 14px 12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:3px;gap:3px}
 .q-mode-btn{flex:1;padding:7px 6px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:.5px;cursor:pointer;transition:all .2s;line-height:1.2;text-align:center}
@@ -259,8 +261,8 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 .q-fpill{flex:1;padding:5px 4px;border:1px solid var(--border);border-radius:7px;background:transparent;color:var(--muted);font-family:'Cormorant Garamond',serif;font-size:11px;cursor:pointer;text-align:center;transition:all .18s;white-space:nowrap}
 .q-fpill.active{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg);border-color:transparent;font-weight:600}
 /* Tajweed legend */
-.tj-legend{display:flex;flex-wrap:wrap;gap:4px 10px;padding:6px 14px 0;font-size:10px}
-.tj-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:3px;vertical-align:middle}
+.tj-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;flex-shrink:0}
+.tj-key-item{display:inline-flex;align-items:center;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:.5px;color:var(--muted);white-space:nowrap}
 /* ── Quran letter spans ── */
 .q-letter{display:inline;transition:color .04s,text-shadow .04s}
 .q-letter-active{color:var(--gold2)!important;text-shadow:0 0 10px rgba(232,184,109,.7)}
@@ -654,14 +656,15 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
           </div>
         </div>
       </div>
-      <!-- Tajweed legend (hidden by default) -->
-      <div id="q-taj-legend" style="display:none" class="tj-legend">
-        <span><span class="tj-dot" style="background:#C084FC"></span>Qalqala</span>
-        <span><span class="tj-dot" style="background:#4ADE80"></span>Ghunna</span>
-        <span><span class="tj-dot" style="background:#60A5FA"></span>Madd</span>
-        <span><span class="tj-dot" style="background:#F87171"></span>Shadda</span>
-        <span><span class="tj-dot" style="background:#FB923C"></span>Tanwin</span>
-        <span><span class="tj-dot" style="background:#F472B6"></span>Iqlab</span>
+      <!-- Tajweed legend — appears as second row inside filter area -->
+      <div id="q-taj-legend" style="display:none;margin:0 14px 10px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;flex-wrap:wrap;gap:6px 14px;align-items:center">
+        <span style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--sublabel);font-family:'Cormorant Garamond',serif;margin-right:4px">Key</span>
+        <span class="tj-key-item"><span class="tj-dot" style="background:#C084FC"></span>Qalqala</span>
+        <span class="tj-key-item"><span class="tj-dot" style="background:#4ADE80"></span>Ghunna</span>
+        <span class="tj-key-item"><span class="tj-dot" style="background:#60A5FA"></span>Madd</span>
+        <span class="tj-key-item"><span class="tj-dot" style="background:#F87171"></span>Shadda</span>
+        <span class="tj-key-item"><span class="tj-dot" style="background:#FB923C"></span>Tanwin</span>
+        <span class="tj-key-item"><span class="tj-dot" style="background:#F472B6"></span>Iqlab</span>
       </div>
 
       <!-- Reciter & Translation selectors -->
@@ -1331,6 +1334,7 @@ let qMode='surah';
 let qAudio=null, qPlaying=false;
 let qCurSurah=1, qCurAyahIdx=0;
 let qAyahData=[], qTransData=[], qVerses=[], qTimings=[];
+let qIndopakData=[]; // separate store for indopak ayah text
 let qRafId=null, qProgTimer=null;
 let qCurActiveVerse=-1, qCurActiveWord=-1;
 let qFontSz='md', qScript='uthmani', qTajweedOn=false;
@@ -1397,6 +1401,7 @@ function qSetScript(s){
   qScript=s;
   document.getElementById('q-script-uthmani').classList.toggle('active',s==='uthmani');
   document.getElementById('q-script-indopak').classList.toggle('active',s==='indopak');
+  // Re-render with the new script (fetches indopak text if needed)
   if(qMode==='surah') qRenderSurahVerses();
   else qRenderAyahList();
 }
@@ -1476,18 +1481,26 @@ async function qLoadSurahMode(autoplay){
   const recId=document.getElementById('q-reciter').value||'7';
   const trans=document.getElementById('q-translation').value||'en.sahih';
   try{
-    const [vRes,aRes]=await Promise.all([
-      fetch('https://api.quran.com/api/v4/verses/by_chapter/'+n+'?words=true&word_fields=text_uthmani,text_indopak,char_type_name&per_page=300&fields=text_uthmani'),
-      fetch('https://api.quran.com/api/v4/chapter_recitations/'+recId+'/'+n)
-    ]);
-    const vJson=await vRes.json();
-    const aJson=await aRes.json();
+    // Fetch verse text (Uthmani words), audio timings, indopak text, and translation in parallel
+    const fetches=[
+      fetch('https://api.quran.com/api/v4/verses/by_chapter/'+n+'?words=true&word_fields=text_uthmani,char_type_name&per_page=300&fields=text_uthmani'),
+      fetch('https://api.quran.com/api/v4/chapter_recitations/'+recId+'/'+n),
+      fetch('https://api.alquran.cloud/v1/surah/'+n+'/editions/quran-uthmani,quran-indopak'),
+    ];
+    if(trans!=='none') fetches.push(fetch('https://api.alquran.cloud/v1/surah/'+n+'/editions/'+trans));
+    const results=await Promise.all(fetches);
+    const [vJson,aJson,scriptJson]=await Promise.all(results.map(r=>r.json()));
     qVerses=vJson.verses||[];
     const af=aJson.audio_file||{};
     qTimings=af.verse_timings||[];
     const audioUrl=af.audio_url||null;
+    // scriptJson.data[0] = quran-uthmani ayahs, scriptJson.data[1] = quran-indopak ayahs
+    qIndopakData=(scriptJson.code===200&&scriptJson.data&&scriptJson.data[1])?scriptJson.data[1].ayahs:[];
     qTransData=[];
-    if(trans!=='none') await qFetchTrans(n,trans);
+    if(trans!=='none'&&results[3]){
+      const tJson=await results[3].json();
+      qTransData=(tJson.code===200&&tJson.data&&tJson.data[0])?tJson.data[0].ayahs:[];
+    }
     qRenderSurahVerses();
     qUpdatePlayer(surah.name+' — '+surah.arabic,'Surah '+n+'/114 · '+surah.ayahs+' ayahs');
     if(autoplay){ if(audioUrl) qPlaySurahAudio(audioUrl); else showToast('No audio for this reciter'); }
@@ -1499,19 +1512,29 @@ async function qLoadSurahMode(autoplay){
 
 function qRenderSurahVerses(){
   const trans=document.getElementById('q-translation').value;
+  const isIndopak=qScript==='indopak';
   const el=document.getElementById('q-ayahs');
   if(!qVerses.length){el.innerHTML='';return;}
   let html='';
   if(qCurSurah!==1&&qCurSurah!==9)
-    html+='<div class="surah-bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
+    html+='<div class="surah-bismillah'+(isIndopak?' script-indopak':'')+'">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
   qVerses.forEach((v,vi)=>{
     const words=(v.words||[]).filter(w=>w.char_type_name!=='end'&&w.char_type_name!=='sajdah');
-    const wordsHtml=words.map((w,wi)=>{
-      const txt=qScript==='indopak'?(w.text_indopak||w.text_uthmani||''):(w.text_uthmani||'');
-      return'<span class="q-word" id="qw-'+vi+'-'+wi+'">'+qWordHtml(txt,vi,wi)+'</span>';
-    }).join(' ');
+    // For indopak: use per-verse text from qIndopakData, split into "words" by space
+    // For uthmani: use word-level data from Quran.com API
+    let wordsHtml;
+    if(isIndopak&&qIndopakData[vi]){
+      const ipText=qIndopakData[vi].text||'';
+      const ipWords=ipText.split(' ').filter(Boolean);
+      wordsHtml=ipWords.map((w,wi)=>`<span class="q-word" id="qw-${vi}-${wi}">${qWordHtml(w,vi,wi)}</span>`).join(' ');
+    } else {
+      wordsHtml=words.map((w,wi)=>{
+        const txt=w.text_uthmani||'';
+        return'<span class="q-word" id="qw-'+vi+'-'+wi+'">'+qWordHtml(txt,vi,wi)+'</span>';
+      }).join(' ');
+    }
     const tText=trans!=='none'&&qTransData[vi]?'<div class="ayah-translation">'+qTransData[vi].text+'</div>':'';
-    html+='<div class="ayah-card" id="ayah-card-'+vi+'"><div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><div class="ayah-num">'+(v.verse_number||vi+1)+'</div><div class="ayah-arabic" style="flex:1;font-size:'+Q_SIZE_MAP[qFontSz]+'">'+wordsHtml+'</div></div>'+tText+'</div>';
+    html+='<div class="ayah-card" id="ayah-card-'+vi+'"><div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><div class="ayah-num">'+(v.verse_number||vi+1)+'</div><div class="ayah-arabic'+(isIndopak?' script-indopak':'')+'" style="flex:1;font-size:'+Q_SIZE_MAP[qFontSz]+'">'+wordsHtml+'</div></div>'+tText+'</div>';
   });
   el.innerHTML=html;
 }
@@ -1585,13 +1608,22 @@ async function qLoadAyahSurah(autoplay){
   qShowLoading(surah.name);
   const trans=document.getElementById('q-translation').value||'en.sahih';
   try{
-    const [vRes,tResolved]=await Promise.all([
-      fetch('https://api.quran.com/api/v4/verses/by_chapter/'+n+'?words=true&word_fields=text_uthmani,text_indopak,char_type_name&per_page=300&fields=text_uthmani'),
-      trans!=='none'?qFetchTransRaw(n,trans):Promise.resolve([])
-    ]);
-    const vJson=await vRes.json();
+    // Fetch Quran.com word data + alquran.cloud uthmani+indopak editions in parallel
+    const fetches=[
+      fetch('https://api.quran.com/api/v4/verses/by_chapter/'+n+'?words=true&word_fields=text_uthmani,char_type_name&per_page=300&fields=text_uthmani'),
+      fetch('https://api.alquran.cloud/v1/surah/'+n+'/editions/quran-uthmani,quran-indopak'),
+    ];
+    if(trans!=='none') fetches.push(fetch('https://api.alquran.cloud/v1/surah/'+n+'/editions/'+trans));
+    const results=await Promise.all(fetches);
+    const [vJson,scriptJson]=await Promise.all([results[0].json(),results[1].json()]);
     qVerses=vJson.verses||[];
-    qTransData=tResolved;
+    // data[0]=uthmani, data[1]=indopak
+    qIndopakData=(scriptJson.code===200&&scriptJson.data&&scriptJson.data[1])?scriptJson.data[1].ayahs:[];
+    qTransData=[];
+    if(trans!=='none'&&results[2]){
+      const tJson=await results[2].json();
+      qTransData=(tJson.code===200&&tJson.data&&tJson.data[0])?tJson.data[0].ayahs:[];
+    }
     qAyahData=qVerses.map((v,i)=>({
       numberInSurah:v.verse_number||i+1,
       globalNum:qGlobalNum(n,v.verse_number||i+1)
@@ -1606,19 +1638,24 @@ async function qLoadAyahSurah(autoplay){
 
 function qRenderAyahList(){
   const trans=document.getElementById('q-translation').value;
+  const isIndopak=qScript==='indopak';
   const el=document.getElementById('q-ayahs');
   if(!qVerses.length){el.innerHTML='';return;}
   let html='';
   if(qCurSurah!==1&&qCurSurah!==9)
-    html+='<div class="surah-bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
+    html+='<div class="surah-bismillah'+(isIndopak?' script-indopak':'')+'">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
   qVerses.forEach((v,vi)=>{
     const words=(v.words||[]).filter(w=>w.char_type_name!=='end'&&w.char_type_name!=='sajdah');
-    const wordsHtml=words.map((w,wi)=>{
-      const txt=qScript==='indopak'?(w.text_indopak||w.text_uthmani||''):(w.text_uthmani||'');
-      return'<span class="q-word" id="qw-'+vi+'-'+wi+'">'+qWordHtml(txt,vi,wi)+'</span>';
-    }).join(' ');
+    let wordsHtml;
+    if(isIndopak&&qIndopakData[vi]){
+      // Use indopak ayah text, split by space into rough words
+      const ipWords=(qIndopakData[vi].text||'').split(' ').filter(Boolean);
+      wordsHtml=ipWords.map((w,wi)=>'<span class="q-word" id="qw-'+vi+'-'+wi+'">'+qWordHtml(w,vi,wi)+'</span>').join(' ');
+    } else {
+      wordsHtml=words.map((w,wi)=>'<span class="q-word" id="qw-'+vi+'-'+wi+'">'+qWordHtml(w.text_uthmani||'',vi,wi)+'</span>').join(' ');
+    }
     const tText=trans!=='none'&&qTransData[vi]?'<div class="ayah-translation">'+qTransData[vi].text+'</div>':'';
-    html+='<div class="ayah-card" id="ayah-card-'+vi+'" onclick="qPlayAyah('+vi+')"><div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><div class="ayah-num">'+(v.verse_number||vi+1)+'</div><div class="ayah-arabic" style="flex:1;font-size:'+Q_SIZE_MAP[qFontSz]+'">'+wordsHtml+'</div></div>'+tText+'</div>';
+    html+='<div class="ayah-card" id="ayah-card-'+vi+'" onclick="qPlayAyah('+vi+')"><div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><div class="ayah-num">'+(v.verse_number||vi+1)+'</div><div class="ayah-arabic'+(isIndopak?' script-indopak':'')+'" style="flex:1;font-size:'+Q_SIZE_MAP[qFontSz]+'">'+wordsHtml+'</div></div>'+tText+'</div>';
   });
   el.innerHTML=html;
 }
