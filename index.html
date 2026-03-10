@@ -225,6 +225,16 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 .coming-soon-icon{font-size:50px}
 .coming-soon h2{font-size:26px;font-weight:300;color:var(--cream)}
 .coming-soon p{font-size:14px;color:var(--muted);font-style:italic;line-height:1.6;max-width:260px}
+/* ── Quran screen ── */
+#screen-quran select{outline:none}
+#screen-quran select option{background:var(--bg2);color:var(--cream)}
+.ayah-card{margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 15px;cursor:pointer;transition:all .2s}
+.ayah-card:hover{border-color:rgba(193,140,60,.4)}
+.ayah-card.active-ayah{border-color:var(--gold);background:linear-gradient(135deg,rgba(193,140,60,.14),rgba(193,140,60,.04))}
+.ayah-arabic{font-family:'Amiri',serif;font-size:22px;color:var(--cream);text-align:right;line-height:1.9;direction:rtl}
+.ayah-translation{font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px;font-style:italic;border-top:1px solid rgba(193,140,60,.12);padding-top:8px}
+.ayah-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(193,140,60,.15);border:1px solid rgba(193,140,60,.3);font-size:10px;color:var(--gold2);flex-shrink:0;margin-right:8px}
+.surah-bismillah{text-align:center;font-family:'Amiri',serif;font-size:20px;color:var(--gold2);padding:10px 0 16px;letter-spacing:1px}
 
 /* ── Bottom nav ── */
 .bottom-nav{position:absolute;bottom:0;left:0;right:0;background:rgba(14,10,6,.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding-bottom:4px;z-index:100}
@@ -576,12 +586,68 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
       <div class="app-header">
         <div class="app-logo"><span class="logo-arabic">نداء</span><div class="logo-divider"></div><div class="logo-text"><span class="logo-english">Nida</span><span class="logo-sub">Quran</span></div></div>
       </div>
-      <div class="coming-soon">
-        <div class="coming-soon-icon">📖</div>
-        <h2>Quran</h2>
-        <p>Colour-coded Tajweed, multiple reciters & translations — coming in the next update.</p>
-        <button class="gold-btn" style="margin-top:10px" onclick="showToast('You\'ll be notified when Quran launches 🌙')">Notify Me</button>
+
+      <!-- Reciter & Translation selectors -->
+      <div style="padding:0 14px 10px;display:flex;gap:8px">
+        <div style="flex:1">
+          <div style="font-size:9px;letter-spacing:2px;color:var(--sublabel);margin-bottom:5px;text-transform:uppercase">Reciter</div>
+          <select id="q-reciter" onchange="qLoadSurah(qCurSurah,qPlaying)" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 10px;color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:13px;cursor:pointer;appearance:none;-webkit-appearance:none">
+            <option value="ar.alafasy">Mishary Al-Afasy</option>
+            <option value="ar.abdurrahmaansudais">Abdul Rahman Al-Sudais</option>
+            <option value="ar.abdulbasitabdulsamad">Abdul Basit</option>
+            <option value="ar.mahermuaiqly">Maher Al-Muaiqly</option>
+            <option value="ar.husary">Mahmoud Al-Husary</option>
+            <option value="ar.saadalghamdi">Saad Al-Ghamdi</option>
+            <option value="ar.shaatree">Abou Bakr Al-Shatri</option>
+            <option value="ar.yasseraldossari">Yasser Al-Dosari</option>
+          </select>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:9px;letter-spacing:2px;color:var(--sublabel);margin-bottom:5px;text-transform:uppercase">Translation</div>
+          <select id="q-translation" onchange="qReloadText()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 10px;color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:13px;cursor:pointer;appearance:none;-webkit-appearance:none">
+            <option value="en.asad">Muhammad Asad</option>
+            <option value="en.sahih">Saheeh International</option>
+            <option value="en.pickthall">Pickthall</option>
+            <option value="en.yusufali">Yusuf Ali</option>
+            <option value="none">Arabic Only</option>
+          </select>
+        </div>
       </div>
+
+      <!-- Surah selector -->
+      <div style="padding:0 14px 12px">
+        <select id="q-surah" onchange="qLoadSurah()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;color:var(--cream);font-family:'Amiri',serif;font-size:15px;cursor:pointer;appearance:none;-webkit-appearance:none">
+          <option value="">Loading surahs…</option>
+        </select>
+      </div>
+
+      <!-- Now playing bar -->
+      <div id="q-player" style="display:none;margin:0 14px 10px;background:linear-gradient(135deg,rgba(193,140,60,.18),rgba(193,140,60,.06));border:1px solid rgba(193,140,60,.4);border-radius:14px;padding:12px 14px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div id="q-np-waves" class="np-waves" style="display:none"><span></span><span></span><span></span><span></span><span></span></div>
+          <div style="flex:1;min-width:0">
+            <div id="q-now-title" style="font-size:13px;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+            <div id="q-now-sub" style="font-size:11px;color:var(--muted);margin-top:1px"></div>
+          </div>
+          <button id="q-prev-btn" onclick="qPrev()" style="background:none;border:1px solid var(--border);border-radius:50%;width:30px;height:30px;color:var(--muted);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center">◀</button>
+          <button id="q-play-btn" onclick="qToggle()" style="background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:50%;width:38px;height:38px;color:var(--bg);cursor:pointer;font-size:14px;font-weight:bold;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(193,140,60,.4)">▶</button>
+          <button id="q-next-btn" onclick="qNext()" style="background:none;border:1px solid var(--border);border-radius:50%;width:30px;height:30px;color:var(--muted);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center">▶</button>
+        </div>
+        <!-- Progress bar -->
+        <div style="position:relative;height:3px;background:rgba(255,255,255,.1);border-radius:2px;cursor:pointer" onclick="qSeek(event,this)">
+          <div id="q-progress" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width .3s linear;pointer-events:none"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px">
+          <span id="q-time-cur" style="font-size:10px;color:var(--muted2)">0:00</span>
+          <span id="q-time-dur" style="font-size:10px;color:var(--muted2)">0:00</span>
+        </div>
+      </div>
+
+      <!-- Ayah list -->
+      <div id="q-ayahs" style="padding:0 14px;flex:1">
+        <div style="text-align:center;padding:30px;color:var(--muted);font-style:italic;font-size:13px">Select a surah to begin</div>
+      </div>
+      <div style="height:8px"></div>
     </div>
 
     <!-- PREMIUM -->
@@ -600,7 +666,7 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
       </div>
       <div class="section-title">What's included</div>
       <div class="feature-list">
-        <div class="feature-row"><span class="feature-icon">🎙</span><div class="feature-text"><h4>38 Premium Reciters</h4><p>Voices from Saudi Arabia, Egypt, Indonesia, Turkey, West Africa, South Asia, East Africa, Central Asia & more</p></div></div>
+        <div class="feature-row"><span class="feature-icon">🎙</span><div class="feature-text"><h4>17 Premium Reciters</h4><p>Voices from Saudi Arabia, Egypt, Turkey, Indonesia & classical maqam styles</p></div></div>
         <div class="feature-row"><span class="feature-icon">🎛</span><div class="feature-text"><h4>Custom Reciter Per Prayer</h4><p>Assign a different reciter to each of the 5 daily prayers — e.g. Makkah for Fajr, Sudais for Maghrib</p></div></div>
         <div class="feature-row"><span class="feature-icon">📁</span><div class="feature-text"><h4>Custom Athan Upload</h4><p>Upload any MP3 — use any reciter or athan you love</p></div></div>
         <div class="feature-row"><span class="feature-icon">📵</span><div class="feature-text"><h4>Offline Mode</h4><p>30-day prayer time cache — works without internet while travelling or in poor signal areas</p></div></div>
@@ -748,7 +814,7 @@ let selR=FREE_R[0],cDown=null,qAngle=0,dHead=0;
 let spState={alexa:false,google:false},conPlat='';
 let obSet={method:2,madhab:1},calDone=false,calInt=null;
 let obSpState={alexa:false,google:false};
-let curAudio=null,playingId=null,playingName='';
+let curAudio=null,playingId=null,playingName='',previewTimer=null;
 
 // ── NAV ───────────────────────────────────────────────────────────────
 function go(name,btn){
@@ -866,6 +932,7 @@ function rotN(){const n=document.getElementById('compass-needle');if(n)n.style.t
 
 // ── AUDIO ─────────────────────────────────────────────────────────────
 function stopAudio(){
+  if(previewTimer){clearTimeout(previewTimer);previewTimer=null;}
   if(curAudio){curAudio.pause();curAudio.src='';curAudio=null;}
   playingId=null;playingName='';
   const bar=document.getElementById('now-playing-bar');
@@ -883,10 +950,14 @@ function playAthan(id,url,name,isPremiumPreview){
     playingId=null;playingName='';renderR();
   });
   curAudio.onended=()=>{playingId=null;playingName='';renderR();};
+  // 5-second cutoff for premium previews
+  if(isPremiumPreview){
+    previewTimer=setTimeout(()=>{stopAudio();renderR();},5000);
+  }
   const bar=document.getElementById('now-playing-bar');
   if(bar){
     bar.style.display='block';
-    bar.innerHTML=`<div class="now-playing-bar"><div class="np-waves"><span></span><span></span><span></span><span></span><span></span></div><span class="np-text">${isPremiumPreview?'Preview: ':'Now playing: '}<strong style="color:var(--cream)">${name}</strong>${isPremiumPreview?' <span style="font-size:10px;color:var(--muted)">(voice sample)</span>':''}</span><button class="np-stop" onclick="stopAudio();renderR()">■ Stop</button></div>`;
+    bar.innerHTML=`<div class="now-playing-bar"><div class="np-waves"><span></span><span></span><span></span><span></span><span></span></div><span class="np-text">${isPremiumPreview?'Preview: ':'Now playing: '}<strong style="color:var(--cream)">${name}</strong>${isPremiumPreview?' <span style="font-size:10px;color:var(--muted)">(5s preview)</span>':''}</span><button class="np-stop" onclick="stopAudio();renderR()">■ Stop</button></div>`;
   }
   renderR();
 }
@@ -1064,8 +1135,314 @@ function listenObC(){window.addEventListener('deviceorientation',e=>{dHead=e.web
 function startObSim(){let a=0;calInt=setInterval(()=>{dHead=(a+=0.5)%360;rotObN()},50)}
 function rotObN(){const n=document.getElementById('ob-needle');if(n)n.style.transform=`translateX(-50%) translateY(-100%) rotate(${qAngle-dHead}deg)`}
 
+
+// ── QURAN ─────────────────────────────────────────────────────────────
+const SURAHS=[
+  {n:1,name:'Al-Fatiha',arabic:'الفاتحة',ayahs:7},
+  {n:2,name:'Al-Baqarah',arabic:'البقرة',ayahs:286},
+  {n:3,name:'Ali Imran',arabic:'آل عمران',ayahs:200},
+  {n:4,name:"An-Nisa",arabic:'النساء',ayahs:176},
+  {n:5,name:'Al-Maidah',arabic:'المائدة',ayahs:120},
+  {n:6,name:"Al-An'am",arabic:'الأنعام',ayahs:165},
+  {n:7,name:"Al-A'raf",arabic:'الأعراف',ayahs:206},
+  {n:8,name:'Al-Anfal',arabic:'الأنفال',ayahs:75},
+  {n:9,name:'At-Tawbah',arabic:'التوبة',ayahs:129},
+  {n:10,name:'Yunus',arabic:'يونس',ayahs:109},
+  {n:11,name:'Hud',arabic:'هود',ayahs:123},
+  {n:12,name:'Yusuf',arabic:'يوسف',ayahs:111},
+  {n:13,name:"Ar-Ra'd",arabic:'الرعد',ayahs:43},
+  {n:14,name:'Ibrahim',arabic:'إبراهيم',ayahs:52},
+  {n:15,name:'Al-Hijr',arabic:'الحجر',ayahs:99},
+  {n:16,name:'An-Nahl',arabic:'النحل',ayahs:128},
+  {n:17,name:"Al-Isra",arabic:'الإسراء',ayahs:111},
+  {n:18,name:'Al-Kahf',arabic:'الكهف',ayahs:110},
+  {n:19,name:'Maryam',arabic:'مريم',ayahs:98},
+  {n:20,name:'Ta-Ha',arabic:'طه',ayahs:135},
+  {n:21,name:"Al-Anbiya",arabic:'الأنبياء',ayahs:112},
+  {n:22,name:'Al-Hajj',arabic:'الحج',ayahs:78},
+  {n:23,name:"Al-Mu'minun",arabic:'المؤمنون',ayahs:118},
+  {n:24,name:'An-Nur',arabic:'النور',ayahs:64},
+  {n:25,name:'Al-Furqan',arabic:'الفرقان',ayahs:77},
+  {n:26,name:"Ash-Shu'ara",arabic:'الشعراء',ayahs:227},
+  {n:27,name:'An-Naml',arabic:'النمل',ayahs:93},
+  {n:28,name:'Al-Qasas',arabic:'القصص',ayahs:88},
+  {n:29,name:"Al-'Ankabut",arabic:'العنكبوت',ayahs:69},
+  {n:30,name:'Ar-Rum',arabic:'الروم',ayahs:60},
+  {n:31,name:'Luqman',arabic:'لقمان',ayahs:34},
+  {n:32,name:'As-Sajdah',arabic:'السجدة',ayahs:30},
+  {n:33,name:'Al-Ahzab',arabic:'الأحزاب',ayahs:73},
+  {n:34,name:'Saba',arabic:'سبأ',ayahs:54},
+  {n:35,name:'Fatir',arabic:'فاطر',ayahs:45},
+  {n:36,name:'Ya-Sin',arabic:'يس',ayahs:83},
+  {n:37,name:'As-Saffat',arabic:'الصافات',ayahs:182},
+  {n:38,name:'Sad',arabic:'ص',ayahs:88},
+  {n:39,name:'Az-Zumar',arabic:'الزمر',ayahs:75},
+  {n:40,name:'Ghafir',arabic:'غافر',ayahs:85},
+  {n:41,name:'Fussilat',arabic:'فصلت',ayahs:54},
+  {n:42,name:"Ash-Shura",arabic:'الشورى',ayahs:53},
+  {n:43,name:'Az-Zukhruf',arabic:'الزخرف',ayahs:89},
+  {n:44,name:'Ad-Dukhan',arabic:'الدخان',ayahs:59},
+  {n:45,name:'Al-Jathiyah',arabic:'الجاثية',ayahs:37},
+  {n:46,name:'Al-Ahqaf',arabic:'الأحقاف',ayahs:35},
+  {n:47,name:'Muhammad',arabic:'محمد',ayahs:38},
+  {n:48,name:'Al-Fath',arabic:'الفتح',ayahs:29},
+  {n:49,name:'Al-Hujurat',arabic:'الحجرات',ayahs:18},
+  {n:50,name:'Qaf',arabic:'ق',ayahs:45},
+  {n:51,name:'Adh-Dhariyat',arabic:'الذاريات',ayahs:60},
+  {n:52,name:'At-Tur',arabic:'الطور',ayahs:49},
+  {n:53,name:'An-Najm',arabic:'النجم',ayahs:62},
+  {n:54,name:'Al-Qamar',arabic:'القمر',ayahs:55},
+  {n:55,name:'Ar-Rahman',arabic:'الرحمن',ayahs:78},
+  {n:56,name:"Al-Waqi'ah",arabic:'الواقعة',ayahs:96},
+  {n:57,name:'Al-Hadid',arabic:'الحديد',ayahs:29},
+  {n:58,name:'Al-Mujadila',arabic:'المجادلة',ayahs:22},
+  {n:59,name:'Al-Hashr',arabic:'الحشر',ayahs:24},
+  {n:60,name:'Al-Mumtahanah',arabic:'الممتحنة',ayahs:13},
+  {n:61,name:'As-Saf',arabic:'الصف',ayahs:14},
+  {n:62,name:"Al-Jumu'ah",arabic:'الجمعة',ayahs:11},
+  {n:63,name:'Al-Munafiqun',arabic:'المنافقون',ayahs:11},
+  {n:64,name:'At-Taghabun',arabic:'التغابن',ayahs:18},
+  {n:65,name:'At-Talaq',arabic:'الطلاق',ayahs:12},
+  {n:66,name:'At-Tahrim',arabic:'التحريم',ayahs:12},
+  {n:67,name:'Al-Mulk',arabic:'الملك',ayahs:30},
+  {n:68,name:'Al-Qalam',arabic:'القلم',ayahs:52},
+  {n:69,name:'Al-Haqqah',arabic:'الحاقة',ayahs:52},
+  {n:70,name:"Al-Ma'arij",arabic:'المعارج',ayahs:44},
+  {n:71,name:'Nuh',arabic:'نوح',ayahs:28},
+  {n:72,name:'Al-Jinn',arabic:'الجن',ayahs:28},
+  {n:73,name:'Al-Muzzammil',arabic:'المزمل',ayahs:20},
+  {n:74,name:'Al-Muddaththir',arabic:'المدثر',ayahs:56},
+  {n:75,name:'Al-Qiyamah',arabic:'القيامة',ayahs:40},
+  {n:76,name:'Al-Insan',arabic:'الإنسان',ayahs:31},
+  {n:77,name:'Al-Mursalat',arabic:'المرسلات',ayahs:50},
+  {n:78,name:"An-Naba",arabic:'النبأ',ayahs:40},
+  {n:79,name:"An-Nazi'at",arabic:'النازعات',ayahs:46},
+  {n:80,name:"'Abasa",arabic:'عبس',ayahs:42},
+  {n:81,name:'At-Takwir',arabic:'التكوير',ayahs:29},
+  {n:82,name:'Al-Infitar',arabic:'الانفطار',ayahs:19},
+  {n:83,name:'Al-Mutaffifin',arabic:'المطففين',ayahs:36},
+  {n:84,name:'Al-Inshiqaq',arabic:'الانشقاق',ayahs:25},
+  {n:85,name:'Al-Buruj',arabic:'البروج',ayahs:22},
+  {n:86,name:'At-Tariq',arabic:'الطارق',ayahs:17},
+  {n:87,name:"Al-A'la",arabic:'الأعلى',ayahs:19},
+  {n:88,name:'Al-Ghashiyah',arabic:'الغاشية',ayahs:26},
+  {n:89,name:'Al-Fajr',arabic:'الفجر',ayahs:30},
+  {n:90,name:'Al-Balad',arabic:'البلد',ayahs:20},
+  {n:91,name:'Ash-Shams',arabic:'الشمس',ayahs:15},
+  {n:92,name:'Al-Layl',arabic:'الليل',ayahs:21},
+  {n:93,name:'Ad-Duha',arabic:'الضحى',ayahs:11},
+  {n:94,name:'Ash-Sharh',arabic:'الشرح',ayahs:8},
+  {n:95,name:'At-Tin',arabic:'التين',ayahs:8},
+  {n:96,name:"Al-'Alaq",arabic:'العلق',ayahs:19},
+  {n:97,name:'Al-Qadr',arabic:'القدر',ayahs:5},
+  {n:98,name:'Al-Bayyinah',arabic:'البينة',ayahs:8},
+  {n:99,name:'Az-Zalzalah',arabic:'الزلزلة',ayahs:8},
+  {n:100,name:"Al-'Adiyat",arabic:'العاديات',ayahs:11},
+  {n:101,name:"Al-Qari'ah",arabic:'القارعة',ayahs:11},
+  {n:102,name:'At-Takathur',arabic:'التكاثر',ayahs:8},
+  {n:103,name:"Al-'Asr",arabic:'العصر',ayahs:3},
+  {n:104,name:'Al-Humazah',arabic:'الهمزة',ayahs:9},
+  {n:105,name:'Al-Fil',arabic:'الفيل',ayahs:5},
+  {n:106,name:'Quraysh',arabic:'قريش',ayahs:4},
+  {n:107,name:"Al-Ma'un",arabic:'الماعون',ayahs:7},
+  {n:108,name:'Al-Kawthar',arabic:'الكوثر',ayahs:3},
+  {n:109,name:'Al-Kafirun',arabic:'الكافرون',ayahs:6},
+  {n:110,name:'An-Nasr',arabic:'النصر',ayahs:3},
+  {n:111,name:'Al-Masad',arabic:'المسد',ayahs:5},
+  {n:112,name:'Al-Ikhlas',arabic:'الإخلاص',ayahs:4},
+  {n:113,name:'Al-Falaq',arabic:'الفلق',ayahs:5},
+  {n:114,name:'An-Nas',arabic:'الناس',ayahs:6},
+];
+
+let qAudio=null,qPlaying=false,qCurSurah=1,qAyahData=[],qTransData=[],qProgTimer=null;
+
+// Surah-level audio: cdn.islamic.network/quran/audio-surah/128/{edition}/{n}.mp3
+const Q_RECITER_MAP={
+  'ar.alafasy':          'ar.alafasy',
+  'ar.abdurrahmaansudais':'ar.abdurrahmaansudais',
+  'ar.abdulbasitabdulsamad':'ar.abdulbasitabdulsamad',
+  'ar.mahermuaiqly':     'ar.mahermuaiqly',
+  'ar.husary':           'ar.husary',
+  'ar.saadalghamdi':     'ar.saadalghamdi',
+  'ar.shaatree':         'ar.shaatree',
+  'ar.yasseraldossari':  'ar.yasseraldossari',
+};
+
+function qAudioUrl(surahN){
+  const ed=document.getElementById('q-reciter').value;
+  return`https://cdn.islamic.network/quran/audio-surah/128/${ed}/${surahN}.mp3`;
+}
+
+function qInit(){
+  const sel=document.getElementById('q-surah');
+  sel.innerHTML=SURAHS.map(s=>`<option value="${s.n}">${s.n}. ${s.name} — ${s.arabic}</option>`).join('');
+  sel.value='1';
+  qCurSurah=1;
+  qLoadSurah(1,false); // load text immediately, don't autoplay
+}
+
+async function qLoadSurah(n, autoplay){
+  n=n||parseInt(document.getElementById('q-surah').value)||1;
+  autoplay=autoplay===undefined?true:autoplay;
+  qCurSurah=n;
+  // sync dropdown
+  const sel=document.getElementById('q-surah');
+  if(sel.value!=n) sel.value=n;
+  const surah=SURAHS.find(s=>s.n===n);
+  const ayahsEl=document.getElementById('q-ayahs');
+  ayahsEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--muted);font-style:italic;font-size:13px">Loading ${surah.name}…</div>`;
+  // Show player immediately with surah info
+  document.getElementById('q-player').style.display='block';
+  document.getElementById('q-now-title').textContent=`${surah.name} — ${surah.arabic}`;
+  document.getElementById('q-now-sub').textContent=`${surah.ayahs} ayahs`;
+  // Stop current audio
+  qStopAudioOnly();
+  // Load text from API
+  try{
+    const trans=document.getElementById('q-translation').value;
+    const editions=trans==='none'?'quran-uthmani':`quran-uthmani,${trans}`;
+    const res=await fetch(`https://api.alquran.cloud/v1/surah/${n}/editions/${editions}`);
+    const json=await res.json();
+    if(json.code!==200)throw new Error();
+    qAyahData=json.data[0].ayahs;
+    qTransData=trans==='none'?null:json.data[1].ayahs;
+    qRenderAyahs(-1);
+  }catch(e){
+    ayahsEl.innerHTML=`<div style="text-align:center;padding:24px;color:var(--muted);font-style:italic;font-size:13px">Text unavailable offline — audio will still play</div>`;
+    qAyahData=[];qTransData=[];
+  }
+  if(autoplay) qPlaySurah();
+}
+
+function qPlaySurah(){
+  if(qProgTimer){clearInterval(qProgTimer);qProgTimer=null;}
+  if(qAudio){qAudio.pause();qAudio=null;}
+  const surah=SURAHS.find(s=>s.n===qCurSurah);
+  const url=qAudioUrl(qCurSurah);
+  qAudio=new Audio(url);
+  const vol=parseInt(document.getElementById('vol-slider').value)/100;
+  qAudio.volume=isNaN(vol)?0.8:vol;
+  qAudio.play().catch(()=>{
+    showToast(`Audio unavailable for ${surah.name}`);
+    qPlaying=false;
+    document.getElementById('q-play-btn').textContent='▶';
+    document.getElementById('q-np-waves').style.display='none';
+  });
+  qPlaying=true;
+  document.getElementById('q-play-btn').textContent='⏸';
+  document.getElementById('q-np-waves').style.display='flex';
+  document.getElementById('q-now-title').textContent=`${surah.name} — ${surah.arabic}`;
+  document.getElementById('q-now-sub').textContent=`Surah ${qCurSurah} of 114 · ${surah.ayahs} ayahs`;
+  // Progress
+  qAudio.onloadedmetadata=()=>{
+    document.getElementById('q-time-dur').textContent=qFmtTime(qAudio.duration);
+  };
+  qProgTimer=setInterval(()=>{
+    if(!qAudio||qAudio.paused)return;
+    const pct=(qAudio.currentTime/qAudio.duration*100)||0;
+    document.getElementById('q-progress').style.width=pct+'%';
+    document.getElementById('q-time-cur').textContent=qFmtTime(qAudio.currentTime);
+  },500);
+  // Auto-advance to next surah
+  qAudio.onended=()=>{
+    if(qCurSurah<114){
+      qLoadSurah(qCurSurah+1,true);
+    }else{
+      qStopQ();
+      showToast('Khatm complete — all 114 surahs finished 🌙');
+    }
+  };
+}
+
+function qRenderAyahs(activeIdx){
+  const surahN=qCurSurah;
+  const trans=document.getElementById('q-translation').value;
+  const el=document.getElementById('q-ayahs');
+  if(!qAyahData.length){return;}
+  let html='';
+  if(surahN!==1&&surahN!==9) html+=`<div class="surah-bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
+  qAyahData.forEach((a,i)=>{
+    const isActive=i===activeIdx;
+    html+=`<div class="ayah-card${isActive?' active-ayah':''}" id="ayah-card-${i}">
+      <div style="display:flex;align-items:flex-start;justify-content:flex-end;gap:8px;margin-bottom:4px">
+        <div class="ayah-arabic">${a.text}</div>
+        <div class="ayah-num">${a.numberInSurah}</div>
+      </div>
+      ${trans!=='none'&&qTransData?`<div class="ayah-translation">${qTransData[i].text}</div>`:''}
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+function qFmtTime(s){
+  if(!s||isNaN(s))return'0:00';
+  const m=Math.floor(s/60),sec=Math.floor(s%60);
+  return`${m}:${sec<10?'0':''}${sec}`;
+}
+
+function qToggle(){
+  if(!qAudio||qAudio.ended){qPlaySurah();return;}
+  if(qPlaying){
+    qAudio.pause();qPlaying=false;
+    document.getElementById('q-play-btn').textContent='▶';
+    document.getElementById('q-np-waves').style.display='none';
+  }else{
+    qAudio.play();qPlaying=true;
+    document.getElementById('q-play-btn').textContent='⏸';
+    document.getElementById('q-np-waves').style.display='flex';
+  }
+}
+
+function qNext(){
+  if(qCurSurah<114) qLoadSurah(qCurSurah+1,true);
+  else showToast('Already at the last surah');
+}
+
+function qPrev(){
+  if(qCurSurah>1) qLoadSurah(qCurSurah-1,true);
+  else showToast('Already at Al-Fatiha');
+}
+
+function qSeek(e,bar){
+  if(!qAudio||!qAudio.duration)return;
+  const rect=bar.getBoundingClientRect();
+  qAudio.currentTime=(e.clientX-rect.left)/rect.width*qAudio.duration;
+}
+
+function qStopAudioOnly(){
+  if(qProgTimer){clearInterval(qProgTimer);qProgTimer=null;}
+  if(qAudio){qAudio.pause();qAudio=null;}
+  qPlaying=false;
+  const btn=document.getElementById('q-play-btn');if(btn)btn.textContent='▶';
+  const waves=document.getElementById('q-np-waves');if(waves)waves.style.display='none';
+  const prog=document.getElementById('q-progress');if(prog)prog.style.width='0%';
+  const cur=document.getElementById('q-time-cur');if(cur)cur.textContent='0:00';
+  const dur=document.getElementById('q-time-dur');if(dur)dur.textContent='0:00';
+}
+
+function qStopQ(){
+  qStopAudioOnly();
+}
+
+
+// reload text only (translation change) — don't restart audio
+async function qReloadText(){
+  if(!qCurSurah)return;
+  const trans=document.getElementById('q-translation').value;
+  const editions=trans==='none'?'quran-uthmani':`quran-uthmani,${trans}`;
+  try{
+    const res=await fetch(`https://api.alquran.cloud/v1/surah/${qCurSurah}/editions/${editions}`);
+    const json=await res.json();
+    if(json.code!==200)throw new Error();
+    qAyahData=json.data[0].ayahs;
+    qTransData=trans==='none'?null:json.data[1].ayahs;
+    qRenderAyahs(-1);
+  }catch(e){}
+}
+
 // ── INIT ─────────────────────────────────────────────────────────────
 renderR();
+qInit();
 initLoc();
 setInterval(()=>{if(times)renderList(times)},60000);
 </script>
