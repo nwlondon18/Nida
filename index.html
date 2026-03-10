@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Nida — نداء</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&family=Scheherazade+New:wght@400;700&display=swap"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&family=Amiri+Quran&family=Scheherazade+New:wght@400;700&display=swap"/>
 <style>
 :root{
   --bg:#0E0A06;--bg2:#160F08;--bg3:#1E1408;--surface:#251A0E;--surface2:#2F2010;
@@ -231,12 +231,12 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 .ayah-card{margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 15px;cursor:pointer;transition:all .2s}
 .ayah-card:hover{border-color:rgba(193,140,60,.4)}
 .ayah-card.active-ayah{border-color:var(--gold);background:linear-gradient(135deg,rgba(193,140,60,.14),rgba(193,140,60,.04))}
-.ayah-arabic{font-family:'Amiri',serif;font-size:22px;color:var(--cream);text-align:right;line-height:1.9;direction:rtl}
-.ayah-arabic.script-indopak{font-family:'Scheherazade New','Amiri',serif;line-height:2.1;font-size:inherit}
+.ayah-arabic{font-family:'Amiri Quran','Amiri',serif;font-size:22px;color:var(--cream);text-align:right;line-height:2.0;direction:rtl}
+.ayah-arabic.script-indopak{font-family:'Scheherazade New','Amiri',serif;line-height:2.2;font-size:inherit}
 .ayah-translation{font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px;font-style:italic;border-top:1px solid rgba(193,140,60,.12);padding-top:8px}
 .ayah-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(193,140,60,.15);border:1px solid rgba(193,140,60,.3);font-size:10px;color:var(--gold2);flex-shrink:0;margin-right:8px}
-.surah-bismillah{text-align:center;font-family:'Amiri',serif;font-size:20px;color:var(--gold2);padding:10px 0 16px;letter-spacing:1px}
-.surah-bismillah.script-indopak{font-family:'Scheherazade New','Amiri',serif;line-height:2.1}
+.surah-bismillah{text-align:center;font-family:'Amiri Quran','Amiri',serif;font-size:20px;color:var(--gold2);padding:10px 0 16px;letter-spacing:1px}
+.surah-bismillah.script-indopak{font-family:'Scheherazade New','Amiri',serif;line-height:2.2}
 /* Quran mode toggle */
 .q-mode-bar{display:flex;margin:0 14px 12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:3px;gap:3px}
 .q-mode-btn{flex:1;padding:7px 6px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:.5px;cursor:pointer;transition:all .2s;line-height:1.2;text-align:center}
@@ -1335,6 +1335,7 @@ let qAudio=null, qPlaying=false;
 let qCurSurah=1, qCurAyahIdx=0;
 let qAyahData=[], qTransData=[], qVerses=[], qTimings=[];
 let qIndopakData=[]; // separate store for indopak ayah text
+let qUthmaniData=[]; // canonical uthmani text from alquran.cloud
 let qRafId=null, qProgTimer=null;
 let qCurActiveVerse=-1, qCurActiveWord=-1;
 let qFontSz='md', qScript='uthmani', qTajweedOn=false;
@@ -1495,6 +1496,7 @@ async function qLoadSurahMode(autoplay){
     qTimings=af.verse_timings||[];
     const audioUrl=af.audio_url||null;
     // scriptJson.data[0] = quran-uthmani ayahs, scriptJson.data[1] = quran-indopak ayahs
+    qUthmaniData=(scriptJson.code===200&&scriptJson.data&&scriptJson.data[0])?scriptJson.data[0].ayahs:[];
     qIndopakData=(scriptJson.code===200&&scriptJson.data&&scriptJson.data[1])?scriptJson.data[1].ayahs:[];
     qTransData=[];
     if(trans!=='none'&&results[3]){
@@ -1527,7 +1529,12 @@ function qRenderSurahVerses(){
       const ipText=qIndopakData[vi].text||'';
       const ipWords=ipText.split(' ').filter(Boolean);
       wordsHtml=ipWords.map((w,wi)=>`<span class="q-word" id="qw-${vi}-${wi}">${qWordHtml(w,vi,wi)}</span>`).join(' ');
+    } else if(!isIndopak&&qUthmaniData[vi]){
+      // Use authoritative alquran.cloud Uthmani text, split by space
+      const utWords=(qUthmaniData[vi].text||'').split(' ').filter(Boolean);
+      wordsHtml=utWords.map((w,wi)=>`<span class="q-word" id="qw-${vi}-${wi}">${qWordHtml(w,vi,wi)}</span>`).join(' ');
     } else {
+      // Fallback: Quran.com word-level data
       wordsHtml=words.map((w,wi)=>{
         const txt=w.text_uthmani||'';
         return'<span class="q-word" id="qw-'+vi+'-'+wi+'">'+qWordHtml(txt,vi,wi)+'</span>';
@@ -1618,6 +1625,7 @@ async function qLoadAyahSurah(autoplay){
     const [vJson,scriptJson]=await Promise.all([results[0].json(),results[1].json()]);
     qVerses=vJson.verses||[];
     // data[0]=uthmani, data[1]=indopak
+    qUthmaniData=(scriptJson.code===200&&scriptJson.data&&scriptJson.data[0])?scriptJson.data[0].ayahs:[];
     qIndopakData=(scriptJson.code===200&&scriptJson.data&&scriptJson.data[1])?scriptJson.data[1].ayahs:[];
     qTransData=[];
     if(trans!=='none'&&results[2]){
@@ -1651,6 +1659,10 @@ function qRenderAyahList(){
       // Use indopak ayah text, split by space into rough words
       const ipWords=(qIndopakData[vi].text||'').split(' ').filter(Boolean);
       wordsHtml=ipWords.map((w,wi)=>'<span class="q-word" id="qw-'+vi+'-'+wi+'">'+qWordHtml(w,vi,wi)+'</span>').join(' ');
+    } else if(!isIndopak&&qUthmaniData[vi]){
+      // Use authoritative alquran.cloud Uthmani text, split by space
+      const utWords=(qUthmaniData[vi].text||'').split(' ').filter(Boolean);
+      wordsHtml=utWords.map((w,wi)=>'<span class="q-word" id="qw-'+vi+'-'+wi+'">'+qWordHtml(w,vi,wi)+'</span>').join(' ');
     } else {
       wordsHtml=words.map((w,wi)=>'<span class="q-word" id="qw-'+vi+'-'+wi+'">'+qWordHtml(w.text_uthmani||'',vi,wi)+'</span>').join(' ');
     }
