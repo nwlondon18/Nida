@@ -235,7 +235,18 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 .ayah-translation{font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px;font-style:italic;border-top:1px solid rgba(193,140,60,.12);padding-top:8px}
 .ayah-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(193,140,60,.15);border:1px solid rgba(193,140,60,.3);font-size:10px;color:var(--gold2);flex-shrink:0;margin-right:8px}
 .surah-bismillah{text-align:center;font-family:'Amiri',serif;font-size:20px;color:var(--gold2);padding:10px 0 16px;letter-spacing:1px}
-
+/* Quran word highlighting */
+.q-word{display:inline;cursor:default;border-radius:4px;transition:background .12s,color .12s,box-shadow .12s;padding:0 1px}
+.q-word-active{background:var(--gold2);color:#0E0A06;border-radius:5px;padding:0 3px;box-shadow:0 0 10px rgba(232,184,109,.5)}
+.ayah-card.active-ayah .q-word:not(.q-word-active){color:rgba(242,232,213,.75)}
+/* np-waves standalone (Quran player) */
+#q-np-waves{display:flex;align-items:center;gap:2px;height:16px;flex-shrink:0}
+#q-np-waves span{display:block;width:3px;background:var(--gold);border-radius:2px;animation:wave-bar .7s ease-in-out infinite}
+#q-np-waves span:nth-child(1){height:5px;animation-delay:0s}
+#q-np-waves span:nth-child(2){height:13px;animation-delay:.08s}
+#q-np-waves span:nth-child(3){height:8px;animation-delay:.16s}
+#q-np-waves span:nth-child(4){height:15px;animation-delay:.04s}
+#q-np-waves span:nth-child(5){height:6px;animation-delay:.12s}
 /* ── Bottom nav ── */
 .bottom-nav{position:absolute;bottom:0;left:0;right:0;background:rgba(14,10,6,.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding-bottom:4px;z-index:100}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 0 3px;background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;min-width:0}
@@ -591,15 +602,8 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
       <div style="padding:0 14px 10px;display:flex;gap:8px">
         <div style="flex:1">
           <div style="font-size:9px;letter-spacing:2px;color:var(--sublabel);margin-bottom:5px;text-transform:uppercase">Reciter</div>
-          <select id="q-reciter" onchange="qLoadSurah(qCurSurah,qPlaying)" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 10px;color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:13px;cursor:pointer;appearance:none;-webkit-appearance:none">
-            <option value="ar.alafasy">Mishary Al-Afasy</option>
-            <option value="ar.abdurrahmaansudais">Abdul Rahman Al-Sudais</option>
-            <option value="ar.abdulbasitabdulsamad">Abdul Basit</option>
-            <option value="ar.mahermuaiqly">Maher Al-Muaiqly</option>
-            <option value="ar.husary">Mahmoud Al-Husary</option>
-            <option value="ar.saadalghamdi">Saad Al-Ghamdi</option>
-            <option value="ar.shaatree">Abou Bakr Al-Shatri</option>
-            <option value="ar.yasseraldossari">Yasser Al-Dosari</option>
+          <select id="q-reciter" onchange="qChangeReciter()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 10px;color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:13px;cursor:pointer;appearance:none;-webkit-appearance:none">
+            <option value="">Loading…</option>
           </select>
         </div>
         <div style="flex:1">
@@ -1254,76 +1258,119 @@ const SURAHS=[
   {n:114,name:'An-Nas',arabic:'الناس',ayahs:6},
 ];
 
-let qAudio=null,qPlaying=false,qCurSurah=1,qAyahData=[],qTransData=[],qProgTimer=null;
 
-// Surah-level audio: cdn.islamic.network/quran/audio-surah/128/{edition}/{n}.mp3
-const Q_RECITER_MAP={
-  'ar.alafasy':          'ar.alafasy',
-  'ar.abdurrahmaansudais':'ar.abdurrahmaansudais',
-  'ar.abdulbasitabdulsamad':'ar.abdulbasitabdulsamad',
-  'ar.mahermuaiqly':     'ar.mahermuaiqly',
-  'ar.husary':           'ar.husary',
-  'ar.saadalghamdi':     'ar.saadalghamdi',
-  'ar.shaatree':         'ar.shaatree',
-  'ar.yasseraldossari':  'ar.yasseraldossari',
-};
+let qAudio=null,qPlaying=false,qCurSurah=1;
+let qVerses=[],qTimings=[],qTranslations=[];
+let qRafId=null;
+let qCurVerseIdx=-1,qCurWordIdx=-1;
 
-function qAudioUrl(surahN){
-  const ed=document.getElementById('q-reciter').value;
-  return`https://cdn.islamic.network/quran/audio-surah/128/${ed}/${surahN}.mp3`;
-}
-
-function qInit(){
-  const sel=document.getElementById('q-surah');
-  sel.innerHTML=SURAHS.map(s=>`<option value="${s.n}">${s.n}. ${s.name} — ${s.arabic}</option>`).join('');
-  sel.value='1';
+async function qInit(){
+  // Surah dropdown
+  const sSel=document.getElementById('q-surah');
+  sSel.innerHTML=SURAHS.map(s=>`<option value="${s.n}">${s.n}. ${s.name} — ${s.arabic}</option>`).join('');
+  sSel.value='1';
+  // Translation dropdown
+  document.getElementById('q-translation').innerHTML=`
+    <option value="en.asad">Muhammad Asad</option>
+    <option value="en.sahih">Saheeh International</option>
+    <option value="en.pickthall">Pickthall</option>
+    <option value="en.yusufali">Yusuf Ali</option>
+    <option value="none">Arabic Only</option>`;
+  // Fetch reciter list dynamically from Quran.com
+  try{
+    const res=await fetch('https://api.quran.com/api/v4/recitations');
+    const json=await res.json();
+    const reciters=(json.recitations||[]).slice(0,14);
+    document.getElementById('q-reciter').innerHTML=reciters.map(r=>
+      `<option value="${r.id}">${r.translated_name&&r.translated_name.name?r.translated_name.name:r.reciter_name}</option>`
+    ).join('');
+  }catch(e){
+    document.getElementById('q-reciter').innerHTML=`
+      <option value="7">Mishary Al-Afasy</option>
+      <option value="1">AbdulBaset AbdulSamad (Murattal)</option>
+      <option value="4">Abu Bakr Al-Shatri</option>
+      <option value="5">Saad Al-Ghamdi</option>`;
+  }
   qCurSurah=1;
-  qLoadSurah(1,false); // load text immediately, don't autoplay
+  qLoadSurah(1,false);
 }
 
-async function qLoadSurah(n, autoplay){
+async function qLoadSurah(n,autoplay){
   n=n||parseInt(document.getElementById('q-surah').value)||1;
   autoplay=autoplay===undefined?true:autoplay;
   qCurSurah=n;
-  // sync dropdown
-  const sel=document.getElementById('q-surah');
-  if(sel.value!=n) sel.value=n;
+  const sSel=document.getElementById('q-surah');
+  if(parseInt(sSel.value)!==n) sSel.value=n;
   const surah=SURAHS.find(s=>s.n===n);
   const ayahsEl=document.getElementById('q-ayahs');
-  ayahsEl.innerHTML=`<div style="text-align:center;padding:30px;color:var(--muted);font-style:italic;font-size:13px">Loading ${surah.name}…</div>`;
-  // Show player immediately with surah info
+  ayahsEl.innerHTML=`<div style="text-align:center;padding:40px 20px;color:var(--muted);font-style:italic;font-size:13px">Loading ${surah.name}…</div>`;
   document.getElementById('q-player').style.display='block';
   document.getElementById('q-now-title').textContent=`${surah.name} — ${surah.arabic}`;
-  document.getElementById('q-now-sub').textContent=`${surah.ayahs} ayahs`;
-  // Stop current audio
+  document.getElementById('q-now-sub').textContent='Loading…';
   qStopAudioOnly();
-  // Load text from API
+  const recId=document.getElementById('q-reciter').value||'7';
+  const trans=document.getElementById('q-translation').value||'en.sahih';
   try{
-    const trans=document.getElementById('q-translation').value;
-    const editions=trans==='none'?'quran-uthmani':`quran-uthmani,${trans}`;
-    const res=await fetch(`https://api.alquran.cloud/v1/surah/${n}/editions/${editions}`);
-    const json=await res.json();
-    if(json.code!==200)throw new Error();
-    qAyahData=json.data[0].ayahs;
-    qTransData=trans==='none'?null:json.data[1].ayahs;
-    qRenderAyahs(-1);
+    const [vRes,aRes]=await Promise.all([
+      fetch(`https://api.quran.com/api/v4/verses/by_chapter/${n}?words=true&word_fields=text_uthmani,char_type_name&per_page=300&fields=text_uthmani`),
+      fetch(`https://api.quran.com/api/v4/chapter_recitations/${recId}/${n}`)
+    ]);
+    const vJson=await vRes.json();
+    const aJson=await aRes.json();
+    qVerses=vJson.verses||[];
+    const af=aJson.audio_file;
+    qTimings=(af&&af.verse_timings)||[];
+    const audioUrl=af&&af.audio_url;
+    // Translation
+    qTranslations=[];
+    if(trans!=='none'){
+      try{
+        const tRes=await fetch(`https://api.alquran.cloud/v1/surah/${n}/editions/${trans}`);
+        const tJson=await tRes.json();
+        qTranslations=(tJson.code===200&&tJson.data&&tJson.data[0])?tJson.data[0].ayahs:[];
+      }catch(e){}
+    }
+    qCurVerseIdx=-1; qCurWordIdx=-1;
+    qRenderVerses();
+    document.getElementById('q-now-sub').textContent=`Surah ${n} of 114 · ${surah.ayahs} ayahs`;
+    if(autoplay&&audioUrl) qPlayAudio(audioUrl);
+    else if(autoplay) showToast('No audio for this reciter — try another');
   }catch(e){
-    ayahsEl.innerHTML=`<div style="text-align:center;padding:24px;color:var(--muted);font-style:italic;font-size:13px">Text unavailable offline — audio will still play</div>`;
-    qAyahData=[];qTransData=[];
+    ayahsEl.innerHTML=`<div style="text-align:center;padding:40px 20px;color:var(--muted);font-style:italic;font-size:13px">Could not load — check your connection</div>`;
+    document.getElementById('q-now-sub').textContent='Error';
   }
-  if(autoplay) qPlaySurah();
 }
 
-function qPlaySurah(){
-  if(qProgTimer){clearInterval(qProgTimer);qProgTimer=null;}
-  if(qAudio){qAudio.pause();qAudio=null;}
-  const surah=SURAHS.find(s=>s.n===qCurSurah);
-  const url=qAudioUrl(qCurSurah);
+function qRenderVerses(){
+  const trans=document.getElementById('q-translation').value||'en.sahih';
+  const el=document.getElementById('q-ayahs');
+  if(!qVerses.length){el.innerHTML='';return;}
+  let html='';
+  if(qCurSurah!==1&&qCurSurah!==9)
+    html+=`<div class="surah-bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
+  qVerses.forEach((v,vi)=>{
+    const words=(v.words||[]).filter(w=>w.char_type_name!=='end'&&w.char_type_name!=='sajdah');
+    const wordsHtml=words.map((w,wi)=>
+      `<span class="q-word" id="qw-${vi}-${wi}">${w.text_uthmani||w.text||''}</span>`
+    ).join(' ');
+    const tText=trans!=='none'&&qTranslations[vi]?
+      `<div class="ayah-translation">${qTranslations[vi].text}</div>`:'';
+    html+=`<div class="ayah-card" id="ayah-card-${vi}">
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px">
+        <div class="ayah-num">${v.verse_number||vi+1}</div>
+        <div class="ayah-arabic" style="flex:1">${wordsHtml}</div>
+      </div>${tText}</div>`;
+  });
+  el.innerHTML=html;
+}
+
+function qPlayAudio(url){
+  qStopAudioOnly();
   qAudio=new Audio(url);
   const vol=parseInt(document.getElementById('vol-slider').value)/100;
   qAudio.volume=isNaN(vol)?0.8:vol;
   qAudio.play().catch(()=>{
-    showToast(`Audio unavailable for ${surah.name}`);
+    showToast('Audio failed — try a different reciter');
     qPlaying=false;
     document.getElementById('q-play-btn').textContent='▶';
     document.getElementById('q-np-waves').style.display='none';
@@ -1331,88 +1378,114 @@ function qPlaySurah(){
   qPlaying=true;
   document.getElementById('q-play-btn').textContent='⏸';
   document.getElementById('q-np-waves').style.display='flex';
-  document.getElementById('q-now-title').textContent=`${surah.name} — ${surah.arabic}`;
-  document.getElementById('q-now-sub').textContent=`Surah ${qCurSurah} of 114 · ${surah.ayahs} ayahs`;
-  // Progress
   qAudio.onloadedmetadata=()=>{
     document.getElementById('q-time-dur').textContent=qFmtTime(qAudio.duration);
   };
-  qProgTimer=setInterval(()=>{
-    if(!qAudio||qAudio.paused)return;
-    const pct=(qAudio.currentTime/qAudio.duration*100)||0;
-    document.getElementById('q-progress').style.width=pct+'%';
-    document.getElementById('q-time-cur').textContent=qFmtTime(qAudio.currentTime);
-  },500);
-  // Auto-advance to next surah
   qAudio.onended=()=>{
-    if(qCurSurah<114){
-      qLoadSurah(qCurSurah+1,true);
-    }else{
-      qStopQ();
-      showToast('Khatm complete — all 114 surahs finished 🌙');
-    }
+    cancelAnimationFrame(qRafId); qRafId=null;
+    qClearHighlights();
+    if(qCurSurah<114) qLoadSurah(qCurSurah+1,true);
+    else{ qStopQ(); showToast('Khatm complete — all 114 surahs finished 🌙'); }
   };
+  qRafLoop();
 }
 
-function qRenderAyahs(activeIdx){
-  const surahN=qCurSurah;
-  const trans=document.getElementById('q-translation').value;
-  const el=document.getElementById('q-ayahs');
-  if(!qAyahData.length){return;}
-  let html='';
-  if(surahN!==1&&surahN!==9) html+=`<div class="surah-bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
-  qAyahData.forEach((a,i)=>{
-    const isActive=i===activeIdx;
-    html+=`<div class="ayah-card${isActive?' active-ayah':''}" id="ayah-card-${i}">
-      <div style="display:flex;align-items:flex-start;justify-content:flex-end;gap:8px;margin-bottom:4px">
-        <div class="ayah-arabic">${a.text}</div>
-        <div class="ayah-num">${a.numberInSurah}</div>
-      </div>
-      ${trans!=='none'&&qTransData?`<div class="ayah-translation">${qTransData[i].text}</div>`:''}
-    </div>`;
-  });
-  el.innerHTML=html;
+function qRafLoop(){
+  if(!qAudio||!qPlaying||qAudio.paused){qRafId=null;return;}
+  const ms=qAudio.currentTime*1000;
+  // Progress bar
+  if(qAudio.duration){
+    document.getElementById('q-progress').style.width=(ms/(qAudio.duration*1000)*100)+'%';
+    document.getElementById('q-time-cur').textContent=qFmtTime(qAudio.currentTime);
+  }
+  // Find active verse
+  const vt=qTimings.find(t=>ms>=t.timestamp_from&&ms<t.timestamp_to);
+  if(vt){
+    const vi=parseInt(vt.verse_key.split(':')[1])-1;
+    let wi=-1;
+    if(vt.segments&&vt.segments.length){
+      for(let i=0;i<vt.segments.length;i++){
+        const s=vt.segments[i];
+        if(ms>=s[1]&&ms<s[2]){wi=s[0]-1;break;}
+        if(i===vt.segments.length-1&&ms>=s[1]) wi=s[0]-1;
+      }
+    }
+    if(vi!==qCurVerseIdx||wi!==qCurWordIdx){
+      if(qCurVerseIdx>=0){
+        const oc=document.getElementById('ayah-card-'+qCurVerseIdx);
+        if(oc) oc.classList.remove('active-ayah');
+        if(qCurWordIdx>=0){const ow=document.getElementById('qw-'+qCurVerseIdx+'-'+qCurWordIdx);if(ow) ow.classList.remove('q-word-active');}
+      }
+      const nc=document.getElementById('ayah-card-'+vi);
+      if(nc){
+        nc.classList.add('active-ayah');
+        if(vi!==qCurVerseIdx) nc.scrollIntoView({behavior:'smooth',block:'center'});
+      }
+      if(wi>=0){const nw=document.getElementById('qw-'+vi+'-'+wi);if(nw) nw.classList.add('q-word-active');}
+      qCurVerseIdx=vi; qCurWordIdx=wi;
+    }
+  }
+  qRafId=requestAnimationFrame(qRafLoop);
 }
+
+function qClearHighlights(){
+  if(qCurVerseIdx>=0){
+    const c=document.getElementById('ayah-card-'+qCurVerseIdx);
+    if(c) c.classList.remove('active-ayah');
+    if(qCurWordIdx>=0){const w=document.getElementById('qw-'+qCurVerseIdx+'-'+qCurWordIdx);if(w) w.classList.remove('q-word-active');}
+  }
+  qCurVerseIdx=-1; qCurWordIdx=-1;
+}
+
+async function qReloadText(){
+  if(!qCurSurah)return;
+  const trans=document.getElementById('q-translation').value;
+  qTranslations=[];
+  if(trans!=='none'){
+    try{
+      const tRes=await fetch(`https://api.alquran.cloud/v1/surah/${qCurSurah}/editions/${trans}`);
+      const tJson=await tRes.json();
+      qTranslations=(tJson.code===200&&tJson.data&&tJson.data[0])?tJson.data[0].ayahs:[];
+    }catch(e){}
+  }
+  qRenderVerses();
+}
+
+function qChangeReciter(){ qLoadSurah(qCurSurah,qPlaying); }
 
 function qFmtTime(s){
   if(!s||isNaN(s))return'0:00';
-  const m=Math.floor(s/60),sec=Math.floor(s%60);
-  return`${m}:${sec<10?'0':''}${sec}`;
+  return Math.floor(s/60)+':'+(Math.floor(s%60)<10?'0':'')+Math.floor(s%60);
 }
 
 function qToggle(){
-  if(!qAudio||qAudio.ended){qPlaySurah();return;}
+  if(!qAudio||qAudio.ended){qLoadSurah(qCurSurah,true);return;}
   if(qPlaying){
-    qAudio.pause();qPlaying=false;
+    qAudio.pause(); qPlaying=false;
+    cancelAnimationFrame(qRafId); qRafId=null;
     document.getElementById('q-play-btn').textContent='▶';
     document.getElementById('q-np-waves').style.display='none';
   }else{
-    qAudio.play();qPlaying=true;
+    qAudio.play(); qPlaying=true;
     document.getElementById('q-play-btn').textContent='⏸';
     document.getElementById('q-np-waves').style.display='flex';
+    qRafLoop();
   }
 }
 
-function qNext(){
-  if(qCurSurah<114) qLoadSurah(qCurSurah+1,true);
-  else showToast('Already at the last surah');
-}
-
-function qPrev(){
-  if(qCurSurah>1) qLoadSurah(qCurSurah-1,true);
-  else showToast('Already at Al-Fatiha');
-}
+function qNext(){ if(qCurSurah<114) qLoadSurah(qCurSurah+1,true); else showToast('Already at the last surah'); }
+function qPrev(){ if(qCurSurah>1) qLoadSurah(qCurSurah-1,true); else showToast('Already at Al-Fatiha'); }
 
 function qSeek(e,bar){
   if(!qAudio||!qAudio.duration)return;
-  const rect=bar.getBoundingClientRect();
-  qAudio.currentTime=(e.clientX-rect.left)/rect.width*qAudio.duration;
+  const r=bar.getBoundingClientRect();
+  qAudio.currentTime=(e.clientX-r.left)/r.width*qAudio.duration;
 }
 
 function qStopAudioOnly(){
-  if(qProgTimer){clearInterval(qProgTimer);qProgTimer=null;}
-  if(qAudio){qAudio.pause();qAudio=null;}
-  qPlaying=false;
+  if(qRafId){cancelAnimationFrame(qRafId);qRafId=null;}
+  if(qAudio){qAudio.onended=null;qAudio.pause();qAudio=null;}
+  qPlaying=false; qClearHighlights();
   const btn=document.getElementById('q-play-btn');if(btn)btn.textContent='▶';
   const waves=document.getElementById('q-np-waves');if(waves)waves.style.display='none';
   const prog=document.getElementById('q-progress');if(prog)prog.style.width='0%';
@@ -1420,25 +1493,7 @@ function qStopAudioOnly(){
   const dur=document.getElementById('q-time-dur');if(dur)dur.textContent='0:00';
 }
 
-function qStopQ(){
-  qStopAudioOnly();
-}
-
-
-// reload text only (translation change) — don't restart audio
-async function qReloadText(){
-  if(!qCurSurah)return;
-  const trans=document.getElementById('q-translation').value;
-  const editions=trans==='none'?'quran-uthmani':`quran-uthmani,${trans}`;
-  try{
-    const res=await fetch(`https://api.alquran.cloud/v1/surah/${qCurSurah}/editions/${editions}`);
-    const json=await res.json();
-    if(json.code!==200)throw new Error();
-    qAyahData=json.data[0].ayahs;
-    qTransData=trans==='none'?null:json.data[1].ayahs;
-    qRenderAyahs(-1);
-  }catch(e){}
-}
+function qStopQ(){ qStopAudioOnly(); }
 
 // ── INIT ─────────────────────────────────────────────────────────────
 renderR();
