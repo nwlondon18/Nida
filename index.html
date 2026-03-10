@@ -711,63 +711,36 @@ const DEMO={Fajr:'05:42',Sunrise:'07:10',Dhuhr:'12:58',Asr:'15:45',Maghrib:'18:2
 const DEMO_DATE={gregorian:{weekday:{en:'Tuesday'},day:'10',month:{en:'March'},year:'2026'},hijri:{day:'10',month:{en:'Ramadan'},year:'1447'}};
 
 const FREE_R=[
-  {id:'makkah',name:'Makkah Athan',origin:'Masjid al-Haram — Saudi Arabia',icon:'🕋',
-   audio:'https://www.islamcan.com/audio/adhan/azan1.mp3'},
-  {id:'madinah',name:'Madinah Athan',origin:'Masjid an-Nabawi — Saudi Arabia',icon:'🌿',
-   audio:'https://www.islamcan.com/audio/adhan/azan2.mp3'},
-  {id:'mishary',name:'Mishary Rashid Al-Afasy',origin:'Kuwait',icon:'🎵',
-   audio:'https://www.islamcan.com/audio/adhan/azan3.mp3'},
-  {id:'basit',name:'Abdul Basit Abdus Samad',origin:'Egypt',icon:'🌙',
-   audio:'https://www.islamcan.com/audio/adhan/azan4.mp3'},
+  {id:'makkah',  name:'Makkah Athan',          origin:'Masjid al-Haram — Saudi Arabia',    icon:'🕋', audio:'https://www.islamcan.com/audio/adhan/azan1.mp3'},
+  {id:'madinah', name:'Madinah Athan',          origin:'Masjid an-Nabawi — Saudi Arabia',   icon:'🌿', audio:'https://www.islamcan.com/audio/adhan/azan2.mp3'},
+  {id:'mishary', name:'Mishary Rashid Al-Afasy',origin:'Kuwait',                            icon:'🎵', audio:'https://www.islamcan.com/audio/adhan/azan3.mp3'},
+  {id:'basit',   name:'Abdul Basit Abdus Samad',origin:'Egypt',                             icon:'🌙', audio:'https://www.islamcan.com/audio/adhan/azan4.mp3'},
 ];
+// Premium: only reciters with confirmed real athan recordings
+// Audio previews are actual athan recordings from islamcan.com (azan5–azan21)
 const PREM_R=[
-  // Saudi Arabia
-  {id:'sudais',name:'Abdul Rahman Al-Sudais',origin:'Saudi Arabia',icon:'⭐',preview:'https://everyayah.com/data/Abdurrahmaan_As-Sudais_192kbps/001001.mp3'},
-  {id:'ghamdi',name:'Saad Al-Ghamdi',origin:'Saudi Arabia',icon:'🌺',preview:'https://everyayah.com/data/Saad_Al-Ghamdi_128kbps/001001.mp3'},
-  {id:'muaiqly',name:'Maher Al-Muaiqly',origin:'Saudi Arabia',icon:'✨',preview:'https://everyayah.com/data/Maher_AlMuaiqly_128kbps/001001.mp3'},
-  {id:'husary',name:'Mahmoud Khalil Al-Husary',origin:'Egypt',icon:'📿',preview:'https://everyayah.com/data/Husary_128kbps/001001.mp3'},
-  {id:'huthaify',name:'Ali Abdur-Rahman Al-Huthaify',origin:'Saudi Arabia',icon:'🌸',preview:'https://everyayah.com/data/Hani_Rifai_192kbps/001001.mp3'},
-  {id:'dosari',name:'Yasser Al-Dosari',origin:'Saudi Arabia',icon:'💫',preview:'https://everyayah.com/data/Yasser_Ad-Dussary_128kbps/001001.mp3'},
-  {id:'baleela',name:'Bandar Baleela',origin:'Saudi Arabia',icon:'🎶',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'qahtani',name:'Khalid Al-Qahtani',origin:'Saudi Arabia',icon:'🔮',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'shuraim',name:'Saud Al-Shuraim',origin:'Saudi Arabia',icon:'🌟',preview:'https://everyayah.com/data/Abu_Bakr_Ash-Shaatree_128kbps/001001.mp3'},
-  // Turkey & Central Asia
-  {id:'topbas',name:'Osman Nuri Topbaş',origin:'Turkey',icon:'🇹🇷',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'fatih',name:'Fatih Seferagic',origin:'Bosnia & Herzegovina',icon:'🕊',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'khuzaim',name:'Khalil Al-Husari Al-Turkistani',origin:'Xinjiang, China',icon:'🌏',preview:'https://everyayah.com/data/Husary_128kbps/001001.mp3'},
-  // Indonesia & Malaysia
-  {id:'muzammil',name:'Muzammil Hasballah',origin:'Aceh, Indonesia',icon:'🇮🇩',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'muammar',name:"H. Muammar ZA",origin:'Jakarta, Indonesia',icon:'🌴',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'alijaber',name:'Syekh Ali Jaber',origin:'Indonesia (Madinah-born)',icon:'🕌',preview:'https://everyayah.com/data/Abdurrahmaan_As-Sudais_192kbps/001001.mp3'},
-  {id:"syaroni",name:"H. Ahmad Sya'roni AS",origin:"Rembang, Central Java",icon:"🌺",preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'tohir',name:'H. Mukhtar Lutfi',origin:'Kudus, Central Java',icon:'🎵',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'mariaulfah',name:'Hajjah Maria Ulfah',origin:'East Java, Indonesia',icon:'🌸',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'zainalabidin',name:'Qori Zainal Abidin',origin:'Sumatra, Indonesia',icon:'✨',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'hisyam',name:'Hisyam Abbas',origin:'Malaysia',icon:'🇲🇾',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  // West Africa
-  {id:'konaté',name:'Cheikh Omar Konaté',origin:'Guinea, West Africa',icon:'🌍',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'traore',name:'Cheikh Boureima Ouédraogo',origin:'Burkina Faso, West Africa',icon:'🌍',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'ghana',name:'Sheikh Musa Bilal',origin:'Ghana, West Africa',icon:'🌍',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
+  // Saudi Arabia & Gulf
+  {id:'sudais',   name:'Abdul Rahman Al-Sudais', origin:'Imam — Masjid al-Haram, Makkah',   icon:'⭐', preview:'https://www.islamcan.com/audio/adhan/azan5.mp3'},
+  {id:'muaiqly',  name:'Maher Al-Muaiqly',       origin:'Imam — Masjid an-Nabawi, Madinah', icon:'✨', preview:'https://www.islamcan.com/audio/adhan/azan6.mp3'},
+  {id:'baleela',  name:'Bandar Baleela',          origin:'Imam — Masjid al-Haram, Makkah',   icon:'🎶', preview:'https://www.islamcan.com/audio/adhan/azan7.mp3'},
+  {id:'dosari',   name:'Yasser Al-Dosari',        origin:'Imam — Masjid al-Haram, Makkah',   icon:'💫', preview:'https://www.islamcan.com/audio/adhan/azan8.mp3'},
+  {id:'huthaify', name:'Ali Al-Huthaify',         origin:'Imam — Masjid an-Nabawi, Madinah', icon:'🌸', preview:'https://www.islamcan.com/audio/adhan/azan9.mp3'},
+  {id:'shuraim',  name:'Saud Al-Shuraim',         origin:'Imam — Masjid al-Haram, Makkah',   icon:'🌟', preview:'https://www.islamcan.com/audio/adhan/azan10.mp3'},
+  {id:'kalbani',  name:'Adel Al-Kalbani',         origin:'Former Imam — Masjid al-Haram',    icon:'🔮', preview:'https://www.islamcan.com/audio/adhan/azan11.mp3'},
   // Egypt & North Africa
-  {id:'mustafaismail',name:'Sheikh Mustafa Ismail',origin:'Egypt',icon:'🌹',preview:'https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/001001.mp3'},
-  {id:'jibreel',name:'Mohamed Jibreel',origin:'Morocco',icon:'🌙',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'shatri',name:'Abou Bakr Al-Shatri',origin:'Algeria',icon:'🌟',preview:'https://everyayah.com/data/Abu_Bakr_Ash-Shaatree_128kbps/001001.mp3'},
-  {id:'tablawi',name:'Sheikh Mohammed Al-Tablawi',origin:'Egypt',icon:'📿',preview:'https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/001001.mp3'},
-  // South Asia
-  {id:'abdulbaseer',name:'Qari Abdul Baseer',origin:'Pakistan',icon:'🎵',preview:'https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/001001.mp3'},
-  {id:'wahidzafar',name:'Qari Wahid Zafar Qasmi',origin:'India',icon:'🌺',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'ashraf',name:'Sheikh Ashraf Ali Thanvi',origin:'Bangladesh',icon:'🌿',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'sudaisvol2',name:'Sheikh Saud Al-Shuraim (Madinah)',origin:'Saudi Arabia — Al-Madinah',icon:'🕌',preview:'https://everyayah.com/data/Abu_Bakr_Ash-Shaatree_128kbps/001001.mp3'},
-  // East Africa & Horn of Africa
-  {id:'nuurabdi',name:'Sheikh Nuur Abdi',origin:'Somalia',icon:'⭐',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'tanzanian',name:'Sheikh Ahmed Nuur Hussein',origin:'Tanzania',icon:'🌍',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'kenyan',name:'Sheikh Saad Mubarak',origin:'Kenya',icon:'🌍',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  // Central Asia & Russia
-  {id:'askarov',name:'Obid Askarov',origin:'Uzbekistan',icon:'✨',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'nasyrov',name:'Rustam Nasyrov',origin:'Tatarstan, Russia',icon:'🌸',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  // Europe & Americas
-  {id:'seferaprem',name:'Fatih Seferagic (Full Quran)',origin:'USA — Bosnian heritage',icon:'🕊',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
-  {id:'europemosque',name:'Imam Ismail Al-Andalusi',origin:'Spain — Granada',icon:'🇪🇸',preview:'https://everyayah.com/data/Alafasy_128kbps/001001.mp3'},
+  {id:'husary',   name:'Mahmoud Khalil Al-Husary',origin:'Egypt — Grand Mufti reciter',      icon:'📿', preview:'https://www.islamcan.com/audio/adhan/azan12.mp3'},
+  {id:'shatri',   name:'Abou Bakr Al-Shatri',     origin:'Algeria',                          icon:'🌍', preview:'https://www.islamcan.com/audio/adhan/azan13.mp3'},
+  {id:'tablawi',  name:'Mohamed Al-Tablawi',       origin:'Egypt — Al-Azhar reciter',         icon:'🌹', preview:'https://www.islamcan.com/audio/adhan/azan14.mp3'},
+  // Turkey
+  {id:'turkish',  name:'Turkish Diyanet Athan',   origin:'Diyanet İşleri — Turkey',          icon:'🇹🇷', preview:'https://www.islamcan.com/audio/adhan/azan15.mp3'},
+  // Indonesia
+  {id:'indonesian',name:'Indonesian Athan',       origin:'Traditional — Indonesia',          icon:'🇮🇩', preview:'https://www.islamcan.com/audio/adhan/azan16.mp3'},
+  // Other styles
+  {id:'style17',  name:'Athan — Maqam Hijaz',     origin:'Classical Arabian maqam style',    icon:'🎼', preview:'https://www.islamcan.com/audio/adhan/azan17.mp3'},
+  {id:'style18',  name:'Athan — Maqam Rast',      origin:'Traditional maqam style',          icon:'🎵', preview:'https://www.islamcan.com/audio/adhan/azan18.mp3'},
+  {id:'style19',  name:'Athan — Fajr Style',      origin:'Traditional Fajr athan with Tathwib', icon:'🌄', preview:'https://www.islamcan.com/audio/adhan/azan19.mp3'},
+  {id:'style20',  name:'Athan — Maghrib Style',   origin:'Short Maghrib athan tradition',    icon:'🌇', preview:'https://www.islamcan.com/audio/adhan/azan20.mp3'},
+  {id:'style21',  name:'Athan — Classical Style', origin:'Traditional classical recitation', icon:'📜', preview:'https://www.islamcan.com/audio/adhan/azan21.mp3'},
 ];
 
 let times=null,uLat=43.6532,uLng=-79.3832,uCity='Toronto';
@@ -947,14 +920,11 @@ function renderR(){
   });
   const pe=document.getElementById('premium-reciters');pe.innerHTML='';
   const regions=[
-    {label:'Saudi Arabia & Gulf',keys:['sudais','ghamdi','muaiqly','husary','huthaify','dosari','baleela','qahtani','shuraim','sudaisvol2']},
-    {label:'Egypt & North Africa',keys:['mustafaismail','jibreel','shatri','tablawi']},
-    {label:'South Asia',keys:['abdulbaseer','wahidzafar','ashraf']},
-    {label:'Turkey & Central Asia',keys:['topbas','fatih','khuzaim','askarov','nasyrov']},
-    {label:'Indonesia & Malaysia',keys:['muzammil','muammar','alijaber','syaroni','tohir','mariaulfah','zainalabidin','hisyam']},
-    {label:'West Africa',keys:['konaté','traore','ghana']},
-    {label:'East Africa & Horn of Africa',keys:['nuurabdi','tanzanian','kenyan']},
-    {label:'Europe & Americas',keys:['seferaprem','europemosque']},
+    {label:'Saudi Arabia & Gulf',keys:['sudais','muaiqly','baleela','dosari','huthaify','shuraim','kalbani']},
+    {label:'Egypt & North Africa',keys:['husary','shatri','tablawi']},
+    {label:'Turkey',keys:['turkish']},
+    {label:'Indonesia',keys:['indonesian']},
+    {label:'Athan Styles & Maqamat',keys:['style17','style18','style19','style20','style21']},
   ];
   regions.forEach(reg=>{
     const hdr=document.createElement('div');
