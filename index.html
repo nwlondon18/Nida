@@ -2,9 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <title>Nida — نداء</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&family=Amiri+Quran&family=Scheherazade+New:wght@400;700&display=swap"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&family=Amiri+Quran&display=swap"/>
+<style>
+@font-face {
+  font-family: 'indopak-nastaleeq';
+  src: url('https://static-cdn.tarteel.ai/qul/fonts/nastaleeq/Hanafi/normal-v4.2.2/with-waqf-lazmi/font.woff2') format('woff2'),
+       url('https://static-cdn.tarteel.ai/qul/fonts/nastaleeq/Hanafi/normal-v4.2.2/with-waqf-lazmi/font.ttf') format('truetype');
+  font-display: swap;
+}
+</style>
 <style>
 :root{
   --bg:#0E0A06;--bg2:#160F08;--bg3:#1E1408;--surface:#251A0E;--surface2:#2F2010;
@@ -24,7 +32,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;background-image:url
 #app{display:flex;flex-direction:column;height:100%;position:relative;overflow:hidden}
 
 /* ── Screens ── */
-.screen{display:none;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:76px}
+.screen{display:none;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(100px + max(44px, env(safe-area-inset-bottom)))}
 .screen.active{display:flex;animation:fadeUp .32s cubic-bezier(.22,.8,.4,1)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .screen::-webkit-scrollbar{width:2px}
@@ -232,11 +240,11 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 .ayah-card:hover{border-color:rgba(193,140,60,.4)}
 .ayah-card.active-ayah{border-color:var(--gold);background:linear-gradient(135deg,rgba(193,140,60,.14),rgba(193,140,60,.04))}
 .ayah-arabic{font-family:'Amiri Quran','Amiri',serif;font-size:22px;color:var(--cream);text-align:right;line-height:2.0;direction:rtl;unicode-bidi:embed}
-.ayah-arabic.script-indopak{font-family:'Scheherazade New','Amiri',serif;line-height:2.2;font-size:inherit}
+.ayah-arabic.script-indopak{font-family:'indopak-nastaleeq','Amiri',serif;line-height:2.4;font-size:inherit}
 .ayah-translation{font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px;font-style:italic;border-top:1px solid rgba(193,140,60,.12);padding-top:8px}
 .ayah-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(193,140,60,.15);border:1px solid rgba(193,140,60,.3);font-size:10px;color:var(--gold2);flex-shrink:0;margin-right:8px}
 .surah-bismillah{text-align:center;font-family:'Amiri Quran','Amiri',serif;font-size:20px;color:var(--gold2);padding:10px 0 16px;letter-spacing:1px}
-.surah-bismillah.script-indopak{font-family:'Scheherazade New','Amiri',serif;line-height:2.2}
+.surah-bismillah.script-indopak{font-family:'indopak-nastaleeq','Amiri',serif;line-height:2.4}
 /* Quran mode toggle — 2×2 grid */
 .q-mode-bar{display:grid;grid-template-columns:1fr 1fr;margin:0 14px 10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:3px;gap:3px}
 .q-mode-btn{padding:7px 4px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:.4px;cursor:pointer;transition:all .2s;line-height:1.2;text-align:center}
@@ -302,6 +310,15 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 .mem-prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;width:0%;transition:width .4s}
 .mem-done-btn{width:100%;background:rgba(46,204,113,.11);border:1px solid rgba(46,204,113,.3);border-radius:25px;padding:10px;font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--green);cursor:pointer;letter-spacing:.5px;transition:all .2s}
 .mem-done-btn:hover{background:rgba(46,204,113,.2)}
+/* Per-card footer row */
+.mem-card-footer{display:flex;gap:7px;margin-top:11px;align-items:center}
+.mem-listen-btn{flex:1;padding:7px 10px;border-radius:20px;font-family:'Cormorant Garamond',serif;font-size:12px;cursor:pointer;background:rgba(193,140,60,.1);border:1px solid rgba(193,140,60,.25);color:var(--gold2);letter-spacing:.4px;transition:all .2s;white-space:nowrap}
+.mem-listen-btn:hover{background:rgba(193,140,60,.22)}
+.mem-listen-btn.playing{background:rgba(193,140,60,.25);border-color:var(--gold)}
+.mem-card-done-btn{flex:0 0 auto;padding:7px 12px;border-radius:20px;font-family:'Cormorant Garamond',serif;font-size:11px;cursor:pointer;background:none;border:1px solid var(--border);color:var(--muted);letter-spacing:.4px;transition:all .2s}
+.mem-card-done-btn.done{background:rgba(46,204,113,.12);border-color:rgba(46,204,113,.4);color:var(--green)}
+.mem-card-done-btn:hover{border-color:rgba(46,204,113,.3);color:var(--green)}
+.mem-card.playing-card{border-color:rgba(193,140,60,.6);background:linear-gradient(135deg,rgba(193,140,60,.12),rgba(193,140,60,.04))}
 /* Quran word highlighting */
 .q-word{display:inline;cursor:default;border-radius:4px;transition:background .12s,color .12s,box-shadow .12s;padding:0 1px;unicode-bidi:embed}
 .q-word-active{background:var(--gold2);color:#0E0A06;border-radius:5px;padding:0 3px;box-shadow:0 0 10px rgba(232,184,109,.5)}
@@ -335,8 +352,8 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 .tj-tanwin {color:#FB923C}
 .tj-iqlab  {color:#F472B6}
 /* ── Bottom nav ── */
-.bottom-nav{position:absolute;bottom:0;left:0;right:0;background:rgba(14,10,6,.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding-bottom:4px;z-index:100}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 0 3px;background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;min-width:0}
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;background:rgba(14,10,6,.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:0 12px;padding-bottom:max(44px, env(safe-area-inset-bottom));z-index:100}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0 0;background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;min-width:0}
 .nav-icon{font-size:17px;filter:grayscale(1);opacity:.35;transition:all .2s}
 /* FIXED: nav labels now readable */
 .nav-label{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:rgba(242,232,213,.4);transition:color .2s;white-space:nowrap}
@@ -388,7 +405,7 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 /* ── ONBOARDING ── */
 .onboarding{position:absolute;inset:0;background:var(--bg);z-index:300;display:flex;flex-direction:column;border-radius:44px;overflow:hidden}.onboarding::after{content:'';position:absolute;top:0;left:0;right:0;height:120px;background:radial-gradient(ellipse at 50% 0%,rgba(193,140,60,.08) 0%,transparent 70%);pointer-events:none;z-index:0}.ob-step{position:relative;z-index:1}
 .onboarding.hidden{display:none}
-.ob-step{display:none;flex-direction:column;flex:1;padding:22px 20px 18px;animation:fadeUp .38s cubic-bezier(.22,.8,.4,1);overflow-y:auto}
+.ob-step{display:none;flex-direction:column;flex:1;padding:22px 20px max(44px, env(safe-area-inset-bottom));animation:fadeUp .38s cubic-bezier(.22,.8,.4,1);overflow-y:auto}
 .ob-step.active{display:flex}
 .ob-progress{display:flex;gap:4px;margin-bottom:20px;flex-shrink:0}
 .ob-dot{flex:1;height:3px;border-radius:2px;background:var(--surface2);transition:all .4s}
@@ -721,17 +738,6 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
           </div>
         </div>
       </div>
-      <!-- Tajweed legend — appears as second row inside filter area -->
-      <div id="q-taj-legend" style="display:none;margin:0 14px 10px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;flex-wrap:wrap;gap:6px 14px;align-items:center">
-        <span style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--sublabel);font-family:'Cormorant Garamond',serif;margin-right:4px">Key</span>
-        <span class="tj-key-item"><span class="tj-dot" style="background:#C084FC"></span>Qalqala</span>
-        <span class="tj-key-item"><span class="tj-dot" style="background:#4ADE80"></span>Ghunna</span>
-        <span class="tj-key-item"><span class="tj-dot" style="background:#60A5FA"></span>Madd</span>
-        <span class="tj-key-item"><span class="tj-dot" style="background:#F87171"></span>Shadda</span>
-        <span class="tj-key-item"><span class="tj-dot" style="background:#FB923C"></span>Tanwin</span>
-        <span class="tj-key-item"><span class="tj-dot" style="background:#F472B6"></span>Iqlab</span>
-      </div>
-
       <!-- Reciter & Translation selectors -->
       <div style="padding:0 14px 10px;display:flex;gap:8px">
         <div style="flex:1" id="q-reciter-wrap">
@@ -753,6 +759,17 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
       </div>
 
       </div><!-- /q-listen-controls -->
+
+      <!-- Tajweed legend — always visible when tajweed is on, in all modes -->
+      <div id="q-taj-legend" style="display:none;margin:0 14px 10px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;flex-wrap:wrap;gap:6px 14px;align-items:center">
+        <span style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--sublabel);font-family:'Cormorant Garamond',serif;margin-right:4px">Key</span>
+        <span class="tj-key-item"><span class="tj-dot" style="background:#C084FC"></span>Qalqala</span>
+        <span class="tj-key-item"><span class="tj-dot" style="background:#4ADE80"></span>Ghunna</span>
+        <span class="tj-key-item"><span class="tj-dot" style="background:#60A5FA"></span>Madd</span>
+        <span class="tj-key-item"><span class="tj-dot" style="background:#F87171"></span>Shadda</span>
+        <span class="tj-key-item"><span class="tj-dot" style="background:#FB923C"></span>Tanwin</span>
+        <span class="tj-key-item"><span class="tj-dot" style="background:#F472B6"></span>Iqlab</span>
+      </div>
 
       <!-- Surah selector — always visible in all modes -->
       <div style="padding:0 14px 10px">
@@ -829,13 +846,16 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 
       <!-- ═══ MEMORISE PANEL ═══ -->
       <div id="q-mem-panel" style="display:none;padding:0 14px;flex:1;overflow-y:auto">
-        <!-- Session stats -->
-        <div class="mem-stats-row">
-          <div class="mem-stat"><span class="mem-stat-num" id="mem-stat-reviewed">0</span><span class="mem-stat-lbl">Reviewed</span></div>
-          <div class="mem-stat"><span class="mem-stat-num" id="mem-stat-memorized">0</span><span class="mem-stat-lbl">Memorised</span></div>
-          <div class="mem-stat"><span class="mem-stat-num" id="mem-stat-total">—</span><span class="mem-stat-lbl">Ayahs</span></div>
+        <!-- Session stats + Play All -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div class="mem-stats-row" style="flex:1;margin-bottom:0">
+            <div class="mem-stat"><span class="mem-stat-num" id="mem-stat-reviewed">0</span><span class="mem-stat-lbl">Reviewed</span></div>
+            <div class="mem-stat"><span class="mem-stat-num" id="mem-stat-memorized">0</span><span class="mem-stat-lbl">Memorised</span></div>
+            <div class="mem-stat"><span class="mem-stat-num" id="mem-stat-total">—</span><span class="mem-stat-lbl">Total</span></div>
+          </div>
+          <button id="mem-play-all-btn" onclick="qMemTogglePlayAll()" style="flex-shrink:0;padding:10px 14px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:25px;color:var(--bg);font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.5px;white-space:nowrap">▶ Play All</button>
         </div>
-        <!-- Options bar -->
+        <!-- Options: display + repeat -->
         <div class="mem-opts-bar">
           <div class="mem-opt-group">
             <div class="q-filter-label">Show Text</div>
@@ -855,32 +875,11 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
             </div>
           </div>
         </div>
-        <!-- Ayah card -->
-        <div id="mem-card" class="mem-card">
-          <div class="mem-card-header">
-            <span class="mem-surah-lbl" id="mem-surah-lbl">—</span>
-            <span class="mem-ayah-lbl" id="mem-ayah-lbl">Ayah 1</span>
-            <span class="mem-prog-lbl" id="mem-prog-lbl">1/1</span>
-          </div>
-          <div id="mem-arabic" class="ayah-arabic" dir="rtl" style="font-size:22px;min-height:60px">Loading…</div>
-          <div id="mem-translation" class="ayah-translation" style="display:none"></div>
-          <div id="mem-reveal-btns" class="mem-reveal-btns" style="display:none">
-            <button class="mem-reveal-btn" onclick="qMemRevealNext()">👆 Reveal Next Word</button>
-            <button class="mem-reveal-btn" onclick="qMemRevealAll()">👁 Reveal All</button>
-          </div>
-        </div>
-        <!-- Controls -->
-        <div class="mem-controls">
-          <button class="mem-ctrl-btn" onclick="qMemPrev()">‹ Prev</button>
-          <button class="mem-ctrl-btn play" id="mem-play-btn" onclick="qMemTogglePlay()">▶ Listen</button>
-          <button class="mem-ctrl-btn" onclick="qMemNext()">Next ›</button>
-        </div>
-        <div id="mem-repeat-status" class="mem-repeat-status"></div>
-        <!-- Progress -->
-        <div class="mem-prog-track"><div class="mem-prog-fill" id="mem-prog-fill"></div></div>
-        <!-- Mark done -->
-        <button class="mem-done-btn" onclick="qMemMarkDone()">✓ Memorised — Next Ayah</button>
-        <div style="height:12px"></div>
+        <!-- Now playing indicator for Play All -->
+        <div id="mem-playall-status" class="mem-repeat-status" style="margin-bottom:6px"></div>
+        <!-- Full surah list — rendered by JS -->
+        <div id="mem-card-list"></div>
+        <div style="height:14px"></div>
       </div>
       <div style="height:8px"></div>
     </div>
@@ -950,7 +949,7 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
       <button class="nav-btn" data-screen="qibla" onclick="go('qibla',this)"><span class="nav-icon">🧭</span><span class="nav-label">Qibla</span><div class="nav-dot"></div></button>
       <button class="nav-btn" data-screen="reciters" onclick="go('reciters',this)"><span class="nav-icon">🎙</span><span class="nav-label">Reciters</span><div class="nav-dot"></div></button>
       <button class="nav-btn" data-screen="quran" onclick="go('quran',this)"><span class="nav-icon">📖</span><span class="nav-label">Quran</span><div class="nav-dot"></div></button>
-      <button class="nav-btn nav-premium" data-screen="premium" onclick="go('premium',this)"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.3 4.5C7.4 5.3 5.2 7.9 5.2 11c0 3.8 3.1 6.9 6.9 6.9 1.5 0 2.9-.5 4-1.3-0.5.1-1.1.2-1.6.2-3.3 0-5.9-2.6-5.9-5.9 0-2.3 1.3-4.3 3.2-5.4-.2 0-.3 0-.5 0z" fill="#C18C3C"/><circle cx="16.5" cy="5.5" r="1.1" fill="#E8B86D"/><path d="M14.2 2.5C12.8 3.2 11.8 4.7 11.8 6.4c0 1.9 1.1 3.5 2.8 4.2-.8-.4-1.4-1.1-1.7-2-.3-.8-.2-1.8.2-2.6.4-.8.9-1.4 2.1-3.5z" fill="#F5D49A" opacity="0.9"/></svg></span><span class="nav-label">Premium</span><div class="nav-dot"></div></button>
+      <button class="nav-btn nav-premium" data-screen="premium" onclick="go('premium',this)"><span class="nav-icon"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="navsg" x1="5" y1="5" x2="95" y2="95" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#F5D49A"/><stop offset="55%" stop-color="#E8B86D"/><stop offset="100%" stop-color="#C18C3C"/></linearGradient></defs><path d="M50 5 L61 35 L95 35 L68 57 L79 91 L50 70 L21 91 L32 57 L5 35 L39 35Z" fill="url(#navsg)" opacity="0.9"/></svg></span><span class="nav-label">Premium</span><div class="nav-dot"></div></button>
 
       <button class="nav-btn" data-screen="settings" onclick="go('settings',this)"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span><div class="nav-dot"></div></button>
     </nav>
@@ -1527,7 +1526,7 @@ let qHfToken='';
 // Memorise mode state
 let qMemAyahIdx=0, qMemDisplay='full', qMemRepeat=1;
 let qMemRepeatLeft=0, qMemAudio=null, qMemPlaying=false;
-let qMemRevealIdx=0, qMemWords=[];
+let qMemRevealIdx=0, qMemWords=[], qMemCurIdx=0, qMemRevealIdxArr=[];
 let qMemDoneSet=new Set(), qMemReviewedSet=new Set();
 
 const Q_SIZE_MAP={sm:'17px',md:'22px',lg:'28px',xl:'34px'};
@@ -1601,10 +1600,11 @@ function qSetTajweed(on){
   qTajweedOn=on;
   document.getElementById('q-taj-off').classList.toggle('active',!on);
   document.getElementById('q-taj-on').classList.toggle('active',on);
-  // Only show legend when not in recite mode (filter bar is hidden there)
-  document.getElementById('q-taj-legend').style.display=(on&&qMode!=='recite')?'flex':'none';
+  document.getElementById('q-taj-legend').style.display=on?'flex':'none';
   if(qMode==='surah') qRenderSurahVerses();
   else if(qMode==='ayah') qRenderAyahList();
+  else if(qMode==='recite') qRecShowAyah(qRecAyahIdx);
+  else if(qMode==='memorize') qMemRenderList();
 }
 
 // ── Init ──────────────────────────────────────────────────────────────
@@ -1632,12 +1632,14 @@ function qSetMode(mode){
   });
   const isListen=mode==='surah'||mode==='ayah';
   const isRec=mode==='recite', isMem=mode==='memorize';
-  // Listen-mode controls (filter bar, reciter)
+  // Listen-mode controls: show in all modes, but hide reciter in recite mode
   const lc=document.getElementById('q-listen-controls');
-  if(lc) lc.style.display=isRec?'none':'';
-  // Tajweed legend guard
+  if(lc) lc.style.display='';
+  const rw=document.getElementById('q-reciter-wrap');
+  if(rw) rw.style.display=isRec?'none':'';
+  // Tajweed legend — show whenever tajweed is on
   const tj=document.getElementById('q-taj-legend');
-  if(tj) tj.style.display=(!isRec&&qTajweedOn)?'flex':'none';
+  if(tj) tj.style.display=qTajweedOn?'flex':'none';
   // Player + ayah list
   const pl=document.getElementById('q-player'), ay=document.getElementById('q-ayahs');
   if(pl) pl.style.display='none'; // qUpdatePlayer/qShowLoading will reveal it
@@ -2096,7 +2098,13 @@ function qRecShowAyah(idx){
   document.getElementById('recite-surah-label').textContent=(surah?surah.name:'')+'  ·  '+(idx+1)+'/'+qVerses.length;
   const text=qUthmaniData[idx]?qUthmaniData[idx].text:'';
   const arabicEl=document.getElementById('recite-arabic');
-  arabicEl.textContent=text||'—';
+  // Apply tajweed if on (uthmani script only)
+  if(qTajweedOn&&text){
+    const words=text.split(/\s+/).filter(Boolean);
+    arabicEl.innerHTML=words.map((w,wi)=>`<span class="q-word">${qWordHtml(w,idx,wi)}</span>`).join('\u200f ');
+  } else {
+    arabicEl.textContent=text||'—';
+  }
   const hideBtn=document.getElementById('recite-hide-btn');
   if(qRecHideText){
     arabicEl.style.filter='blur(9px)';arabicEl.style.userSelect='none';
@@ -2249,83 +2257,135 @@ function qRecTryAgain(){
 }
 
 // ── MEMORISE MODE ─────────────────────────────────────────────────────
-async function qLoadMemMode(startIdx){
+// ── MEMORISE MODE ─────────────────────────────────────────────────────
+async function qLoadMemMode(){
   const n=parseInt(document.getElementById('q-surah').value)||1;
   qCurSurah=n;
   qMemDoneSet=new Set(); qMemReviewedSet=new Set();
-  qMemDisplay='full'; qMemRepeat=1;
-  // Reset UI pills
+  qMemDisplay='full'; qMemRepeat=1; qMemRevealIdx=0; qMemRevealIdxArr=[];
+  qMemIsPlayAll=false;
+  if(qMemAudio){qMemAudio.pause();qMemAudio=null;} qMemPlaying=false;
+  // Reset pills
   ['full','blur','hide'].forEach(d=>{const el=document.getElementById('mem-disp-'+d);if(el)el.classList.toggle('active',d==='full');});
-  document.getElementById('mem-rep-1').classList.add('active');
-  ['mem-rep-3','mem-rep-5','mem-rep-10'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
-  document.getElementById('mem-arabic').textContent='Loading…';
+  ['mem-rep-1','mem-rep-3','mem-rep-5','mem-rep-10'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',i===0);});
   document.getElementById('mem-stat-reviewed').textContent='0';
   document.getElementById('mem-stat-memorized').textContent='0';
   document.getElementById('mem-stat-total').textContent='—';
+  document.getElementById('mem-playall-status').textContent='';
+  document.getElementById('mem-play-all-btn').textContent='▶ Play All';
+  document.getElementById('mem-card-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);font-style:italic;font-size:13px">Loading…</div>';
   const ok=await qFetchVerseData(n);
-  if(!ok){document.getElementById('mem-arabic').textContent='Could not load — check connection';return;}
+  if(!ok){document.getElementById('mem-card-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);font-style:italic">Could not load — check connection</div>';return;}
   document.getElementById('mem-stat-total').textContent=qVerses.length;
-  qMemShowAyah(typeof startIdx==='number'?startIdx:0);
+  qMemRevealIdxArr=new Array(qVerses.length).fill(0);
+  qMemRenderList();
 }
 
-function qMemShowAyah(idx){
-  if(!qVerses.length||idx<0||idx>=qVerses.length) return;
-  qMemAyahIdx=idx; qMemRevealIdx=0;
-  qMemReviewedSet.add(idx);
-  document.getElementById('mem-stat-reviewed').textContent=qMemReviewedSet.size;
-  const v=qVerses[idx], surah=SURAHS.find(s=>s.n===qCurSurah);
-  document.getElementById('mem-surah-lbl').textContent=surah?surah.name:'';
-  document.getElementById('mem-ayah-lbl').textContent='Ayah '+(v.verse_number||idx+1);
-  document.getElementById('mem-prog-lbl').textContent=(idx+1)+'/'+qVerses.length;
-  document.getElementById('mem-prog-fill').style.width=((idx+1)/qVerses.length*100)+'%';
-  const text=(qScript==='indopak'&&qIndopakData[idx])?qIndopakData[idx].text:(qUthmaniData[idx]?qUthmaniData[idx].text:'');
-  qMemWords=text.split(/\s+/).filter(Boolean);
-  document.getElementById('mem-card').classList.toggle('memorized',qMemDoneSet.has(idx));
-  qMemRenderText();
-  const tEl=document.getElementById('mem-translation');
-  const trans=document.getElementById('q-translation').value;
-  if(trans!=='none'&&qTransData[idx]){tEl.textContent=qTransData[idx].text;tEl.style.display='block';}
-  else tEl.style.display='none';
-  if(qMemAudio){qMemAudio.pause();qMemAudio=null;}
-  qMemPlaying=false;
-  document.getElementById('mem-play-btn').textContent='▶ Listen';
-  document.getElementById('mem-repeat-status').textContent='';
+function qMemGetText(idx){
+  if(qScript==='indopak'&&qIndopakData[idx]) return qIndopakData[idx].text||'';
+  return qUthmaniData[idx]?qUthmaniData[idx].text:'';
 }
 
-function qMemRenderText(){
-  const el=document.getElementById('mem-arabic');
-  el.style.fontSize=Q_SIZE_MAP[qFontSz]||'22px';
-  const fc=(qScript==='indopak'?' script-indopak':'');
-  el.className='ayah-arabic'+fc;
-  // Derive words for current script
-  const words=(qScript==='indopak'&&qIndopakData[qMemAyahIdx])?
-    qIndopakData[qMemAyahIdx].text.split(/\s+/).filter(Boolean):qMemWords;
+function qMemArabicHtml(idx){
+  const text=qMemGetText(idx);
+  const words=text.split(/\s+/).filter(Boolean);
+  const fontCls=qScript==='indopak'?'script-indopak':'';
+  const sz=Q_SIZE_MAP[qFontSz]||'22px';
   if(qMemDisplay==='full'){
-    el.textContent=words.join(' ');
-    document.getElementById('mem-reveal-btns').style.display='none';
+    // Tajweed on? Use word spans
+    if(qTajweedOn&&qScript!=='indopak'){
+      const spans=words.map((w,wi)=>`<span class="q-word">${qWordHtml(w,idx,wi)}</span>`).join('\u200f ');
+      return `<div class="ayah-arabic ${fontCls}" dir="rtl" style="font-size:${sz}">${spans}</div>`;
+    }
+    return `<div class="ayah-arabic ${fontCls}" dir="rtl" style="font-size:${sz}">${text}</div>`;
   } else if(qMemDisplay==='blur'){
-    el.innerHTML=`<span style="filter:blur(7px);user-select:none;cursor:pointer;transition:filter .4s;display:inline" onclick="this.style.filter=this.style.filter?'':'blur(7px)'">${words.join(' ')}</span>`;
-    document.getElementById('mem-reveal-btns').style.display='none';
+    return `<div class="ayah-arabic ${fontCls}" dir="rtl" style="font-size:${sz};filter:blur(7px);cursor:pointer;user-select:none;transition:filter .4s" onclick="this.style.filter=this.style.filter?'':'blur(7px)'">${text}</div>`;
   } else {
-    // hide mode — word-by-word reveal
-    el.innerHTML=words.map((w,i)=>
-      i<qMemRevealIdx
+    // hide mode — per-card word reveal
+    const rev=qMemRevealIdxArr[idx]||0;
+    const spans=words.map((w,wi)=>
+      wi<rev
         ?`<span class="mem-word-revealed">${w}</span>`
-        :`<span class="mem-word-hidden" onclick="qMemRevealAt(${i})">&#x2591;&#x2591;&#x2591;</span>`
+        :`<span class="mem-word-hidden" onclick="qMemRevealWord(${idx},${wi})">▒▒▒</span>`
     ).join('\u200f ');
-    document.getElementById('mem-reveal-btns').style.display='flex';
+    return `<div class="ayah-arabic ${fontCls}" dir="rtl" style="font-size:${sz}">${spans}</div>`;
   }
 }
 
-function qMemRevealNext(){if(qMemRevealIdx<qMemWords.length){qMemRevealIdx++;qMemRenderText();}}
-function qMemRevealAll(){qMemRevealIdx=qMemWords.length;qMemRenderText();}
-function qMemRevealAt(idx){if(idx>=qMemRevealIdx){qMemRevealIdx=idx+1;qMemRenderText();}}
+function qMemRenderList(){
+  const el=document.getElementById('mem-card-list');
+  if(!qVerses.length){el.innerHTML='';return;}
+  const trans=document.getElementById('q-translation').value;
+  const surah=SURAHS.find(s=>s.n===qCurSurah);
+  let html='';
+  if(qCurSurah!==1&&qCurSurah!==9)
+    html+=`<div class="surah-bismillah${qScript==='indopak'?' script-indopak':''}">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
+  qVerses.forEach((v,vi)=>{
+    const num=v.verse_number||vi+1;
+    const isDone=qMemDoneSet.has(vi);
+    const tHtml=trans!=='none'&&qTransData[vi]?`<div class="ayah-translation">${qTransData[vi].text}</div>`:'';
+    const revBtns=qMemDisplay==='hide'
+      ?`<div class="mem-reveal-btns"><button class="mem-reveal-btn" onclick="qMemRevealNextCard(${vi})">👆 Next Word</button><button class="mem-reveal-btn" onclick="qMemRevealAllCard(${vi})">👁 Reveal All</button></div>`
+      :'';
+    html+=`<div class="mem-card${isDone?' memorized':''}" id="mem-card-${vi}">
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px">
+        <div class="ayah-num">${num}</div>
+        <div style="flex:1">${qMemArabicHtml(vi)}</div>
+      </div>
+      ${tHtml}${revBtns}
+      <div class="mem-card-footer">
+        <button class="mem-listen-btn" id="mem-listen-${vi}" onclick="qMemToggleListenCard(${vi})">🎵 Listen</button>
+        <button class="mem-card-done-btn${isDone?' done':''}" id="mem-done-${vi}" onclick="qMemToggleDone(${vi})">${isDone?'✓ Done':'Mark Done'}</button>
+      </div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+function qMemRefreshCard(idx){
+  const card=document.getElementById('mem-card-'+idx);
+  if(!card) return;
+  const trans=document.getElementById('q-translation').value;
+  const v=qVerses[idx]; const num=v?v.verse_number||idx+1:idx+1;
+  const isDone=qMemDoneSet.has(idx);
+  const tHtml=trans!=='none'&&qTransData[idx]?`<div class="ayah-translation">${qTransData[idx].text}</div>`:'';
+  const revBtns=qMemDisplay==='hide'
+    ?`<div class="mem-reveal-btns"><button class="mem-reveal-btn" onclick="qMemRevealNextCard(${idx})">👆 Next Word</button><button class="mem-reveal-btn" onclick="qMemRevealAllCard(${idx})">👁 Reveal All</button></div>`
+    :'';
+  card.className='mem-card'+(isDone?' memorized':'')+((qMemCurIdx===idx&&qMemPlaying)?' playing-card':'');
+  card.innerHTML=`
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px">
+      <div class="ayah-num">${num}</div>
+      <div style="flex:1">${qMemArabicHtml(idx)}</div>
+    </div>
+    ${tHtml}${revBtns}
+    <div class="mem-card-footer">
+      <button class="mem-listen-btn${(qMemCurIdx===idx&&qMemPlaying)?' playing':''}" id="mem-listen-${idx}" onclick="qMemToggleListenCard(${idx})">${(qMemCurIdx===idx&&qMemPlaying)?'⏹ Stop':'🎵 Listen'}</button>
+      <button class="mem-card-done-btn${isDone?' done':''}" id="mem-done-${idx}" onclick="qMemToggleDone(${idx})">${isDone?'✓ Done':'Mark Done'}</button>
+    </div>`;
+}
+
+function qMemRevealWord(cardIdx,wordIdx){
+  if(qMemRevealIdxArr[cardIdx]<=wordIdx){
+    qMemRevealIdxArr[cardIdx]=wordIdx+1;
+    qMemRefreshCard(cardIdx);
+  }
+}
+function qMemRevealNextCard(idx){
+  const words=qMemGetText(idx).split(/\s+/).filter(Boolean);
+  if(qMemRevealIdxArr[idx]<words.length){qMemRevealIdxArr[idx]++;qMemRefreshCard(idx);}
+}
+function qMemRevealAllCard(idx){
+  const words=qMemGetText(idx).split(/\s+/).filter(Boolean);
+  qMemRevealIdxArr[idx]=words.length; qMemRefreshCard(idx);
+}
 
 function qMemSetDisplay(mode,btn){
   qMemDisplay=mode;
   btn.closest('.q-filter-pills').querySelectorAll('.q-fpill').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  qMemRevealIdx=0; qMemRenderText();
+  qMemRevealIdxArr=new Array(qVerses.length).fill(0);
+  qMemRenderList();
 }
 
 function qMemSetRepeat(n,btn){
@@ -2334,62 +2394,119 @@ function qMemSetRepeat(n,btn){
   btn.classList.add('active');
 }
 
-function qMemTogglePlay(){
-  if(qMemPlaying&&qMemAudio){
-    qMemAudio.pause();qMemAudio=null;qMemPlaying=false;qMemRepeatLeft=0;
-    document.getElementById('mem-play-btn').textContent='▶ Listen';
-    document.getElementById('mem-repeat-status').textContent='';
-  } else { qMemStartPlay(); }
+// Play a single card with repeat — robust error handling
+function qMemToggleListenCard(idx){
+  // Stop if already playing this card
+  if(qMemPlaying&&qMemCurIdx===idx){
+    qMemStopAudio(); return;
+  }
+  qMemStopAudio();
+  qMemIsPlayAll=false;
+  qMemPlayCard(idx, ()=>{});
 }
 
-function qMemStartPlay(){
-  if(!qAyahData[qMemAyahIdx]) return;
-  const a=qAyahData[qMemAyahIdx];
+function qMemPlayCard(idx, onDone){
+  if(!qAyahData[idx]){showToast('No audio data — reload surah');onDone();return;}
+  const a=qAyahData[idx];
   const folder=document.getElementById('q-reciter').value||'Alafasy_128kbps';
   const url='https://everyayah.com/data/'+folder+'/'+String(a.globalNum).padStart(6,'0')+'.mp3';
-  qMemRepeatLeft=qMemRepeat; qMemPlaying=true;
+  qMemCurIdx=idx; qMemPlaying=true; qMemRepeatLeft=qMemRepeat;
+  qMemReviewedSet.add(idx);
+  document.getElementById('mem-stat-reviewed').textContent=qMemReviewedSet.size;
+  qMemRefreshCard(idx);
+  const card=document.getElementById('mem-card-'+idx);
+  if(card) card.scrollIntoView({behavior:'smooth',block:'nearest'});
+
   const playOnce=()=>{
-    qMemAudio=new Audio(url);
+    if(!qMemPlaying) return;
+    qMemAudio=new Audio();
+    qMemAudio.crossOrigin='anonymous';
     qMemAudio.volume=qGetVol();
-    qMemAudio.play().catch(()=>{showToast('Audio unavailable');qMemPlaying=false;document.getElementById('mem-play-btn').textContent='▶ Listen';});
-    document.getElementById('mem-play-btn').textContent='⏹ Stop';
-    const done=qMemRepeat-qMemRepeatLeft+1;
-    document.getElementById('mem-repeat-status').textContent=qMemRepeat>1?'Play '+done+' of '+qMemRepeat:'';
-    qMemAudio.onended=()=>{
-      qMemRepeatLeft--;
-      if(qMemRepeatLeft>0&&qMemPlaying) setTimeout(playOnce,500);
-      else{
-        qMemPlaying=false;qMemAudio=null;
-        document.getElementById('mem-play-btn').textContent='▶ Listen';
-        document.getElementById('mem-repeat-status').textContent=qMemRepeat>1?'Done ✓':'';
-        if(qMemRepeat>1) setTimeout(()=>{document.getElementById('mem-repeat-status').textContent='';},2000);
-      }
+    const playNum=qMemRepeat-qMemRepeatLeft+1;
+    if(qMemRepeat>1){
+      const s=document.getElementById('mem-playall-status');
+      if(s) s.textContent=qMemIsPlayAll
+        ?`Ayah ${idx+1}/${qVerses.length} · Play ${playNum}/${qMemRepeat}`
+        :`Playing ${playNum} of ${qMemRepeat}…`;
+    }
+    qMemAudio.onerror=()=>{
+      // Retry once without crossOrigin
+      qMemAudio=new Audio(url);
+      qMemAudio.volume=qGetVol();
+      qMemAudio.play().catch(()=>{
+        showToast('Audio unavailable for this ayah');
+        qMemStopAudio(); onDone();
+      });
+      qMemAudio.onended=handleEnded;
     };
+    qMemAudio.onended=handleEnded;
+    qMemAudio.src=url;
+    qMemAudio.load();
+    qMemAudio.play().catch(()=>{
+      // Retry without crossOrigin in case it blocked
+      qMemAudio=new Audio(url);
+      qMemAudio.volume=qGetVol();
+      qMemAudio.onended=handleEnded;
+      qMemAudio.onerror=()=>{showToast('Audio unavailable for this ayah');qMemStopAudio();onDone();};
+      qMemAudio.play().catch(()=>{showToast('Audio unavailable for this ayah');qMemStopAudio();onDone();});
+    });
   };
+
+  const handleEnded=()=>{
+    if(!qMemPlaying) return;
+    qMemRepeatLeft--;
+    if(qMemRepeatLeft>0) setTimeout(playOnce,400);
+    else{ qMemStopAudio(); onDone(); }
+  };
+
   playOnce();
 }
 
-function qMemPrev(){
-  if(qMemAudio){qMemAudio.pause();qMemAudio=null;qMemPlaying=false;}
-  if(qMemAyahIdx>0) qMemShowAyah(qMemAyahIdx-1);
-  else if(qCurSurah>1){qCurSurah--;document.getElementById('q-surah').value=qCurSurah;qLoadMemMode();}
-  else showToast('Already at Al-Fatiha');
+function qMemStopAudio(){
+  if(qMemAudio){qMemAudio.onended=null;qMemAudio.onerror=null;qMemAudio.pause();qMemAudio=null;}
+  const prevIdx=qMemCurIdx;
+  qMemPlaying=false; qMemRepeatLeft=0;
+  document.getElementById('mem-play-all-btn').textContent='▶ Play All';
+  document.getElementById('mem-playall-status').textContent='';
+  qMemRefreshCard(prevIdx);
 }
 
-function qMemNext(){
-  if(qMemAudio){qMemAudio.pause();qMemAudio=null;qMemPlaying=false;}
-  if(qMemAyahIdx<qVerses.length-1) qMemShowAyah(qMemAyahIdx+1);
-  else if(qCurSurah<114){qCurSurah++;document.getElementById('q-surah').value=qCurSurah;qLoadMemMode();}
-  else showToast('End of Quran — Khatm complete 🌙');
+// Play All — sequential through all ayahs
+let qMemIsPlayAll=false;
+function qMemTogglePlayAll(){
+  if(qMemIsPlayAll){
+    qMemIsPlayAll=false; qMemStopAudio();
+    document.getElementById('mem-play-all-btn').textContent='▶ Play All'; return;
+  }
+  if(!qVerses.length){showToast('Select a surah first');return;}
+  qMemStopAudio();
+  qMemIsPlayAll=true;
+  document.getElementById('mem-play-all-btn').textContent='⏹ Stop';
+  const playFrom=(idx)=>{
+    if(!qMemIsPlayAll||idx>=qVerses.length){ qMemIsPlayAll=false; qMemStopAudio(); showToast('Surah complete 🌙'); return; }
+    qMemPlayCard(idx,()=>{
+      if(qMemIsPlayAll) setTimeout(()=>playFrom(idx+1),500);
+    });
+  };
+  playFrom(0);
 }
 
-function qMemMarkDone(){
-  qMemDoneSet.add(qMemAyahIdx);
+function qMemToggleDone(idx){
+  if(qMemDoneSet.has(idx)) qMemDoneSet.delete(idx);
+  else qMemDoneSet.add(idx);
   document.getElementById('mem-stat-memorized').textContent=qMemDoneSet.size;
-  document.getElementById('mem-card').classList.add('memorized');
-  showToast('Ayah '+(qMemAyahIdx+1)+' memorised ✓');
-  setTimeout(()=>qMemNext(),600);
+  qMemRefreshCard(idx);
 }
+
+// Kept for qSetScript re-render
+function qMemRenderText(){qMemRenderList();}
+function qMemPrev(){} // no longer used
+function qMemNext(){} // no longer used
+function qMemMarkDone(){} // no longer used
+function qMemShowAyah(){} // no longer used
+function qMemRevealNext(){} // no longer used
+function qMemRevealAll(){} // no longer used
+function qMemRevealAt(){} // no longer used
 
 // ── HF TOKEN MODAL ───────────────────────────────────────────────────
 function openHfTokenModal(){
