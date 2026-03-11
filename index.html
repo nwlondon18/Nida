@@ -231,18 +231,79 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 .ayah-card{margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 15px;cursor:pointer;transition:all .2s}
 .ayah-card:hover{border-color:rgba(193,140,60,.4)}
 .ayah-card.active-ayah{border-color:var(--gold);background:linear-gradient(135deg,rgba(193,140,60,.14),rgba(193,140,60,.04))}
-.ayah-arabic{font-family:'Amiri Quran','Amiri',serif;font-size:22px;color:var(--cream);text-align:right;line-height:2.0;direction:rtl}
+.ayah-arabic{font-family:'Amiri Quran','Amiri',serif;font-size:22px;color:var(--cream);text-align:right;line-height:2.0;direction:rtl;unicode-bidi:embed}
 .ayah-arabic.script-indopak{font-family:'Scheherazade New','Amiri',serif;line-height:2.2;font-size:inherit}
 .ayah-translation{font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px;font-style:italic;border-top:1px solid rgba(193,140,60,.12);padding-top:8px}
 .ayah-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(193,140,60,.15);border:1px solid rgba(193,140,60,.3);font-size:10px;color:var(--gold2);flex-shrink:0;margin-right:8px}
 .surah-bismillah{text-align:center;font-family:'Amiri Quran','Amiri',serif;font-size:20px;color:var(--gold2);padding:10px 0 16px;letter-spacing:1px}
 .surah-bismillah.script-indopak{font-family:'Scheherazade New','Amiri',serif;line-height:2.2}
-/* Quran mode toggle */
-.q-mode-bar{display:flex;margin:0 14px 12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:3px;gap:3px}
-.q-mode-btn{flex:1;padding:7px 6px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:.5px;cursor:pointer;transition:all .2s;line-height:1.2;text-align:center}
+/* Quran mode toggle — 2×2 grid */
+.q-mode-bar{display:grid;grid-template-columns:1fr 1fr;margin:0 14px 10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:3px;gap:3px}
+.q-mode-btn{padding:7px 4px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:.4px;cursor:pointer;transition:all .2s;line-height:1.2;text-align:center}
 .q-mode-btn.active{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg);font-weight:600;box-shadow:0 2px 8px rgba(193,140,60,.35)}
+/* ── Recite Mode ── */
+.recite-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.recite-nav-btn{background:none;border:1px solid var(--border);border-radius:50%;width:34px;height:34px;color:var(--muted);cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.recite-nav-btn:hover{border-color:rgba(193,140,60,.4);color:var(--gold2)}
+.recite-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px;position:relative}
+.recite-hide-row{display:flex;justify-content:flex-end;margin-bottom:8px}
+.recite-hide-btn{background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:10px;color:var(--muted);cursor:pointer;font-family:'Cormorant Garamond',serif;letter-spacing:.5px;transition:all .2s}
+.recite-hide-btn.hidden{border-color:rgba(193,140,60,.4);color:var(--gold2)}
+.recite-mic-area{display:flex;flex-direction:column;align-items:center;gap:10px;padding:10px 0 14px}
+.recite-mic-btn{width:74px;height:74px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg);font-size:28px;cursor:pointer;box-shadow:0 4px 20px rgba(193,140,60,.4);transition:all .25s;display:flex;align-items:center;justify-content:center}
+.recite-mic-btn:disabled{opacity:.5;cursor:not-allowed}
+.recite-mic-btn.recording{background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 4px 20px rgba(239,68,68,.5);animation:mic-pulse 1.5s ease-in-out infinite}
+@keyframes mic-pulse{0%,100%{box-shadow:0 4px 20px rgba(239,68,68,.5)}50%{box-shadow:0 4px 32px rgba(239,68,68,.8),0 0 0 10px rgba(239,68,68,.12)}}
+.recite-status{font-size:12px;color:var(--muted);font-style:italic;text-align:center;min-height:18px}
+.recite-timer{font-size:11px;color:var(--muted2);font-family:'Cormorant Garamond',serif;min-height:16px}
+.recite-result-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
+.recite-score-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.recite-pct{font-size:36px;font-weight:600;font-family:'Cormorant Garamond',serif;line-height:1;flex-shrink:0}
+.recite-pct.excellent{color:var(--green)}
+.recite-pct.good{color:var(--amber)}
+.recite-pct.needs-work{color:#ef4444}
+.recite-score-detail{font-size:13px;color:var(--cream);line-height:1.5}
+.recite-score-sub{font-size:11px;color:var(--muted);font-style:italic}
+.recite-words-wrap{direction:rtl;line-height:2.6;padding:6px 0;min-height:40px}
+.recite-word{display:inline;padding:2px 4px;border-radius:4px;margin:0 2px;font-family:'Amiri Quran','Amiri',serif;font-size:18px}
+.recite-word.correct{color:var(--green)}
+.recite-word.incorrect{color:#ef4444;text-decoration:line-through;opacity:.8}
+.recite-result-btns{display:flex;gap:8px;margin-top:12px}
+.recite-result-btn{flex:1;padding:9px;border-radius:25px;font-family:'Cormorant Garamond',serif;font-size:13px;cursor:pointer;letter-spacing:.5px;transition:all .2s}
+.recite-result-btn.secondary{background:none;border:1px solid var(--border);color:var(--muted)}
+.recite-result-btn.secondary:hover{border-color:rgba(193,140,60,.4);color:var(--cream)}
+.recite-result-btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:var(--bg);font-weight:600}
+.recite-powered{text-align:center;font-size:9px;color:var(--muted2);letter-spacing:1.5px;text-transform:uppercase;padding:6px 0}
+/* ── Memorise Mode ── */
+.mem-stats-row{display:flex;gap:6px;margin-bottom:10px}
+.mem-stat{flex:1;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 4px}
+.mem-stat-num{font-size:22px;color:var(--gold2);font-family:'Cormorant Garamond',serif;display:block;line-height:1}
+.mem-stat-lbl{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);margin-top:3px;display:block}
+.mem-opts-bar{display:flex;gap:10px;margin-bottom:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;flex-wrap:wrap}
+.mem-opt-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.mem-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:15px;margin-bottom:10px;transition:border-color .3s}
+.mem-card.memorized{border-color:rgba(46,204,113,.5);background:linear-gradient(135deg,rgba(46,204,113,.07),transparent)}
+.mem-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;flex-wrap:wrap;gap:4px}
+.mem-surah-lbl{font-size:12px;color:var(--gold2);font-style:italic}
+.mem-ayah-lbl{font-size:10px;letter-spacing:1.5px;color:var(--muted2)}
+.mem-prog-lbl{font-size:10px;color:var(--muted2)}
+.mem-word-hidden{display:inline;font-family:'Amiri Quran','Amiri',serif;line-height:2.4;background:rgba(193,140,60,.15);color:transparent;border-radius:5px;padding:0 5px;cursor:pointer;user-select:none;transition:all .3s}
+.mem-word-hidden:hover{background:rgba(193,140,60,.28)}
+.mem-word-revealed{display:inline;font-family:'Amiri Quran','Amiri',serif;line-height:2.4;color:var(--cream)}
+.mem-reveal-btns{display:flex;gap:6px;margin-top:10px}
+.mem-reveal-btn{flex:1;padding:7px;border-radius:20px;font-family:'Cormorant Garamond',serif;font-size:11px;cursor:pointer;background:rgba(193,140,60,.1);border:1px solid rgba(193,140,60,.25);color:var(--gold2);letter-spacing:.5px;transition:all .2s}
+.mem-reveal-btn:hover{background:rgba(193,140,60,.2)}
+.mem-controls{display:flex;align-items:center;gap:7px;margin:8px 0}
+.mem-ctrl-btn{flex:1;padding:9px 6px;border-radius:25px;font-family:'Cormorant Garamond',serif;font-size:12px;cursor:pointer;letter-spacing:.4px;background:none;border:1px solid var(--border);color:var(--muted);transition:all .2s;white-space:nowrap}
+.mem-ctrl-btn:hover{border-color:rgba(193,140,60,.35);color:var(--cream)}
+.mem-ctrl-btn.play{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:var(--bg);font-weight:600;flex:1.5}
+.mem-repeat-status{text-align:center;font-size:11px;color:var(--gold2);font-style:italic;min-height:17px;margin-bottom:4px}
+.mem-prog-track{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin:6px 0 10px}
+.mem-prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;width:0%;transition:width .4s}
+.mem-done-btn{width:100%;background:rgba(46,204,113,.11);border:1px solid rgba(46,204,113,.3);border-radius:25px;padding:10px;font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--green);cursor:pointer;letter-spacing:.5px;transition:all .2s}
+.mem-done-btn:hover{background:rgba(46,204,113,.2)}
 /* Quran word highlighting */
-.q-word{display:inline;cursor:default;border-radius:4px;transition:background .12s,color .12s,box-shadow .12s;padding:0 1px}
+.q-word{display:inline;cursor:default;border-radius:4px;transition:background .12s,color .12s,box-shadow .12s;padding:0 1px;unicode-bidi:embed}
 .q-word-active{background:var(--gold2);color:#0E0A06;border-radius:5px;padding:0 3px;box-shadow:0 0 10px rgba(232,184,109,.5)}
 .ayah-card.active-ayah .q-word:not(.q-word-active){color:rgba(242,232,213,.75)}
 /* np-waves standalone (Quran player) */
@@ -624,14 +685,18 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
         <div class="app-logo"><span class="logo-arabic">نداء</span><div class="logo-divider"></div><div class="logo-text"><span class="logo-english">Nida</span><span class="logo-sub">Quran</span></div></div>
       </div>
 
-      <!-- Mode toggle -->
+      <!-- Mode toggle — 2×2 grid -->
       <div class="q-mode-bar">
-        <button class="q-mode-btn active" id="q-mode-surah" onclick="qSetMode('surah')">▶ Full Surah<br><span style="font-size:10px;opacity:.7">Continuous play</span></button>
-        <button class="q-mode-btn" id="q-mode-ayah" onclick="qSetMode('ayah')">☰ Ayah by Ayah<br><span style="font-size:10px;opacity:.7">Auto-scroll &amp; highlight</span></button>
+        <button class="q-mode-btn active" id="q-mode-surah" onclick="qSetMode('surah')">▶ Surah<br><span style="font-size:9px;opacity:.7">Continuous</span></button>
+        <button class="q-mode-btn" id="q-mode-ayah" onclick="qSetMode('ayah')">☰ Ayah<br><span style="font-size:9px;opacity:.7">Step by step</span></button>
+        <button class="q-mode-btn" id="q-mode-recite" onclick="qSetMode('recite')">🎤 Recite<br><span style="font-size:9px;opacity:.7">AI feedback</span></button>
+        <button class="q-mode-btn" id="q-mode-memorize" onclick="qSetMode('memorize')">🧠 Memorise<br><span style="font-size:9px;opacity:.7">Hide &amp; repeat</span></button>
       </div>
 
+      <!-- Listen-mode controls (hidden in Recite mode) -->
+      <div id="q-listen-controls">
       <!-- Filters -->
-      <div class="q-filter-bar">
+      <div class="q-filter-bar" id="q-filter-bar-el">
         <div class="q-filter-group">
           <div class="q-filter-label">Text Size</div>
           <div class="q-filter-pills">
@@ -669,7 +734,7 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 
       <!-- Reciter & Translation selectors -->
       <div style="padding:0 14px 10px;display:flex;gap:8px">
-        <div style="flex:1">
+        <div style="flex:1" id="q-reciter-wrap">
           <div style="font-size:9px;letter-spacing:2px;color:var(--sublabel);margin-bottom:5px;text-transform:uppercase">Reciter</div>
           <select id="q-reciter" onchange="qChangeReciter()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 10px;color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:13px;cursor:pointer;appearance:none;-webkit-appearance:none">
             <option value="">Loading…</option>
@@ -687,8 +752,10 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
         </div>
       </div>
 
-      <!-- Surah selector -->
-      <div style="padding:0 14px 12px">
+      </div><!-- /q-listen-controls -->
+
+      <!-- Surah selector — always visible in all modes -->
+      <div style="padding:0 14px 10px">
         <select id="q-surah" onchange="qLoadSurah()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;color:var(--cream);font-family:'Amiri',serif;font-size:15px;cursor:pointer;appearance:none;-webkit-appearance:none">
           <option value="">Loading surahs…</option>
         </select>
@@ -719,6 +786,102 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
       <div id="q-ayahs" style="padding:0 14px;flex:1">
         <div style="text-align:center;padding:30px;color:var(--muted);font-style:italic;font-size:13px">Select a surah to begin</div>
       </div>
+
+      <!-- ═══ RECITE PANEL ═══ -->
+      <div id="q-recite-panel" style="display:none;padding:0 14px;flex:1;overflow-y:auto">
+        <!-- Ayah navigation -->
+        <div class="recite-nav-row">
+          <button class="recite-nav-btn" onclick="qRecPrev()">‹</button>
+          <div style="text-align:center;flex:1">
+            <div id="recite-ayah-label" style="font-size:13px;color:var(--cream);letter-spacing:.5px">—</div>
+            <div id="recite-surah-label" style="font-size:10px;color:var(--muted);font-style:italic;margin-top:2px">Select a surah above</div>
+          </div>
+          <button class="recite-nav-btn" onclick="qRecNext()">›</button>
+        </div>
+        <!-- Arabic text card -->
+        <div class="recite-card">
+          <div class="recite-hide-row">
+            <button id="recite-hide-btn" class="recite-hide-btn" onclick="qRecToggleHide()">👁 Hide Text</button>
+          </div>
+          <div id="recite-arabic" class="ayah-arabic" dir="rtl" style="font-size:24px;min-height:64px">Loading…</div>
+          <div id="recite-translation" class="ayah-translation" style="display:none"></div>
+        </div>
+        <!-- Mic area -->
+        <div class="recite-mic-area">
+          <div id="recite-status" class="recite-status">Tap the mic to begin reciting</div>
+          <button id="recite-mic-btn" class="recite-mic-btn" onclick="qRecToggleMic()">🎤</button>
+          <div id="recite-timer" class="recite-timer">0:00</div>
+        </div>
+        <!-- Result card (shown after transcription) -->
+        <div id="recite-result" style="display:none">
+          <div class="recite-result-card">
+            <div class="recite-score-row" id="recite-score"></div>
+            <div class="recite-words-wrap" id="recite-word-result" dir="rtl"></div>
+            <div class="recite-result-btns">
+              <button class="recite-result-btn secondary" onclick="qRecTryAgain()">↺ Try Again</button>
+              <button class="recite-result-btn primary" onclick="qRecNext()">Next Ayah ›</button>
+            </div>
+          </div>
+        </div>
+        <div class="recite-powered">Powered by Tarteel AI · OpenAI Whisper · HuggingFace</div>
+        <div style="height:12px"></div>
+      </div>
+
+      <!-- ═══ MEMORISE PANEL ═══ -->
+      <div id="q-mem-panel" style="display:none;padding:0 14px;flex:1;overflow-y:auto">
+        <!-- Session stats -->
+        <div class="mem-stats-row">
+          <div class="mem-stat"><span class="mem-stat-num" id="mem-stat-reviewed">0</span><span class="mem-stat-lbl">Reviewed</span></div>
+          <div class="mem-stat"><span class="mem-stat-num" id="mem-stat-memorized">0</span><span class="mem-stat-lbl">Memorised</span></div>
+          <div class="mem-stat"><span class="mem-stat-num" id="mem-stat-total">—</span><span class="mem-stat-lbl">Ayahs</span></div>
+        </div>
+        <!-- Options bar -->
+        <div class="mem-opts-bar">
+          <div class="mem-opt-group">
+            <div class="q-filter-label">Show Text</div>
+            <div class="q-filter-pills">
+              <button class="q-fpill active" id="mem-disp-full" onclick="qMemSetDisplay('full',this)">Full</button>
+              <button class="q-fpill" id="mem-disp-blur" onclick="qMemSetDisplay('blur',this)">Blur</button>
+              <button class="q-fpill" id="mem-disp-hide" onclick="qMemSetDisplay('hide',this)">Hide</button>
+            </div>
+          </div>
+          <div class="mem-opt-group">
+            <div class="q-filter-label">Repeat</div>
+            <div class="q-filter-pills">
+              <button class="q-fpill active" id="mem-rep-1" onclick="qMemSetRepeat(1,this)">1×</button>
+              <button class="q-fpill" id="mem-rep-3" onclick="qMemSetRepeat(3,this)">3×</button>
+              <button class="q-fpill" id="mem-rep-5" onclick="qMemSetRepeat(5,this)">5×</button>
+              <button class="q-fpill" id="mem-rep-10" onclick="qMemSetRepeat(10,this)">10×</button>
+            </div>
+          </div>
+        </div>
+        <!-- Ayah card -->
+        <div id="mem-card" class="mem-card">
+          <div class="mem-card-header">
+            <span class="mem-surah-lbl" id="mem-surah-lbl">—</span>
+            <span class="mem-ayah-lbl" id="mem-ayah-lbl">Ayah 1</span>
+            <span class="mem-prog-lbl" id="mem-prog-lbl">1/1</span>
+          </div>
+          <div id="mem-arabic" class="ayah-arabic" dir="rtl" style="font-size:22px;min-height:60px">Loading…</div>
+          <div id="mem-translation" class="ayah-translation" style="display:none"></div>
+          <div id="mem-reveal-btns" class="mem-reveal-btns" style="display:none">
+            <button class="mem-reveal-btn" onclick="qMemRevealNext()">👆 Reveal Next Word</button>
+            <button class="mem-reveal-btn" onclick="qMemRevealAll()">👁 Reveal All</button>
+          </div>
+        </div>
+        <!-- Controls -->
+        <div class="mem-controls">
+          <button class="mem-ctrl-btn" onclick="qMemPrev()">‹ Prev</button>
+          <button class="mem-ctrl-btn play" id="mem-play-btn" onclick="qMemTogglePlay()">▶ Listen</button>
+          <button class="mem-ctrl-btn" onclick="qMemNext()">Next ›</button>
+        </div>
+        <div id="mem-repeat-status" class="mem-repeat-status"></div>
+        <!-- Progress -->
+        <div class="mem-prog-track"><div class="mem-prog-fill" id="mem-prog-fill"></div></div>
+        <!-- Mark done -->
+        <button class="mem-done-btn" onclick="qMemMarkDone()">✓ Memorised — Next Ayah</button>
+        <div style="height:12px"></div>
+      </div>
       <div style="height:8px"></div>
     </div>
 
@@ -738,6 +901,8 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
       </div>
       <div class="section-title">What's included</div>
       <div class="feature-list">
+        <div class="feature-row"><span class="feature-icon">🎤</span><div class="feature-text"><h4>AI Recitation Feedback</h4><p>Powered by Tarteel AI's Whisper model — get word-by-word accuracy scores on every ayah you recite</p></div></div>
+        <div class="feature-row"><span class="feature-icon">🧠</span><div class="feature-text"><h4>Memorisation Mode</h4><p>Hide text, reveal word by word, loop ayahs 1–10 times — structured hifz training for every level</p></div></div>
         <div class="feature-row"><span class="feature-icon">🎙</span><div class="feature-text"><h4>17 Premium Reciters</h4><p>Voices from Saudi Arabia, Egypt, Turkey, Indonesia & classical maqam styles</p></div></div>
         <div class="feature-row"><span class="feature-icon">🎛</span><div class="feature-text"><h4>Custom Reciter Per Prayer</h4><p>Assign a different reciter to each of the 5 daily prayers — e.g. Makkah for Fajr, Sudais for Maghrib</p></div></div>
         <div class="feature-row"><span class="feature-icon">📁</span><div class="feature-text"><h4>Custom Athan Upload</h4><p>Upload any MP3 — use any reciter or athan you love</p></div></div>
@@ -771,6 +936,8 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
         <div class="speaker-header"><div class="speaker-brand-icon google-icon">🟢</div><div style="flex:1"><div class="speaker-name">Google Home</div><div class="speaker-status disconnected-txt" id="google-status">Not connected</div></div></div>
         <button class="connect-btn" id="google-btn" onclick="connectSpeaker('google')">Connect Google Home</button>
       </div>
+      <div class="section-title">AI &amp; Recitation</div>
+      <div class="settings-row" onclick="openHfTokenModal()"><span class="settings-icon">🤖</span><div class="settings-text"><div class="settings-label">HuggingFace Token</div><div class="settings-value" id="hf-token-status">Optional — enables AI recitation feedback</div></div><span class="settings-arrow">›</span></div>
       <div class="section-title">Account</div>
       <div class="settings-row" onclick="go('premium',document.querySelector('[data-screen=premium]'))"><span class="settings-icon">✦</span><div class="settings-text"><div class="settings-label">Nida Premium</div><div class="settings-value">Unlock all reciters & features</div></div><span style="font-size:10px;color:var(--amber);background:rgba(240,192,96,.12);border:1px solid rgba(240,192,96,.3);border-radius:20px;padding:2px 8px;letter-spacing:1px">FREE</span></div>
       <div class="settings-row"><span class="settings-icon">📍</span><div class="settings-text"><div class="settings-label">Location</div><div class="settings-value" id="settings-loc">Detecting…</div></div><span class="settings-arrow">›</span></div>
@@ -829,6 +996,17 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
         </div>
         <button class="modal-apply" id="sp-btn" onclick="finishConnect()">Sign In & Connect</button>
         <div style="text-align:center;font-size:11px;color:var(--muted2);margin-top:7px;font-style:italic">Your credentials are never stored by Nida</div>
+      </div>
+    </div>
+    <div class="modal-overlay" id="modal-hf-token" onclick="if(event.target===this)this.classList.remove('open')">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <button class="modal-close" onclick="document.getElementById('modal-hf-token').classList.remove('open')">✕</button>
+        <div class="modal-title">HuggingFace Token</div>
+        <div class="modal-subtitle">Optional — provides higher rate limits for AI recitation feedback. Get a free token at <span style="color:var(--gold2)">huggingface.co/settings/tokens</span></div>
+        <input type="password" id="hf-token-input" placeholder="hf_…" autocomplete="off" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:14px;margin-bottom:12px;outline:none;letter-spacing:.5px"/>
+        <button class="modal-apply" onclick="saveHfToken()">Save Token</button>
+        <button style="width:100%;background:none;border:none;color:var(--muted2);font-size:12px;font-family:inherit;cursor:pointer;padding:9px;font-style:italic;margin-top:4px" onclick="clearHfToken()">Clear saved token</button>
       </div>
     </div>
   </div>
@@ -1334,11 +1512,23 @@ let qMode='surah';
 let qAudio=null, qPlaying=false;
 let qCurSurah=1, qCurAyahIdx=0;
 let qAyahData=[], qTransData=[], qVerses=[], qTimings=[];
-let qIndopakData=[]; // separate store for indopak ayah text
-let qUthmaniData=[]; // canonical uthmani text from alquran.cloud
+let qIndopakData=[];
+let qUthmaniData=[];
 let qRafId=null, qProgTimer=null;
 let qCurActiveVerse=-1, qCurActiveWord=-1;
 let qFontSz='md', qScript='uthmani', qTajweedOn=false;
+
+// Recite mode state
+let qRecAyahIdx=0, qRecHideText=false;
+let qRecRecorder=null, qRecStream=null, qRecChunks=[], qRecMimeType='audio/webm';
+let qRecIsRecording=false, qRecTimerInt=null, qRecTimerSecs=0;
+let qHfToken='';
+
+// Memorise mode state
+let qMemAyahIdx=0, qMemDisplay='full', qMemRepeat=1;
+let qMemRepeatLeft=0, qMemAudio=null, qMemPlaying=false;
+let qMemRevealIdx=0, qMemWords=[];
+let qMemDoneSet=new Set(), qMemReviewedSet=new Set();
 
 const Q_SIZE_MAP={sm:'17px',md:'22px',lg:'28px',xl:'34px'};
 
@@ -1402,18 +1592,19 @@ function qSetScript(s){
   qScript=s;
   document.getElementById('q-script-uthmani').classList.toggle('active',s==='uthmani');
   document.getElementById('q-script-indopak').classList.toggle('active',s==='indopak');
-  // Re-render with the new script (fetches indopak text if needed)
   if(qMode==='surah') qRenderSurahVerses();
-  else qRenderAyahList();
+  else if(qMode==='ayah') qRenderAyahList();
+  else if(qMode==='memorize') qMemRenderText();
 }
 
 function qSetTajweed(on){
   qTajweedOn=on;
   document.getElementById('q-taj-off').classList.toggle('active',!on);
   document.getElementById('q-taj-on').classList.toggle('active',on);
-  document.getElementById('q-taj-legend').style.display=on?'flex':'none';
+  // Only show legend when not in recite mode (filter bar is hidden there)
+  document.getElementById('q-taj-legend').style.display=(on&&qMode!=='recite')?'flex':'none';
   if(qMode==='surah') qRenderSurahVerses();
-  else qRenderAyahList();
+  else if(qMode==='ayah') qRenderAyahList();
 }
 
 // ── Init ──────────────────────────────────────────────────────────────
@@ -1432,15 +1623,42 @@ async function qInit(){
 
 function qSetMode(mode){
   qMode=mode; qStopQ();
-  document.getElementById('q-mode-surah').classList.toggle('active',mode==='surah');
-  document.getElementById('q-mode-ayah').classList.toggle('active',mode==='ayah');
+  if(qMemAudio){qMemAudio.pause();qMemAudio=null;qMemPlaying=false;}
+  qRecCleanup();
+  // Mode buttons
+  ['surah','ayah','recite','memorize'].forEach(m=>{
+    const b=document.getElementById('q-mode-'+m);
+    if(b) b.classList.toggle('active',m===mode);
+  });
+  const isListen=mode==='surah'||mode==='ayah';
+  const isRec=mode==='recite', isMem=mode==='memorize';
+  // Listen-mode controls (filter bar, reciter)
+  const lc=document.getElementById('q-listen-controls');
+  if(lc) lc.style.display=isRec?'none':'';
+  // Tajweed legend guard
+  const tj=document.getElementById('q-taj-legend');
+  if(tj) tj.style.display=(!isRec&&qTajweedOn)?'flex':'none';
+  // Player + ayah list
+  const pl=document.getElementById('q-player'), ay=document.getElementById('q-ayahs');
+  if(pl) pl.style.display='none'; // qUpdatePlayer/qShowLoading will reveal it
+  if(ay) ay.style.display=isListen?'':'none';
+  // New panels
+  const rp=document.getElementById('q-recite-panel'), mp=document.getElementById('q-mem-panel');
+  if(rp) rp.style.display=isRec?'block':'none';
+  if(mp) mp.style.display=isMem?'block':'none';
+  // Populate reciter dropdown & start loading
   const rSel=document.getElementById('q-reciter');
-  if(mode==='ayah'){
+  if(mode==='surah'){
+    rSel.innerHTML='<option value="">Loading reciters…</option>';
+    qFetchSurahReciters().then(()=>qLoadSurahMode(false));
+  } else if(mode==='ayah'){
     rSel.innerHTML=Q_AYAH_RECITERS.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
     qLoadAyahSurah(false);
-  } else {
-    rSel.innerHTML=`<option value="">Loading reciters…</option>`;
-    qFetchSurahReciters().then(()=>qLoadSurahMode(false));
+  } else if(mode==='recite'){
+    qLoadReciteMode();
+  } else if(mode==='memorize'){
+    rSel.innerHTML=Q_AYAH_RECITERS.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+    qLoadMemMode();
   }
 }
 
@@ -1469,7 +1687,9 @@ function qChangeReciter(){
 function qLoadSurah(){
   qCurSurah=parseInt(document.getElementById('q-surah').value)||1;
   if(qMode==='surah') qLoadSurahMode(false);
-  else qLoadAyahSurah(false);
+  else if(qMode==='ayah') qLoadAyahSurah(false);
+  else if(qMode==='recite') qLoadReciteMode();
+  else if(qMode==='memorize') qLoadMemMode();
 }
 
 // ── SURAH MODE ────────────────────────────────────────────────────────
@@ -1521,27 +1741,26 @@ function qRenderSurahVerses(){
   if(qCurSurah!==1&&qCurSurah!==9)
     html+='<div class="surah-bismillah'+(isIndopak?' script-indopak':'')+'">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
   qVerses.forEach((v,vi)=>{
-    const words=(v.words||[]).filter(w=>w.char_type_name!=='end'&&w.char_type_name!=='sajdah');
-    // For indopak: use per-verse text from qIndopakData, split into "words" by space
-    // For uthmani: use word-level data from Quran.com API
-    let wordsHtml;
-    if(isIndopak&&qIndopakData[vi]){
-      const ipText=qIndopakData[vi].text||'';
-      const ipWords=ipText.split(' ').filter(Boolean);
-      wordsHtml=ipWords.map((w,wi)=>`<span class="q-word" id="qw-${vi}-${wi}">${qWordHtml(w,vi,wi)}</span>`).join(' ');
-    } else if(!isIndopak&&qUthmaniData[vi]){
-      // Use authoritative alquran.cloud Uthmani text, split by space
-      const utWords=(qUthmaniData[vi].text||'').split(' ').filter(Boolean);
-      wordsHtml=utWords.map((w,wi)=>`<span class="q-word" id="qw-${vi}-${wi}">${qWordHtml(w,vi,wi)}</span>`).join(' ');
-    } else {
-      // Fallback: Quran.com word-level data
-      wordsHtml=words.map((w,wi)=>{
-        const txt=w.text_uthmani||'';
-        return'<span class="q-word" id="qw-'+vi+'-'+wi+'">'+qWordHtml(txt,vi,wi)+'</span>';
-      }).join(' ');
-    }
     const tText=trans!=='none'&&qTransData[vi]?'<div class="ayah-translation">'+qTransData[vi].text+'</div>':'';
-    html+='<div class="ayah-card" id="ayah-card-'+vi+'"><div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><div class="ayah-num">'+(v.verse_number||vi+1)+'</div><div class="ayah-arabic'+(isIndopak?' script-indopak':'')+'" style="flex:1;font-size:'+Q_SIZE_MAP[qFontSz]+'">'+wordsHtml+'</div></div>'+tText+'</div>';
+    let arabicInner;
+    if(isIndopak&&qIndopakData[vi]){
+      // Render full ayah text as-is — no splitting, preserves RTL bidi perfectly
+      arabicInner=`<div class="ayah-arabic script-indopak" dir="rtl" id="ayah-text-${vi}" style="flex:1;font-size:${Q_SIZE_MAP[qFontSz]}">${qIndopakData[vi].text||''}</div>`;
+    } else {
+      // Uthmani: use Quran.com word-level spans for RAF timing highlight
+      const words=(v.words||[]).filter(w=>w.char_type_name!=='end'&&w.char_type_name!=='sajdah');
+      const src=(!isIndopak&&qUthmaniData[vi]);
+      let wordsHtml;
+      if(src){
+        // Use alquran.cloud uthmani text split by space for correct encoding
+        wordsHtml=(qUthmaniData[vi].text||'').split(' ').filter(Boolean)
+          .map((w,wi)=>`<span class="q-word" id="qw-${vi}-${wi}">${qWordHtml(w,vi,wi)}</span>`).join('\u200f ');
+      } else {
+        wordsHtml=words.map((w,wi)=>`<span class="q-word" id="qw-${vi}-${wi}">${qWordHtml(w.text_uthmani||'',vi,wi)}</span>`).join('\u200f ');
+      }
+      arabicInner=`<div class="ayah-arabic" dir="rtl" id="ayah-text-${vi}" style="flex:1;font-size:${Q_SIZE_MAP[qFontSz]}">${wordsHtml}</div>`;
+    }
+    html+=`<div class="ayah-card" id="ayah-card-${vi}"><div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><div class="ayah-num">${v.verse_number||vi+1}</div>${arabicInner}</div>${tText}</div>`;
   });
   el.innerHTML=html;
 }
@@ -1653,21 +1872,14 @@ function qRenderAyahList(){
   if(qCurSurah!==1&&qCurSurah!==9)
     html+='<div class="surah-bismillah'+(isIndopak?' script-indopak':'')+'">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>';
   qVerses.forEach((v,vi)=>{
-    const words=(v.words||[]).filter(w=>w.char_type_name!=='end'&&w.char_type_name!=='sajdah');
-    let wordsHtml;
-    if(isIndopak&&qIndopakData[vi]){
-      // Use indopak ayah text, split by space into rough words
-      const ipWords=(qIndopakData[vi].text||'').split(' ').filter(Boolean);
-      wordsHtml=ipWords.map((w,wi)=>'<span class="q-word" id="qw-'+vi+'-'+wi+'">'+qWordHtml(w,vi,wi)+'</span>').join(' ');
-    } else if(!isIndopak&&qUthmaniData[vi]){
-      // Use authoritative alquran.cloud Uthmani text, split by space
-      const utWords=(qUthmaniData[vi].text||'').split(' ').filter(Boolean);
-      wordsHtml=utWords.map((w,wi)=>'<span class="q-word" id="qw-'+vi+'-'+wi+'">'+qWordHtml(w,vi,wi)+'</span>').join(' ');
-    } else {
-      wordsHtml=words.map((w,wi)=>'<span class="q-word" id="qw-'+vi+'-'+wi+'">'+qWordHtml(w.text_uthmani||'',vi,wi)+'</span>').join(' ');
-    }
+    // Choose text source — always render as a single RTL block to preserve correct bidi
+    let ayahText='';
+    if(isIndopak&&qIndopakData[vi]) ayahText=qIndopakData[vi].text||'';
+    else if(!isIndopak&&qUthmaniData[vi]) ayahText=qUthmaniData[vi].text||'';
+    else ayahText=(v.words||[]).filter(w=>w.char_type_name!=='end'&&w.char_type_name!=='sajdah').map(w=>w.text_uthmani||'').join(' ');
+    const fontCls=isIndopak?' script-indopak':'';
     const tText=trans!=='none'&&qTransData[vi]?'<div class="ayah-translation">'+qTransData[vi].text+'</div>':'';
-    html+='<div class="ayah-card" id="ayah-card-'+vi+'" onclick="qPlayAyah('+vi+')"><div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><div class="ayah-num">'+(v.verse_number||vi+1)+'</div><div class="ayah-arabic'+(isIndopak?' script-indopak':'')+'" style="flex:1;font-size:'+Q_SIZE_MAP[qFontSz]+'">'+wordsHtml+'</div></div>'+tText+'</div>';
+    html+=`<div class="ayah-card" id="ayah-card-${vi}" onclick="qPlayAyah(${vi})"><div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><div class="ayah-num">${v.verse_number||vi+1}</div><div class="ayah-arabic${fontCls}" dir="rtl" style="flex:1;font-size:${Q_SIZE_MAP[qFontSz]}">${ayahText}</div></div>${tText}</div>`;
   });
   el.innerHTML=html;
 }
@@ -1749,13 +1961,17 @@ async function qReloadText(){
     qTransData=[];
     if(trans!=='none') await qFetchTrans(qCurSurah,trans);
     qRenderSurahVerses();
-  } else {
-    // Re-fetch translation and re-render without restarting audio or resetting ayah position
+  } else if(qMode==='ayah'){
     qTransData=trans!=='none'?await qFetchTransRaw(qCurSurah,trans):[];
     qRenderAyahList();
-    // Restore active-ayah highlight on the current card after re-render
     const card=document.getElementById('ayah-card-'+qCurAyahIdx);
     if(card&&qPlaying) card.classList.add('active-ayah');
+  } else if(qMode==='recite'){
+    qTransData=trans!=='none'?await qFetchTransRaw(qCurSurah,trans):[];
+    qRecShowAyah(qRecAyahIdx);
+  } else if(qMode==='memorize'){
+    qTransData=trans!=='none'?await qFetchTransRaw(qCurSurah,trans):[];
+    qMemShowAyah(qMemAyahIdx);
   }
 }
 
@@ -1832,6 +2048,365 @@ function qStopAudioOnly(){
 function qStopQ(){
   if(qRafId){ cancelAnimationFrame(qRafId); qRafId=null; }
   qStopAudioOnly(); qClearAllHighlights();
+}
+
+// ── SHARED DATA HELPER ───────────────────────────────────────────────
+async function qFetchVerseData(n){
+  const trans=document.getElementById('q-translation').value||'en.sahih';
+  try{
+    const fetches=[
+      fetch('https://api.quran.com/api/v4/verses/by_chapter/'+n+'?words=true&word_fields=text_uthmani,char_type_name&per_page=300&fields=text_uthmani'),
+      fetch('https://api.alquran.cloud/v1/surah/'+n+'/editions/quran-uthmani,quran-indopak'),
+    ];
+    if(trans!=='none') fetches.push(fetch('https://api.alquran.cloud/v1/surah/'+n+'/editions/'+trans));
+    const results=await Promise.all(fetches);
+    const [vJson,scriptJson]=await Promise.all([results[0].json(),results[1].json()]);
+    qVerses=vJson.verses||[];
+    qUthmaniData=(scriptJson.code===200&&scriptJson.data&&scriptJson.data[0])?scriptJson.data[0].ayahs:[];
+    qIndopakData=(scriptJson.code===200&&scriptJson.data&&scriptJson.data[1])?scriptJson.data[1].ayahs:[];
+    qTransData=[];
+    if(trans!=='none'&&results[2]){
+      const tJson=await results[2].json();
+      qTransData=(tJson.code===200&&tJson.data&&tJson.data[0])?tJson.data[0].ayahs:[];
+    }
+    qAyahData=qVerses.map((v,i)=>({numberInSurah:v.verse_number||i+1,globalNum:qGlobalNum(n,v.verse_number||i+1)}));
+    return true;
+  }catch(e){ console.error('qFetchVerseData:',e); return false; }
+}
+
+// ── RECITE MODE ───────────────────────────────────────────────────────
+async function qLoadReciteMode(){
+  const n=parseInt(document.getElementById('q-surah').value)||1;
+  qCurSurah=n; qRecAyahIdx=0;
+  const surah=SURAHS.find(s=>s.n===n);
+  document.getElementById('recite-arabic').textContent='Loading…';
+  document.getElementById('recite-result').style.display='none';
+  document.getElementById('recite-status').textContent='Loading '+surah.name+'…';
+  const ok=await qFetchVerseData(n);
+  if(!ok){document.getElementById('recite-status').textContent='Could not load — check connection';return;}
+  qRecShowAyah(0);
+}
+
+function qRecShowAyah(idx){
+  if(!qVerses.length||idx<0||idx>=qVerses.length) return;
+  qRecAyahIdx=idx;
+  const v=qVerses[idx];
+  const surah=SURAHS.find(s=>s.n===qCurSurah);
+  document.getElementById('recite-ayah-label').textContent='Ayah '+(v.verse_number||idx+1);
+  document.getElementById('recite-surah-label').textContent=(surah?surah.name:'')+'  ·  '+(idx+1)+'/'+qVerses.length;
+  const text=qUthmaniData[idx]?qUthmaniData[idx].text:'';
+  const arabicEl=document.getElementById('recite-arabic');
+  arabicEl.textContent=text||'—';
+  const hideBtn=document.getElementById('recite-hide-btn');
+  if(qRecHideText){
+    arabicEl.style.filter='blur(9px)';arabicEl.style.userSelect='none';
+    hideBtn.textContent='🙈 Hidden';hideBtn.classList.add('hidden');
+  }else{
+    arabicEl.style.filter='';arabicEl.style.userSelect='';
+    hideBtn.textContent='👁 Hide Text';hideBtn.classList.remove('hidden');
+  }
+  const tEl=document.getElementById('recite-translation');
+  const trans=document.getElementById('q-translation').value;
+  if(trans!=='none'&&qTransData[idx]){tEl.textContent=qTransData[idx].text;tEl.style.display='block';}
+  else tEl.style.display='none';
+  document.getElementById('recite-result').style.display='none';
+  document.getElementById('recite-status').textContent='Tap the mic to begin reciting';
+  document.getElementById('recite-timer').textContent='0:00';
+}
+
+function qRecToggleHide(){qRecHideText=!qRecHideText;qRecShowAyah(qRecAyahIdx);}
+
+async function qRecToggleMic(){
+  if(qRecIsRecording) qRecStopRecording();
+  else await qRecStartRecording();
+}
+
+async function qRecStartRecording(){
+  if(!qVerses.length){showToast('Please select a surah first');return;}
+  try{
+    qRecStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    qRecChunks=[];
+    const mt=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':
+              MediaRecorder.isTypeSupported('audio/webm')?'audio/webm':
+              MediaRecorder.isTypeSupported('audio/ogg')?'audio/ogg':'';
+    qRecRecorder=new MediaRecorder(qRecStream,mt?{mimeType:mt}:{});
+    qRecMimeType=qRecRecorder.mimeType||mt||'audio/webm';
+    qRecRecorder.ondataavailable=(e)=>{if(e.data.size>0)qRecChunks.push(e.data);};
+    qRecRecorder.onstop=qRecProcessAudio;
+    qRecRecorder.start(100);
+    qRecIsRecording=true;
+    const btn=document.getElementById('recite-mic-btn');
+    btn.classList.add('recording');btn.textContent='⏹';
+    document.getElementById('recite-status').textContent='Recording… tap ⏹ to stop';
+    document.getElementById('recite-result').style.display='none';
+    qRecTimerSecs=0;
+    qRecTimerInt=setInterval(()=>{
+      qRecTimerSecs++;
+      document.getElementById('recite-timer').textContent=qFmtTime(qRecTimerSecs);
+      if(qRecTimerSecs>=60) qRecStopRecording();
+    },1000);
+  }catch(err){
+    showToast('Microphone access needed — please allow in your browser');
+    document.getElementById('recite-status').textContent='Microphone access denied';
+  }
+}
+
+function qRecStopRecording(){
+  if(qRecTimerInt){clearInterval(qRecTimerInt);qRecTimerInt=null;}
+  if(qRecStream){qRecStream.getTracks().forEach(t=>t.stop());qRecStream=null;}
+  if(qRecRecorder&&qRecIsRecording) qRecRecorder.stop();
+  qRecIsRecording=false;
+  const btn=document.getElementById('recite-mic-btn');
+  if(btn){btn.classList.remove('recording');btn.textContent='🎤';}
+}
+
+function qRecCleanup(){
+  if(qRecIsRecording) qRecStopRecording();
+  qRecRecorder=null; qRecChunks=[];
+}
+
+async function qRecProcessAudio(){
+  if(!qRecChunks.length){document.getElementById('recite-status').textContent='No audio captured — try again';return;}
+  const blob=new Blob(qRecChunks,{type:qRecMimeType});
+  const statusEl=document.getElementById('recite-status');
+  const micBtn=document.getElementById('recite-mic-btn');
+  statusEl.textContent='Analysing your recitation…';
+  micBtn.disabled=true;
+  try{
+    const hdrs={};
+    if(qHfToken) hdrs['Authorization']='Bearer '+qHfToken;
+    let resp=await fetch('https://api-inference.huggingface.co/models/tarteel-ai/whisper-base-ar-quran',
+      {method:'POST',headers:hdrs,body:blob});
+    // Handle model cold start (503)
+    if(resp.status===503){
+      let d={};try{d=await resp.json();}catch(e){}
+      const wait=Math.ceil(d.estimated_time||25);
+      statusEl.textContent=`Model warming up — retrying in ${wait}s…`;
+      await new Promise(r=>setTimeout(r,wait*1000));
+      resp=await fetch('https://api-inference.huggingface.co/models/tarteel-ai/whisper-base-ar-quran',
+        {method:'POST',headers:hdrs,body:blob});
+    }
+    if(!resp.ok){
+      const ed=await resp.json().catch(()=>({}));
+      throw new Error(ed.error||'HTTP '+resp.status);
+    }
+    const data=await resp.json();
+    const transcribed=(data.text||'').trim();
+    if(!transcribed){statusEl.textContent='No speech detected — try again';micBtn.disabled=false;return;}
+    qRecShowResult(transcribed);
+  }catch(err){
+    console.error('Recitation API:',err);
+    const msg=String(err.message||'');
+    if(msg.includes('503')||msg.includes('loading')) statusEl.textContent='Model unavailable — try again shortly';
+    else statusEl.textContent='Error: '+(msg||'check connection');
+    micBtn.disabled=false;
+  }
+}
+
+function qRecShowResult(transcribed){
+  const ayahText=qUthmaniData[qRecAyahIdx]?qUthmaniData[qRecAyahIdx].text:'';
+  if(!ayahText){document.getElementById('recite-status').textContent='No reference text — reload surah';document.getElementById('recite-mic-btn').disabled=false;return;}
+  const comparison=qCompareArabic(ayahText,transcribed);
+  const correct=comparison.filter(w=>w.match).length, total=comparison.length;
+  const pct=total>0?Math.round(correct/total*100):0;
+  const grade=pct>=80?'excellent':pct>=55?'good':'needs-work';
+  const msg=pct>=80?'Excellent! 🌟':pct>=55?'Good effort 👍':'Keep practising 💪';
+  document.getElementById('recite-score').innerHTML=
+    `<span class="recite-pct ${grade}">${pct}%</span><div><div class="recite-score-detail">${msg}</div><div class="recite-score-sub">${correct} of ${total} words correct</div></div>`;
+  document.getElementById('recite-word-result').innerHTML=
+    comparison.map(w=>`<span class="recite-word ${w.match?'correct':'incorrect'}">${w.word}</span>`).join('\u200f ');
+  document.getElementById('recite-result').style.display='block';
+  document.getElementById('recite-status').textContent='Transcribed: "'+transcribed.slice(0,60)+(transcribed.length>60?'…':'')+'"';
+  document.getElementById('recite-mic-btn').disabled=false;
+}
+
+function qCompareArabic(expected,transcribed){
+  function norm(s){
+    return s.replace(/[\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED]/g,'')
+            .replace(/[أإآٱ]/g,'ا').replace(/ؤ/g,'و').replace(/ئ/g,'ي')
+            .replace(/ة/g,'ه').replace(/ـ/g,'').trim();
+  }
+  const expWords=expected.split(/\s+/).filter(Boolean);
+  const normTransSet=new Set(transcribed.split(/\s+/).filter(Boolean).map(norm));
+  return expWords.map(word=>({word,match:normTransSet.has(norm(word))}));
+}
+
+function qRecNext(){
+  if(!qVerses.length) return;
+  if(qRecAyahIdx<qVerses.length-1) qRecShowAyah(qRecAyahIdx+1);
+  else if(qCurSurah<114){qCurSurah++;document.getElementById('q-surah').value=qCurSurah;qLoadReciteMode();}
+  else showToast('End of Quran 🌙');
+}
+function qRecPrev(){
+  if(!qVerses.length) return;
+  if(qRecAyahIdx>0) qRecShowAyah(qRecAyahIdx-1);
+  else if(qCurSurah>1){qCurSurah--;document.getElementById('q-surah').value=qCurSurah;qLoadReciteMode();}
+  else showToast('Already at Al-Fatiha');
+}
+function qRecTryAgain(){
+  document.getElementById('recite-result').style.display='none';
+  document.getElementById('recite-status').textContent='Tap the mic to begin reciting';
+}
+
+// ── MEMORISE MODE ─────────────────────────────────────────────────────
+async function qLoadMemMode(startIdx){
+  const n=parseInt(document.getElementById('q-surah').value)||1;
+  qCurSurah=n;
+  qMemDoneSet=new Set(); qMemReviewedSet=new Set();
+  qMemDisplay='full'; qMemRepeat=1;
+  // Reset UI pills
+  ['full','blur','hide'].forEach(d=>{const el=document.getElementById('mem-disp-'+d);if(el)el.classList.toggle('active',d==='full');});
+  document.getElementById('mem-rep-1').classList.add('active');
+  ['mem-rep-3','mem-rep-5','mem-rep-10'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+  document.getElementById('mem-arabic').textContent='Loading…';
+  document.getElementById('mem-stat-reviewed').textContent='0';
+  document.getElementById('mem-stat-memorized').textContent='0';
+  document.getElementById('mem-stat-total').textContent='—';
+  const ok=await qFetchVerseData(n);
+  if(!ok){document.getElementById('mem-arabic').textContent='Could not load — check connection';return;}
+  document.getElementById('mem-stat-total').textContent=qVerses.length;
+  qMemShowAyah(typeof startIdx==='number'?startIdx:0);
+}
+
+function qMemShowAyah(idx){
+  if(!qVerses.length||idx<0||idx>=qVerses.length) return;
+  qMemAyahIdx=idx; qMemRevealIdx=0;
+  qMemReviewedSet.add(idx);
+  document.getElementById('mem-stat-reviewed').textContent=qMemReviewedSet.size;
+  const v=qVerses[idx], surah=SURAHS.find(s=>s.n===qCurSurah);
+  document.getElementById('mem-surah-lbl').textContent=surah?surah.name:'';
+  document.getElementById('mem-ayah-lbl').textContent='Ayah '+(v.verse_number||idx+1);
+  document.getElementById('mem-prog-lbl').textContent=(idx+1)+'/'+qVerses.length;
+  document.getElementById('mem-prog-fill').style.width=((idx+1)/qVerses.length*100)+'%';
+  const text=(qScript==='indopak'&&qIndopakData[idx])?qIndopakData[idx].text:(qUthmaniData[idx]?qUthmaniData[idx].text:'');
+  qMemWords=text.split(/\s+/).filter(Boolean);
+  document.getElementById('mem-card').classList.toggle('memorized',qMemDoneSet.has(idx));
+  qMemRenderText();
+  const tEl=document.getElementById('mem-translation');
+  const trans=document.getElementById('q-translation').value;
+  if(trans!=='none'&&qTransData[idx]){tEl.textContent=qTransData[idx].text;tEl.style.display='block';}
+  else tEl.style.display='none';
+  if(qMemAudio){qMemAudio.pause();qMemAudio=null;}
+  qMemPlaying=false;
+  document.getElementById('mem-play-btn').textContent='▶ Listen';
+  document.getElementById('mem-repeat-status').textContent='';
+}
+
+function qMemRenderText(){
+  const el=document.getElementById('mem-arabic');
+  el.style.fontSize=Q_SIZE_MAP[qFontSz]||'22px';
+  const fc=(qScript==='indopak'?' script-indopak':'');
+  el.className='ayah-arabic'+fc;
+  // Derive words for current script
+  const words=(qScript==='indopak'&&qIndopakData[qMemAyahIdx])?
+    qIndopakData[qMemAyahIdx].text.split(/\s+/).filter(Boolean):qMemWords;
+  if(qMemDisplay==='full'){
+    el.textContent=words.join(' ');
+    document.getElementById('mem-reveal-btns').style.display='none';
+  } else if(qMemDisplay==='blur'){
+    el.innerHTML=`<span style="filter:blur(7px);user-select:none;cursor:pointer;transition:filter .4s;display:inline" onclick="this.style.filter=this.style.filter?'':'blur(7px)'">${words.join(' ')}</span>`;
+    document.getElementById('mem-reveal-btns').style.display='none';
+  } else {
+    // hide mode — word-by-word reveal
+    el.innerHTML=words.map((w,i)=>
+      i<qMemRevealIdx
+        ?`<span class="mem-word-revealed">${w}</span>`
+        :`<span class="mem-word-hidden" onclick="qMemRevealAt(${i})">&#x2591;&#x2591;&#x2591;</span>`
+    ).join('\u200f ');
+    document.getElementById('mem-reveal-btns').style.display='flex';
+  }
+}
+
+function qMemRevealNext(){if(qMemRevealIdx<qMemWords.length){qMemRevealIdx++;qMemRenderText();}}
+function qMemRevealAll(){qMemRevealIdx=qMemWords.length;qMemRenderText();}
+function qMemRevealAt(idx){if(idx>=qMemRevealIdx){qMemRevealIdx=idx+1;qMemRenderText();}}
+
+function qMemSetDisplay(mode,btn){
+  qMemDisplay=mode;
+  btn.closest('.q-filter-pills').querySelectorAll('.q-fpill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  qMemRevealIdx=0; qMemRenderText();
+}
+
+function qMemSetRepeat(n,btn){
+  qMemRepeat=n;
+  btn.closest('.q-filter-pills').querySelectorAll('.q-fpill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function qMemTogglePlay(){
+  if(qMemPlaying&&qMemAudio){
+    qMemAudio.pause();qMemAudio=null;qMemPlaying=false;qMemRepeatLeft=0;
+    document.getElementById('mem-play-btn').textContent='▶ Listen';
+    document.getElementById('mem-repeat-status').textContent='';
+  } else { qMemStartPlay(); }
+}
+
+function qMemStartPlay(){
+  if(!qAyahData[qMemAyahIdx]) return;
+  const a=qAyahData[qMemAyahIdx];
+  const folder=document.getElementById('q-reciter').value||'Alafasy_128kbps';
+  const url='https://everyayah.com/data/'+folder+'/'+String(a.globalNum).padStart(6,'0')+'.mp3';
+  qMemRepeatLeft=qMemRepeat; qMemPlaying=true;
+  const playOnce=()=>{
+    qMemAudio=new Audio(url);
+    qMemAudio.volume=qGetVol();
+    qMemAudio.play().catch(()=>{showToast('Audio unavailable');qMemPlaying=false;document.getElementById('mem-play-btn').textContent='▶ Listen';});
+    document.getElementById('mem-play-btn').textContent='⏹ Stop';
+    const done=qMemRepeat-qMemRepeatLeft+1;
+    document.getElementById('mem-repeat-status').textContent=qMemRepeat>1?'Play '+done+' of '+qMemRepeat:'';
+    qMemAudio.onended=()=>{
+      qMemRepeatLeft--;
+      if(qMemRepeatLeft>0&&qMemPlaying) setTimeout(playOnce,500);
+      else{
+        qMemPlaying=false;qMemAudio=null;
+        document.getElementById('mem-play-btn').textContent='▶ Listen';
+        document.getElementById('mem-repeat-status').textContent=qMemRepeat>1?'Done ✓':'';
+        if(qMemRepeat>1) setTimeout(()=>{document.getElementById('mem-repeat-status').textContent='';},2000);
+      }
+    };
+  };
+  playOnce();
+}
+
+function qMemPrev(){
+  if(qMemAudio){qMemAudio.pause();qMemAudio=null;qMemPlaying=false;}
+  if(qMemAyahIdx>0) qMemShowAyah(qMemAyahIdx-1);
+  else if(qCurSurah>1){qCurSurah--;document.getElementById('q-surah').value=qCurSurah;qLoadMemMode();}
+  else showToast('Already at Al-Fatiha');
+}
+
+function qMemNext(){
+  if(qMemAudio){qMemAudio.pause();qMemAudio=null;qMemPlaying=false;}
+  if(qMemAyahIdx<qVerses.length-1) qMemShowAyah(qMemAyahIdx+1);
+  else if(qCurSurah<114){qCurSurah++;document.getElementById('q-surah').value=qCurSurah;qLoadMemMode();}
+  else showToast('End of Quran — Khatm complete 🌙');
+}
+
+function qMemMarkDone(){
+  qMemDoneSet.add(qMemAyahIdx);
+  document.getElementById('mem-stat-memorized').textContent=qMemDoneSet.size;
+  document.getElementById('mem-card').classList.add('memorized');
+  showToast('Ayah '+(qMemAyahIdx+1)+' memorised ✓');
+  setTimeout(()=>qMemNext(),600);
+}
+
+// ── HF TOKEN MODAL ───────────────────────────────────────────────────
+function openHfTokenModal(){
+  document.getElementById('hf-token-input').value=qHfToken||'';
+  document.getElementById('modal-hf-token').classList.add('open');
+}
+function saveHfToken(){
+  qHfToken=(document.getElementById('hf-token-input').value||'').trim();
+  document.getElementById('modal-hf-token').classList.remove('open');
+  document.getElementById('hf-token-status').textContent=qHfToken?'Token saved ✓':'Optional — enables AI recitation';
+  showToast(qHfToken?'HuggingFace token saved ✓':'Token cleared');
+}
+function clearHfToken(){
+  qHfToken='';document.getElementById('hf-token-input').value='';
+  document.getElementById('modal-hf-token').classList.remove('open');
+  document.getElementById('hf-token-status').textContent='Optional — enables AI recitation';
+  showToast('Token cleared');
 }
 
 // ── INIT ─────────────────────────────────────────────────────────────
