@@ -356,7 +356,58 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0 0;background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;min-width:0}
 .nav-icon{font-size:17px;filter:grayscale(1);opacity:.35;transition:all .2s}
 /* FIXED: nav labels now readable */
-.nav-label{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:rgba(242,232,213,.4);transition:color .2s;white-space:nowrap}
+.nav-label{font-size:7px;letter-spacing:.8px;text-transform:uppercase;color:rgba(242,232,213,.4);transition:color .2s;white-space:nowrap}
+/* ── Masjid Finder ── */
+.mj-search-row{display:flex;gap:7px;padding:0 14px 10px;align-items:center}
+.mj-search-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:25px;padding:9px 14px;color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:14px;outline:none}
+.mj-search-input::placeholder{color:var(--muted)}
+.mj-search-input:focus{border-color:rgba(193,140,60,.4)}
+.mj-search-btn{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:25px;padding:9px 16px;color:var(--bg);font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.mj-loc-btn{background:none;border:1px solid var(--border);border-radius:25px;padding:8px 12px;color:var(--gold2);font-size:12px;cursor:pointer;flex-shrink:0;white-space:nowrap}
+.mj-radius-row{display:flex;align-items:center;gap:6px;padding:0 14px 10px}
+.mj-radius-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sublabel);flex-shrink:0}
+.mj-radius-btn{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 10px;color:var(--muted);font-family:'Cormorant Garamond',serif;font-size:12px;cursor:pointer;transition:all .2s}
+.mj-radius-btn.active{background:rgba(193,140,60,.15);border-color:var(--gold);color:var(--gold2)}
+.mj-header-row{display:flex;align-items:center;justify-content:space-between;padding:0 14px 8px}
+.mj-city-lbl{font-family:'Amiri',serif;font-size:15px;color:var(--cream)}
+.mj-count-lbl{font-size:10px;color:var(--muted);letter-spacing:1px}
+.mj-list{padding:0 14px;display:flex;flex-direction:column;gap:8px}
+.mj-loading{text-align:center;padding:40px 20px;color:var(--muted)}
+.mj-empty{text-align:center;padding:40px 20px;color:var(--muted);font-style:italic;font-size:13px;line-height:1.7}
+.mj-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s}
+.mj-card.expanded{border-color:rgba(193,140,60,.35)}
+.mj-card-header{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer}
+.mj-mosque-icon{font-size:22px;flex-shrink:0;width:32px;text-align:center}
+.mj-info{flex:1;min-width:0}
+.mj-name{font-family:'Amiri',serif;font-size:15px;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mj-meta{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mj-dist-badge{font-size:10px;background:rgba(193,140,60,.12);border:1px solid rgba(193,140,60,.25);border-radius:12px;padding:2px 7px;color:var(--gold2);flex-shrink:0}
+.mj-chevron{font-size:18px;color:var(--muted);transition:transform .25s;flex-shrink:0}
+.mj-expanded{padding:0 14px 14px;border-top:1px solid var(--border);background:rgba(14,10,6,.4)}
+.mj-times-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;padding-top:12px}
+.mj-time-cell{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 6px;text-align:center}
+.mj-time-cell.mj-sunrise{opacity:.55}
+.mj-time-name{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--sublabel);margin-bottom:3px}
+.mj-time-val{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--cream)}
+.mj-jumah-row{display:flex;align-items:center;gap:10px;background:rgba(193,140,60,.08);border:1px solid rgba(193,140,60,.2);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.mj-jumah-icon{font-size:18px;flex-shrink:0}
+.mj-jumah-title{font-size:13px;color:var(--gold2);font-family:'Amiri',serif;margin-bottom:1px}
+.mj-jumah-sub{font-size:10px;color:var(--muted);font-style:italic}
+.mj-action-row{display:flex;gap:7px;flex-wrap:wrap}
+.mj-action-btn{flex:1;min-width:80px;text-align:center;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--gold2);font-family:'Cormorant Garamond',serif;font-size:12px;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-block}
+.mj-action-btn:hover{background:rgba(193,140,60,.15);border-color:rgba(193,140,60,.4)}
+.mj-dir-btn{background:linear-gradient(135deg,rgba(193,140,60,.2),rgba(232,184,109,.1));border-color:rgba(193,140,60,.4)!important}
+/* Directions modal */
+.mj-dir-modal{position:absolute;inset:0;background:rgba(0,0,0,.65);z-index:500;display:none;align-items:flex-end}
+.mj-dir-modal.open{display:flex}
+.mj-dir-sheet{width:100%;background:var(--bg2);border-radius:22px 22px 0 0;padding:20px 18px max(28px,env(safe-area-inset-bottom));border-top:1px solid var(--border)}
+.mj-dir-title{font-family:'Amiri',serif;font-size:17px;color:var(--gold2);margin-bottom:4px}
+.mj-dir-sub{font-size:11px;color:var(--muted);margin-bottom:18px;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mj-dir-app{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--border);text-decoration:none;cursor:pointer}
+.mj-dir-app:last-of-type{border-bottom:none}
+.mj-dir-app-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.mj-dir-app-label{font-size:15px;color:var(--cream);font-family:'Cormorant Garamond',serif}
+.mj-dir-cancel{width:100%;margin-top:10px;background:var(--surface);border:1px solid var(--border);border-radius:25px;padding:12px;color:var(--muted);font-family:'Cormorant Garamond',serif;font-size:14px;cursor:pointer}
 .nav-btn.active .nav-icon{filter:none;opacity:1}
 .nav-btn.active .nav-label{color:var(--gold2)}
 .nav-dot{width:3px;height:3px;border-radius:50%;background:var(--gold);opacity:0;transition:opacity .2s;margin-top:1px}
@@ -884,6 +935,41 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
       <div style="height:8px"></div>
     </div>
 
+    <!-- MASJID FINDER -->
+    <div class="screen" id="screen-masjid">
+      <div class="app-header">
+        <div class="app-logo"><span class="logo-arabic">نداء</span><div class="logo-divider"></div><div class="logo-text"><span class="logo-english">Nida</span><span class="logo-sub">Masajid</span></div></div>
+      </div>
+
+      <!-- Search bar -->
+      <div class="mj-search-row">
+        <input class="mj-search-input" id="mj-search-input" placeholder="Search city or area…" onkeydown="if(event.key==='Enter')mjSearchCity()"/>
+        <button class="mj-search-btn" id="mj-search-btn" onclick="mjSearchCity()">Go</button>
+        <button class="mj-loc-btn" onclick="mjUseMyLocation()">📍 Me</button>
+      </div>
+
+      <!-- Radius filter -->
+      <div class="mj-radius-row">
+        <span class="mj-radius-lbl">Radius</span>
+        <button class="mj-radius-btn active" onclick="mjSetRadius(2000,this)">2 km</button>
+        <button class="mj-radius-btn" onclick="mjSetRadius(5000,this)">5 km</button>
+        <button class="mj-radius-btn" onclick="mjSetRadius(10000,this)">10 km</button>
+        <button class="mj-radius-btn" onclick="mjSetRadius(20000,this)">20 km</button>
+      </div>
+
+      <!-- Result header -->
+      <div class="mj-header-row">
+        <span class="mj-city-lbl" id="mj-city">—</span>
+        <span class="mj-count-lbl" id="mj-count"></span>
+      </div>
+
+      <!-- Mosque list -->
+      <div class="mj-list" id="mj-list">
+        <div class="mj-loading" style="padding:40px 20px;text-align:center;color:var(--muted);font-style:italic;font-size:13px">Open the Masajid tab to load nearby mosques</div>
+      </div>
+      <div style="height:10px"></div>
+    </div>
+
     <!-- PREMIUM -->
     <div class="screen" id="screen-premium">
       <div class="app-header">
@@ -945,10 +1031,11 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 
     <!-- Bottom nav -->
     <nav class="bottom-nav">
-      <button class="nav-btn active" data-screen="home" onclick="go('home',this)"><span class="nav-icon">🕌</span><span class="nav-label">Prayers</span><div class="nav-dot"></div></button>
+      <button class="nav-btn active" data-screen="home" onclick="go('home',this)"><span class="nav-icon">🌙</span><span class="nav-label">Prayers</span><div class="nav-dot"></div></button>
       <button class="nav-btn" data-screen="qibla" onclick="go('qibla',this)"><span class="nav-icon">🧭</span><span class="nav-label">Qibla</span><div class="nav-dot"></div></button>
       <button class="nav-btn" data-screen="reciters" onclick="go('reciters',this)"><span class="nav-icon">🎙</span><span class="nav-label">Reciters</span><div class="nav-dot"></div></button>
       <button class="nav-btn" data-screen="quran" onclick="go('quran',this)"><span class="nav-icon">📖</span><span class="nav-label">Quran</span><div class="nav-dot"></div></button>
+      <button class="nav-btn" data-screen="masjid" onclick="go('masjid',this);mjInit()"><span class="nav-icon">🕌</span><span class="nav-label">Masajid</span><div class="nav-dot"></div></button>
       <button class="nav-btn nav-premium" data-screen="premium" onclick="go('premium',this)"><span class="nav-icon"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="navsg" x1="5" y1="5" x2="95" y2="95" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#F5D49A"/><stop offset="55%" stop-color="#E8B86D"/><stop offset="100%" stop-color="#C18C3C"/></linearGradient></defs><path d="M50 5 L61 35 L95 35 L68 57 L79 91 L50 70 L21 91 L32 57 L5 35 L39 35Z" fill="url(#navsg)" opacity="0.9"/></svg></span><span class="nav-label">Premium</span><div class="nav-dot"></div></button>
 
       <button class="nav-btn" data-screen="settings" onclick="go('settings',this)"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span><div class="nav-dot"></div></button>
@@ -1008,7 +1095,27 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
         <button style="width:100%;background:none;border:none;color:var(--muted2);font-size:12px;font-family:inherit;cursor:pointer;padding:9px;font-style:italic;margin-top:4px" onclick="clearHfToken()">Clear saved token</button>
       </div>
     </div>
-  </div>
+    <!-- Masjid Directions sheet -->
+    <div class="mj-dir-modal" id="mj-dir-modal" onclick="if(event.target===this)this.classList.remove('open')">
+      <div class="mj-dir-sheet">
+        <div class="mj-dir-title">Get Directions</div>
+        <div class="mj-dir-sub" id="mj-dir-name">Masjid</div>
+        <a class="mj-dir-app" id="mj-dir-gmaps" href="#" target="_blank" onclick="document.getElementById('mj-dir-modal').classList.remove('open')">
+          <div class="mj-dir-app-icon" style="background:linear-gradient(135deg,#4285F4,#34A853)">🗺</div>
+          <span class="mj-dir-app-label">Google Maps</span>
+        </a>
+        <a class="mj-dir-app" id="mj-dir-apple" href="#" target="_blank" onclick="document.getElementById('mj-dir-modal').classList.remove('open')">
+          <div class="mj-dir-app-icon" style="background:linear-gradient(135deg,#555,#222)">🍎</div>
+          <span class="mj-dir-app-label">Apple Maps</span>
+        </a>
+        <a class="mj-dir-app" id="mj-dir-waze" href="#" target="_blank" onclick="document.getElementById('mj-dir-modal').classList.remove('open')">
+          <div class="mj-dir-app-icon" style="background:linear-gradient(135deg,#33CCFF,#00A8FF)">🚗</div>
+          <span class="mj-dir-app-label">Waze</span>
+        </a>
+        <button class="mj-dir-cancel" onclick="document.getElementById('mj-dir-modal').classList.remove('open')">Cancel</button>
+      </div>
+    </div>
+</div>
 </div>
 
 <script>
@@ -2526,7 +2633,195 @@ function clearHfToken(){
   showToast('Token cleared');
 }
 
-// ── INIT ─────────────────────────────────────────────────────────────
+// ── MASJID FINDER ─────────────────────────────────────────────────────
+let mjLat=null,mjLng=null,mjLoaded=false,mjRadius=2000;
+let mjMosques=[],mjPrayerCache={},mjExpandedId=null;
+
+async function mjInit(){
+  if(mjLoaded){return;}
+  mjLoaded=true;
+  mjLat=uLat; mjLng=uLng;
+  document.getElementById('mj-city').textContent=uCity||'Your Location';
+  await mjFetch(mjLat,mjLng);
+}
+
+async function mjFetch(lat,lng){
+  const list=document.getElementById('mj-list');
+  list.innerHTML='<div class="mj-loading"><div class="loading-spinner" style="margin:0 auto 12px"></div><div style="font-size:13px;color:var(--muted);font-style:italic">Finding nearby masajid…</div></div>';
+  document.getElementById('mj-count').textContent='';
+  mjPrayerCache={}; mjExpandedId=null;
+  const q=`[out:json][timeout:25];(node["amenity"="place_of_worship"]["religion"="muslim"](around:${mjRadius},${lat},${lng});way["amenity"="place_of_worship"]["religion"="muslim"](around:${mjRadius},${lat},${lng});relation["amenity"="place_of_worship"]["religion"="muslim"](around:${mjRadius},${lat},${lng}););out center tags;`;
+  try{
+    const res=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(q)});
+    const data=await res.json();
+    mjMosques=data.elements.map(el=>{
+      const elLat=el.lat||(el.center&&el.center.lat);
+      const elLng=el.lon||(el.center&&el.center.lon);
+      if(!elLat||!elLng) return null;
+      return{
+        id:el.id,
+        name:el.tags['name:en']||el.tags.name||el.tags['name:ar']||'Masjid',
+        lat:elLat,lng:elLng,
+        dist:mjHaversine(lat,lng,elLat,elLng),
+        address:mjAddr(el.tags),
+        phone:el.tags.phone||el.tags['contact:phone']||null,
+        website:el.tags.website||el.tags['contact:website']||null,
+      };
+    }).filter(Boolean).sort((a,b)=>a.dist-b.dist);
+    mjRenderList();
+  }catch(e){
+    list.innerHTML='<div class="mj-empty">Could not load — check your connection<br><br><button class="mj-search-btn" style="margin:0 auto;display:block" onclick="mjFetch(mjLat,mjLng)">Retry</button></div>';
+  }
+}
+
+function mjAddr(t){
+  const parts=[];
+  if(t['addr:housenumber']&&t['addr:street']) parts.push(t['addr:housenumber']+' '+t['addr:street']);
+  else if(t['addr:street']) parts.push(t['addr:street']);
+  if(t['addr:city']) parts.push(t['addr:city']);
+  return parts.join(', ')||null;
+}
+
+function mjHaversine(la1,lo1,la2,lo2){
+  const R=6371,dL=(la2-la1)*Math.PI/180,dO=(lo2-lo1)*Math.PI/180;
+  const a=Math.sin(dL/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dO/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function mjFmtDist(km){return km<1?Math.round(km*1000)+'m':km.toFixed(1)+'km';}
+
+function mjRenderList(){
+  const list=document.getElementById('mj-list');
+  document.getElementById('mj-count').textContent=mjMosques.length+' found';
+  if(!mjMosques.length){
+    list.innerHTML='<div class="mj-empty">No masajid found in this area.<br>Try increasing the radius or searching a different location.</div>';
+    return;
+  }
+  list.innerHTML=mjMosques.map(m=>`
+    <div class="mj-card" id="mjc-${m.id}">
+      <div class="mj-card-header" onclick="mjToggle(${m.id})">
+        <div class="mj-mosque-icon">🕌</div>
+        <div class="mj-info">
+          <div class="mj-name">${mjEsc(m.name)}</div>
+          <div class="mj-meta">${m.address?mjEsc(m.address):''}</div>
+        </div>
+        <span class="mj-dist-badge">${mjFmtDist(m.dist)}</span>
+        <span class="mj-chevron" id="mjchev-${m.id}">›</span>
+      </div>
+      <div class="mj-expanded" id="mjexp-${m.id}" style="display:none"></div>
+    </div>`).join('');
+}
+
+function mjEsc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+async function mjToggle(id){
+  const expEl=document.getElementById('mjexp-'+id);
+  const chevEl=document.getElementById('mjchev-'+id);
+  const card=document.getElementById('mjc-'+id);
+  // Collapse if already open
+  if(mjExpandedId===id){
+    expEl.style.display='none';
+    chevEl.style.transform='';
+    card.classList.remove('expanded');
+    mjExpandedId=null;
+    return;
+  }
+  // Collapse previous
+  if(mjExpandedId!==null){
+    const prev=document.getElementById('mjexp-'+mjExpandedId);
+    const prevChev=document.getElementById('mjchev-'+mjExpandedId);
+    const prevCard=document.getElementById('mjc-'+mjExpandedId);
+    if(prev) prev.style.display='none';
+    if(prevChev) prevChev.style.transform='';
+    if(prevCard) prevCard.classList.remove('expanded');
+  }
+  mjExpandedId=id;
+  chevEl.style.transform='rotate(90deg)';
+  card.classList.add('expanded');
+  expEl.style.display='block';
+  const m=mjMosques.find(x=>x.id===id);
+  if(!m) return;
+  if(!mjPrayerCache[id]){
+    expEl.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);font-style:italic;font-size:12px;border-top:1px solid var(--border)">Loading prayer times…</div>';
+    try{
+      const r=await fetch(`https://api.aladhan.com/v1/timings?latitude=${m.lat}&longitude=${m.lng}&method=2`);
+      const d=await r.json();
+      mjPrayerCache[id]=d.data.timings;
+    }catch(e){
+      expEl.innerHTML='<div style="padding:12px 0;color:var(--muted);font-size:12px;text-align:center">Could not load prayer times</div>';
+      return;
+    }
+  }
+  const t=mjPrayerCache[id];
+  const prayers=[
+    {k:'Fajr',t:t.Fajr},{k:'Sunrise',t:t.Sunrise},
+    {k:'Dhuhr',t:t.Dhuhr},{k:'Asr',t:t.Asr},
+    {k:'Maghrib',t:t.Maghrib},{k:'Isha',t:t.Isha}
+  ];
+  const safeN=m.name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+  expEl.innerHTML=`
+    <div class="mj-times-grid">
+      ${prayers.map(p=>`<div class="mj-time-cell${p.k==='Sunrise'?' mj-sunrise':''}"><div class="mj-time-name">${p.k}</div><div class="mj-time-val">${p.t}</div></div>`).join('')}
+    </div>
+    <div class="mj-jumah-row">
+      <span class="mj-jumah-icon">✦</span>
+      <div>
+        <div class="mj-jumah-title">Jumu'ah</div>
+        <div class="mj-jumah-sub">Typically around ${t.Dhuhr} · Please confirm with the masjid</div>
+      </div>
+    </div>
+    <div class="mj-action-row">
+      ${m.phone?`<a class="mj-action-btn" href="tel:${m.phone}">📞 Call</a>`:''}
+      ${m.website?`<a class="mj-action-btn" href="${m.website}" target="_blank">🌐 Website</a>`:''}
+      <button class="mj-action-btn mj-dir-btn" onclick="mjDirections(${m.lat},${m.lng},'${safeN}')">📍 Directions</button>
+    </div>`;
+}
+
+function mjDirections(lat,lng,name){
+  const modal=document.getElementById('mj-dir-modal');
+  document.getElementById('mj-dir-name').textContent=name;
+  document.getElementById('mj-dir-gmaps').href=`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+  document.getElementById('mj-dir-apple').href=`https://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`;
+  document.getElementById('mj-dir-waze').href=`https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
+  modal.classList.add('open');
+}
+
+async function mjSearchCity(){
+  const q=document.getElementById('mj-search-input').value.trim();
+  if(!q) return;
+  const btn=document.getElementById('mj-search-btn');
+  btn.textContent='…'; btn.disabled=true;
+  try{
+    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`);
+    const d=await r.json();
+    if(!d.length){showToast('Location not found');btn.textContent='Go';btn.disabled=false;return;}
+    mjLat=parseFloat(d[0].lat); mjLng=parseFloat(d[0].lon);
+    const label=d[0].display_name.split(',')[0];
+    document.getElementById('mj-city').textContent=label;
+    await mjFetch(mjLat,mjLng);
+  }catch(e){showToast('Search failed');}
+  btn.textContent='Go'; btn.disabled=false;
+}
+
+function mjSetRadius(r,btn){
+  mjRadius=r;
+  document.querySelectorAll('.mj-radius-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(mjLoaded) mjFetch(mjLat||uLat,mjLng||uLng);
+}
+
+function mjUseMyLocation(){
+  if(!navigator.geolocation){showToast('Location unavailable');return;}
+  showToast('Getting location…');
+  navigator.geolocation.getCurrentPosition(pos=>{
+    mjLat=pos.coords.latitude; mjLng=pos.coords.longitude;
+    document.getElementById('mj-city').textContent=uCity||'Your Location';
+    document.getElementById('mj-search-input').value='';
+    mjFetch(mjLat,mjLng);
+  },()=>showToast('Could not get location'),{timeout:8000});
+}
+
+
 renderR();
 qInit();
 initLoc();
