@@ -362,6 +362,16 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 .mj-search-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:25px;padding:9px 14px;color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:14px;outline:none}
 .mj-search-input::placeholder{color:var(--muted)}
 .mj-search-input:focus{border-color:rgba(193,140,60,.4)}
+.mj-autocomplete{position:absolute;top:100%;left:0;right:0;background:var(--bg2);border:1px solid rgba(193,140,60,.3);border-radius:14px;margin-top:4px;overflow:hidden;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.5);display:none}
+.mj-autocomplete.open{display:block}
+.mj-ac-item{padding:11px 14px;font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--cream);cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;display:flex;align-items:center;gap:10px}
+.mj-ac-item:last-child{border-bottom:none}
+.mj-ac-item:hover,.mj-ac-item.focused{background:rgba(193,140,60,.12)}
+.mj-ac-icon{font-size:13px;opacity:.6;flex-shrink:0}
+.mj-ac-main{flex:1;min-width:0}
+.mj-ac-primary{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mj-ac-secondary{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.mj-ac-loading{padding:12px 14px;font-size:12px;color:var(--muted);font-style:italic;text-align:center}
 .mj-search-btn{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:25px;padding:9px 16px;color:var(--bg);font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .mj-loc-btn{background:none;border:1px solid var(--border);border-radius:25px;padding:8px 12px;color:var(--gold2);font-size:12px;cursor:pointer;flex-shrink:0;white-space:nowrap}
 .mj-radius-row{display:flex;align-items:center;gap:6px;padding:0 14px 10px}
@@ -389,10 +399,6 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 .mj-time-cell.mj-sunrise{opacity:.55}
 .mj-time-name{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--sublabel);margin-bottom:3px}
 .mj-time-val{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--cream)}
-.mj-jumah-row{display:flex;align-items:center;gap:10px;background:rgba(193,140,60,.08);border:1px solid rgba(193,140,60,.2);border-radius:10px;padding:10px 12px;margin-bottom:10px}
-.mj-jumah-icon{font-size:18px;flex-shrink:0}
-.mj-jumah-title{font-size:13px;color:var(--gold2);font-family:'Amiri',serif;margin-bottom:1px}
-.mj-jumah-sub{font-size:10px;color:var(--muted);font-style:italic}
 .mj-action-row{display:flex;gap:7px;flex-wrap:wrap}
 .mj-action-btn{flex:1;min-width:80px;text-align:center;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--gold2);font-family:'Cormorant Garamond',serif;font-size:12px;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-block}
 .mj-action-btn:hover{background:rgba(193,140,60,.15);border-color:rgba(193,140,60,.4)}
@@ -943,7 +949,15 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
 
       <!-- Search bar -->
       <div class="mj-search-row">
-        <input class="mj-search-input" id="mj-search-input" placeholder="Search city or area…" onkeydown="if(event.key==='Enter')mjSearchCity()"/>
+        <div style="flex:1;position:relative">
+          <input class="mj-search-input" id="mj-search-input" placeholder="Search city, area or address…"
+            oninput="mjOnInput(this.value)"
+            onkeydown="mjOnKeydown(event)"
+            onblur="setTimeout(()=>mjCloseAC(),180)"
+            autocomplete="off" autocorrect="off" spellcheck="false"
+            style="width:100%;box-sizing:border-box"/>
+          <div class="mj-autocomplete" id="mj-autocomplete"></div>
+        </div>
         <button class="mj-search-btn" id="mj-search-btn" onclick="mjSearchCity()">Go</button>
         <button class="mj-loc-btn" onclick="mjUseMyLocation()">📍 Me</button>
       </div>
@@ -1023,6 +1037,8 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
       </div>
       <div class="section-title">AI &amp; Recitation</div>
       <div class="settings-row" onclick="openHfTokenModal()"><span class="settings-icon">🤖</span><div class="settings-text"><div class="settings-label">HuggingFace Token</div><div class="settings-value" id="hf-token-status">Optional — enables AI recitation feedback</div></div><span class="settings-arrow">›</span></div>
+      <div class="section-title">Masajid</div>
+      <div class="settings-row" onclick="openGMapsModal()"><span class="settings-icon">🗺</span><div class="settings-text"><div class="settings-label">Google Maps API Key</div><div class="settings-value" id="gmaps-key-status">Optional — improves mosque search coverage</div></div><span class="settings-arrow">›</span></div>
       <div class="section-title">Account</div>
       <div class="settings-row" onclick="go('premium',document.querySelector('[data-screen=premium]'))"><span class="settings-icon">✦</span><div class="settings-text"><div class="settings-label">Nida Premium</div><div class="settings-value">Unlock all reciters & features</div></div><span style="font-size:10px;color:var(--amber);background:rgba(240,192,96,.12);border:1px solid rgba(240,192,96,.3);border-radius:20px;padding:2px 8px;letter-spacing:1px">FREE</span></div>
       <div class="settings-row"><span class="settings-icon">📍</span><div class="settings-text"><div class="settings-label">Location</div><div class="settings-value" id="settings-loc">Detecting…</div></div><span class="settings-arrow">›</span></div>
@@ -1093,6 +1109,19 @@ input[type=range].vol-input{position:absolute;inset:-8px 0;opacity:0;cursor:poin
         <input type="password" id="hf-token-input" placeholder="hf_…" autocomplete="off" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:14px;margin-bottom:12px;outline:none;letter-spacing:.5px"/>
         <button class="modal-apply" onclick="saveHfToken()">Save Token</button>
         <button style="width:100%;background:none;border:none;color:var(--muted2);font-size:12px;font-family:inherit;cursor:pointer;padding:9px;font-style:italic;margin-top:4px" onclick="clearHfToken()">Clear saved token</button>
+      </div>
+    </div>
+    </div>
+    <!-- Google Maps API Key modal -->
+    <div class="modal-overlay" id="modal-gmaps-key" onclick="if(event.target===this)this.classList.remove('open')">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <button class="modal-close" onclick="document.getElementById('modal-gmaps-key').classList.remove('open')">✕</button>
+        <div class="modal-title">Google Maps API Key</div>
+        <div class="modal-subtitle">Enables Google Places for mosque search — far better coverage than OpenStreetMap. Enable <span style="color:var(--gold2)">Places API</span> in Google Cloud Console and restrict the key to this domain.<br><br>Without a key, OpenStreetMap is used as fallback.</div>
+        <input type="password" id="gmaps-key-input" placeholder="AIza…" autocomplete="off" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:14px;margin-bottom:12px;outline:none;letter-spacing:.5px"/>
+        <button class="modal-apply" onclick="saveGMapsKey()">Save Key</button>
+        <button style="width:100%;background:none;border:none;color:var(--muted2);font-size:12px;font-family:inherit;cursor:pointer;padding:9px;font-style:italic;margin-top:4px" onclick="clearGMapsKey()">Clear saved key</button>
       </div>
     </div>
     <!-- Masjid Directions sheet -->
@@ -2636,6 +2665,7 @@ function clearHfToken(){
 // ── MASJID FINDER ─────────────────────────────────────────────────────
 let mjLat=null,mjLng=null,mjLoaded=false,mjRadius=2000;
 let mjMosques=[],mjPrayerCache={},mjExpandedId=null;
+let gMapsKey='';
 
 async function mjInit(){
   if(mjLoaded){return;}
@@ -2645,30 +2675,111 @@ async function mjInit(){
   await mjFetch(mjLat,mjLng);
 }
 
+// ── Fetch: Google Places if key set, else improved Overpass ──────────
 async function mjFetch(lat,lng){
   const list=document.getElementById('mj-list');
   list.innerHTML='<div class="mj-loading"><div class="loading-spinner" style="margin:0 auto 12px"></div><div style="font-size:13px;color:var(--muted);font-style:italic">Finding nearby masajid…</div></div>';
   document.getElementById('mj-count').textContent='';
   mjPrayerCache={}; mjExpandedId=null;
-  const q=`[out:json][timeout:25];(node["amenity"="place_of_worship"]["religion"="muslim"](around:${mjRadius},${lat},${lng});way["amenity"="place_of_worship"]["religion"="muslim"](around:${mjRadius},${lat},${lng});relation["amenity"="place_of_worship"]["religion"="muslim"](around:${mjRadius},${lat},${lng}););out center tags;`;
+  if(gMapsKey) await mjFetchGoogle(lat,lng);
+  else await mjFetchOverpass(lat,lng);
+}
+
+// ── Google Places Nearby Search ──────────────────────────────────────
+async function mjFetchGoogle(lat,lng){
+  const list=document.getElementById('mj-list');
+  // Proxy via allorigins to avoid CORS on the old Places API
+  const endpoint=`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${mjRadius}&type=mosque&key=${gMapsKey}`;
+  const url=`https://api.allorigins.win/get?url=${encodeURIComponent(endpoint)}`;
+  try{
+    const res=await fetch(url);
+    const wrapper=await res.json();
+    const data=JSON.parse(wrapper.contents);
+    if(data.status==='REQUEST_DENIED'||data.status==='INVALID_REQUEST'){
+      showToast('Google Maps key invalid — using OpenStreetMap');
+      gMapsKey='';
+      await mjFetchOverpass(lat,lng);
+      return;
+    }
+    const results=data.results||[];
+    // If first page only got some results, fetch up to 2 more pages
+    let allResults=[...results];
+    if(data.next_page_token){
+      await new Promise(r=>setTimeout(r,2000)); // Google requires 2s delay
+      const p2=await mjGooglePage(data.next_page_token);
+      allResults=[...allResults,...p2.results];
+      if(p2.next_page_token){
+        await new Promise(r=>setTimeout(r,2000));
+        const p3=await mjGooglePage(p2.next_page_token);
+        allResults=[...allResults,...p3.results];
+      }
+    }
+    mjMosques=allResults.map(p=>({
+      id:p.place_id,
+      name:p.name,
+      lat:p.geometry.location.lat,
+      lng:p.geometry.location.lng,
+      dist:mjHaversine(lat,lng,p.geometry.location.lat,p.geometry.location.lng),
+      address:p.vicinity||null,
+      rating:p.rating||null,
+      open:p.opening_hours?.open_now,
+      phone:null, website:null,
+      source:'google'
+    })).sort((a,b)=>a.dist-b.dist);
+    mjRenderList();
+  }catch(e){
+    console.warn('Google Places failed, falling back',e);
+    await mjFetchOverpass(lat,lng);
+  }
+}
+
+async function mjGooglePage(token){
+  const endpoint=`https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken=${token}&key=${gMapsKey}`;
+  const url=`https://api.allorigins.win/get?url=${encodeURIComponent(endpoint)}`;
+  try{
+    const res=await fetch(url);
+    const w=await res.json();
+    return JSON.parse(w.contents);
+  }catch(e){return{results:[]};}
+}
+
+// ── Improved Overpass — broad name-based search catches untagged mosques
+async function mjFetchOverpass(lat,lng){
+  const list=document.getElementById('mj-list');
+  const R=mjRadius, q=`[out:json][timeout:30];(
+    node["amenity"="place_of_worship"]["religion"="muslim"](around:${R},${lat},${lng});
+    way["amenity"="place_of_worship"]["religion"="muslim"](around:${R},${lat},${lng});
+    relation["amenity"="place_of_worship"]["religion"="muslim"](around:${R},${lat},${lng});
+    node[~"^name$"~"[Mm]asjid|[Mm]osque|[Ii]slamic [Cc]entre|[Ii]slamic [Cc]enter|[Mm]uslim",i](around:${R},${lat},${lng});
+    way[~"^name$"~"[Mm]asjid|[Mm]osque|[Ii]slamic [Cc]entre|[Ii]slamic [Cc]enter|[Mm]uslim",i](around:${R},${lat},${lng});
+    relation[~"^name$"~"[Mm]asjid|[Mm]osque|[Ii]slamic [Cc]entre|[Ii]slamic [Cc]enter|[Mm]uslim",i](around:${R},${lat},${lng});
+    node["amenity"="community_centre"]["religion"="muslim"](around:${R},${lat},${lng});
+    way["amenity"="community_centre"]["religion"="muslim"](around:${R},${lat},${lng});
+  );out center tags;`;
   try{
     const res=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(q)});
     const data=await res.json();
+    const seen=new Set();
     mjMosques=data.elements.map(el=>{
       const elLat=el.lat||(el.center&&el.center.lat);
       const elLng=el.lon||(el.center&&el.center.lon);
       if(!elLat||!elLng) return null;
+      const name=el.tags['name:en']||el.tags.name||el.tags['name:ar']||'Masjid';
+      const key=name.toLowerCase().trim();
+      if(seen.has(key)){return null;} seen.add(key);
       return{
-        id:el.id,
-        name:el.tags['name:en']||el.tags.name||el.tags['name:ar']||'Masjid',
-        lat:elLat,lng:elLng,
+        id:el.id, name, lat:elLat, lng:elLng,
         dist:mjHaversine(lat,lng,elLat,elLng),
         address:mjAddr(el.tags),
         phone:el.tags.phone||el.tags['contact:phone']||null,
         website:el.tags.website||el.tags['contact:website']||null,
+        source:'osm'
       };
     }).filter(Boolean).sort((a,b)=>a.dist-b.dist);
     mjRenderList();
+    if(mjMosques.length<5){
+      showToast('Add a Google Maps key in Settings for better coverage 🗺');
+    }
   }catch(e){
     list.innerHTML='<div class="mj-empty">Could not load — check your connection<br><br><button class="mj-search-btn" style="margin:0 auto;display:block" onclick="mjFetch(mjLat,mjLng)">Retry</button></div>';
   }
@@ -2692,18 +2803,21 @@ function mjFmtDist(km){return km<1?Math.round(km*1000)+'m':km.toFixed(1)+'km';}
 
 function mjRenderList(){
   const list=document.getElementById('mj-list');
-  document.getElementById('mj-count').textContent=mjMosques.length+' found';
+  const srcLabel=gMapsKey
+    ?'<span style="font-size:9px;color:var(--green);background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25);border-radius:10px;padding:1px 6px;margin-left:6px">Google</span>'
+    :'<span style="font-size:9px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1px 6px;margin-left:6px">OpenStreetMap</span>';
+  document.getElementById('mj-count').innerHTML=mjMosques.length+' found'+srcLabel;
   if(!mjMosques.length){
-    list.innerHTML='<div class="mj-empty">No masajid found in this area.<br>Try increasing the radius or searching a different location.</div>';
+    list.innerHTML='<div class="mj-empty">No masajid found in this area.<br>Try increasing the radius, searching a different location, or adding a Google Maps API key in Settings for better coverage.</div>';
     return;
   }
   list.innerHTML=mjMosques.map(m=>`
     <div class="mj-card" id="mjc-${m.id}">
-      <div class="mj-card-header" onclick="mjToggle(${m.id})">
+      <div class="mj-card-header" onclick="mjToggle('${m.id}')">
         <div class="mj-mosque-icon">🕌</div>
         <div class="mj-info">
           <div class="mj-name">${mjEsc(m.name)}</div>
-          <div class="mj-meta">${m.address?mjEsc(m.address):''}</div>
+          <div class="mj-meta">${m.address?mjEsc(m.address):m.rating?'⭐ '+m.rating:''}</div>
         </div>
         <span class="mj-dist-badge">${mjFmtDist(m.dist)}</span>
         <span class="mj-chevron" id="mjchev-${m.id}">›</span>
@@ -2712,34 +2826,27 @@ function mjRenderList(){
     </div>`).join('');
 }
 
-function mjEsc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function mjEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 async function mjToggle(id){
   const expEl=document.getElementById('mjexp-'+id);
   const chevEl=document.getElementById('mjchev-'+id);
   const card=document.getElementById('mjc-'+id);
-  // Collapse if already open
   if(mjExpandedId===id){
-    expEl.style.display='none';
-    chevEl.style.transform='';
-    card.classList.remove('expanded');
-    mjExpandedId=null;
-    return;
+    expEl.style.display='none'; chevEl.style.transform='';
+    card.classList.remove('expanded'); mjExpandedId=null; return;
   }
-  // Collapse previous
   if(mjExpandedId!==null){
-    const prev=document.getElementById('mjexp-'+mjExpandedId);
-    const prevChev=document.getElementById('mjchev-'+mjExpandedId);
-    const prevCard=document.getElementById('mjc-'+mjExpandedId);
-    if(prev) prev.style.display='none';
-    if(prevChev) prevChev.style.transform='';
-    if(prevCard) prevCard.classList.remove('expanded');
+    const p=document.getElementById('mjexp-'+mjExpandedId);
+    const pc=document.getElementById('mjchev-'+mjExpandedId);
+    const pcard=document.getElementById('mjc-'+mjExpandedId);
+    if(p) p.style.display='none';
+    if(pc) pc.style.transform='';
+    if(pcard) pcard.classList.remove('expanded');
   }
-  mjExpandedId=id;
-  chevEl.style.transform='rotate(90deg)';
-  card.classList.add('expanded');
-  expEl.style.display='block';
-  const m=mjMosques.find(x=>x.id===id);
+  mjExpandedId=id; chevEl.style.transform='rotate(90deg)';
+  card.classList.add('expanded'); expEl.style.display='block';
+  const m=mjMosques.find(x=>String(x.id)===String(id));
   if(!m) return;
   if(!mjPrayerCache[id]){
     expEl.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);font-style:italic;font-size:12px;border-top:1px solid var(--border)">Loading prayer times…</div>';
@@ -2748,7 +2855,7 @@ async function mjToggle(id){
       const d=await r.json();
       mjPrayerCache[id]=d.data.timings;
     }catch(e){
-      expEl.innerHTML='<div style="padding:12px 0;color:var(--muted);font-size:12px;text-align:center">Could not load prayer times</div>';
+      expEl.innerHTML='<div style="padding:12px 0;color:var(--muted);font-size:12px;text-align:center;border-top:1px solid var(--border)">Could not load prayer times</div>';
       return;
     }
   }
@@ -2758,35 +2865,150 @@ async function mjToggle(id){
     {k:'Dhuhr',t:t.Dhuhr},{k:'Asr',t:t.Asr},
     {k:'Maghrib',t:t.Maghrib},{k:'Isha',t:t.Isha}
   ];
-  const safeN=m.name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+  const safeN=mjEsc(m.name);
+  const safeLat=m.lat, safeLng=m.lng;
   expEl.innerHTML=`
     <div class="mj-times-grid">
       ${prayers.map(p=>`<div class="mj-time-cell${p.k==='Sunrise'?' mj-sunrise':''}"><div class="mj-time-name">${p.k}</div><div class="mj-time-val">${p.t}</div></div>`).join('')}
     </div>
-    <div class="mj-jumah-row">
-      <span class="mj-jumah-icon">✦</span>
-      <div>
-        <div class="mj-jumah-title">Jumu'ah</div>
-        <div class="mj-jumah-sub">Typically around ${t.Dhuhr} · Please confirm with the masjid</div>
-      </div>
-    </div>
     <div class="mj-action-row">
       ${m.phone?`<a class="mj-action-btn" href="tel:${m.phone}">📞 Call</a>`:''}
       ${m.website?`<a class="mj-action-btn" href="${m.website}" target="_blank">🌐 Website</a>`:''}
-      <button class="mj-action-btn mj-dir-btn" onclick="mjDirections(${m.lat},${m.lng},'${safeN}')">📍 Directions</button>
+      <button class="mj-action-btn mj-dir-btn" onclick="mjDirections(${safeLat},${safeLng},'${safeN.replace(/'/g,"\\'")}')">📍 Directions</button>
     </div>`;
 }
 
 function mjDirections(lat,lng,name){
-  const modal=document.getElementById('mj-dir-modal');
   document.getElementById('mj-dir-name').textContent=name;
   document.getElementById('mj-dir-gmaps').href=`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
   document.getElementById('mj-dir-apple').href=`https://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`;
   document.getElementById('mj-dir-waze').href=`https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
-  modal.classList.add('open');
+  document.getElementById('mj-dir-modal').classList.add('open');
 }
 
-async function mjSearchCity(){
+// ── Autocomplete ─────────────────────────────────────────────────────
+let mjAcTimer=null, mjAcIdx=-1, mjAcItems=[];
+
+function mjOnInput(val){
+  clearTimeout(mjAcTimer);
+  mjAcIdx=-1;
+  if(val.trim().length<3){mjCloseAC();return;}
+  const ac=document.getElementById('mj-autocomplete');
+  ac.innerHTML='<div class="mj-ac-loading">Searching…</div>';
+  ac.classList.add('open');
+  mjAcTimer=setTimeout(()=>mjFetchAC(val.trim()),320);
+}
+
+async function mjFetchAC(q){
+  const ac=document.getElementById('mj-autocomplete');
+  if(gMapsKey){
+    // Google Places Autocomplete
+    const endpoint=`https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(q)}&types=geocode|establishment&key=${gMapsKey}`;
+    const url=`https://api.allorigins.win/get?url=${encodeURIComponent(endpoint)}`;
+    try{
+      const res=await fetch(url);
+      const w=await res.json();
+      const d=JSON.parse(w.contents);
+      if(d.status==='OK'&&d.predictions?.length){
+        mjAcItems=d.predictions.map(p=>({
+          label:p.structured_formatting?.main_text||p.description,
+          sub:p.structured_formatting?.secondary_text||'',
+          full:p.description,
+          place_id:p.place_id
+        }));
+        mjRenderAC(); return;
+      }
+    }catch(e){}
+  }
+  // Nominatim fallback
+  try{
+    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=6&addressdetails=1`);
+    const d=await r.json();
+    mjAcItems=d.map(p=>{
+      const parts=p.display_name.split(',');
+      return{label:parts[0].trim(),sub:parts.slice(1,3).join(',').trim(),full:p.display_name,lat:p.lat,lon:p.lon};
+    });
+    mjRenderAC();
+  }catch(e){mjCloseAC();}
+}
+
+function mjRenderAC(){
+  const ac=document.getElementById('mj-autocomplete');
+  if(!mjAcItems.length){ac.innerHTML='<div class="mj-ac-loading">No results</div>';return;}
+  ac.innerHTML=mjAcItems.map((item,i)=>`
+    <div class="mj-ac-item" id="mjac-${i}" onmousedown="mjSelectAC(${i})">
+      <span class="mj-ac-icon">📍</span>
+      <div class="mj-ac-main">
+        <div class="mj-ac-primary">${mjEsc(item.label)}</div>
+        ${item.sub?`<div class="mj-ac-secondary">${mjEsc(item.sub)}</div>`:''}
+      </div>
+    </div>`).join('');
+  ac.classList.add('open');
+}
+
+async function mjSelectAC(idx){
+  const item=mjAcItems[idx];
+  if(!item) return;
+  document.getElementById('mj-search-input').value=item.label+(item.sub?', '+item.sub:'');
+  mjCloseAC();
+  const btn=document.getElementById('mj-search-btn');
+  btn.textContent='…'; btn.disabled=true;
+  try{
+    if(item.lat&&item.lon){
+      mjLat=parseFloat(item.lat); mjLng=parseFloat(item.lon);
+      document.getElementById('mj-city').textContent=item.label;
+      await mjFetch(mjLat,mjLng);
+    } else if(item.place_id&&gMapsKey){
+      // Resolve place_id to coords via Places Details
+      const endpoint=`https://maps.googleapis.com/maps/api/place/details/json?place_id=${item.place_id}&fields=geometry,name&key=${gMapsKey}`;
+      const url=`https://api.allorigins.win/get?url=${encodeURIComponent(endpoint)}`;
+      const res=await fetch(url);
+      const w=await res.json();
+      const d=JSON.parse(w.contents);
+      if(d.result?.geometry){
+        mjLat=d.result.geometry.location.lat;
+        mjLng=d.result.geometry.location.lng;
+        document.getElementById('mj-city').textContent=item.label;
+        await mjFetch(mjLat,mjLng);
+      }
+    }
+  }catch(e){showToast('Could not resolve location');}
+  btn.textContent='Go'; btn.disabled=false;
+}
+
+function mjOnKeydown(e){
+  const ac=document.getElementById('mj-autocomplete');
+  const isOpen=ac.classList.contains('open');
+  if(e.key==='Enter'){
+    if(isOpen&&mjAcIdx>=0){e.preventDefault();mjSelectAC(mjAcIdx);}
+    else{mjCloseAC();mjSearchCity();}
+    return;
+  }
+  if(!isOpen||!mjAcItems.length) return;
+  if(e.key==='ArrowDown'){
+    e.preventDefault();
+    mjAcIdx=Math.min(mjAcIdx+1,mjAcItems.length-1);
+    mjHighlightAC();
+  } else if(e.key==='ArrowUp'){
+    e.preventDefault();
+    mjAcIdx=Math.max(mjAcIdx-1,-1);
+    mjHighlightAC();
+  } else if(e.key==='Escape'){
+    mjCloseAC();
+  }
+}
+
+function mjHighlightAC(){
+  document.querySelectorAll('.mj-ac-item').forEach((el,i)=>el.classList.toggle('focused',i===mjAcIdx));
+}
+
+function mjCloseAC(){
+  const ac=document.getElementById('mj-autocomplete');
+  ac.classList.remove('open');
+  mjAcIdx=-1;
+}
+
+
   const q=document.getElementById('mj-search-input').value.trim();
   if(!q) return;
   const btn=document.getElementById('mj-search-btn');
@@ -2796,7 +3018,7 @@ async function mjSearchCity(){
     const d=await r.json();
     if(!d.length){showToast('Location not found');btn.textContent='Go';btn.disabled=false;return;}
     mjLat=parseFloat(d[0].lat); mjLng=parseFloat(d[0].lon);
-    const label=d[0].display_name.split(',')[0];
+    const label=d[0].display_name.split(',').slice(0,2).join(', ');
     document.getElementById('mj-city').textContent=label;
     await mjFetch(mjLat,mjLng);
   }catch(e){showToast('Search failed');}
@@ -2820,6 +3042,26 @@ function mjUseMyLocation(){
     mjFetch(mjLat,mjLng);
   },()=>showToast('Could not get location'),{timeout:8000});
 }
+
+// ── Google Maps Key modal ────────────────────────────────────────────
+function openGMapsModal(){
+  document.getElementById('gmaps-key-input').value=gMapsKey||'';
+  document.getElementById('modal-gmaps-key').classList.add('open');
+}
+function saveGMapsKey(){
+  gMapsKey=(document.getElementById('gmaps-key-input').value||'').trim();
+  document.getElementById('modal-gmaps-key').classList.remove('open');
+  document.getElementById('gmaps-key-status').textContent=gMapsKey?'Google Maps key saved ✓':'Optional — improves mosque search coverage';
+  showToast(gMapsKey?'Google Maps key saved ✓':'Key cleared');
+  if(gMapsKey&&mjLoaded){mjFetch(mjLat||uLat,mjLng||uLng);}
+}
+function clearGMapsKey(){
+  gMapsKey=''; document.getElementById('gmaps-key-input').value='';
+  document.getElementById('modal-gmaps-key').classList.remove('open');
+  document.getElementById('gmaps-key-status').textContent='Optional — improves mosque search coverage';
+  showToast('Key cleared');
+}
+
 
 
 renderR();
