@@ -1800,26 +1800,22 @@ function qSetMode(mode){
   }
 }
 
-async function qFetchSurahReciters(){
-  try{
-    const res=await fetch('https://api.quran.com/api/v4/recitations');
-    const json=await res.json();
-    document.getElementById('q-reciter').innerHTML=
-      (json.recitations||[]).slice(0,12).map(r=>
-        `<option value="${r.id}">${r.translated_name&&r.translated_name.name?r.translated_name.name:r.reciter_name}</option>`
-      ).join('');
-  }catch(e){
-    document.getElementById('q-reciter').innerHTML=`
-      <option value="7">Mishary Al-Afasy</option>
-      <option value="1">AbdulBaset AbdulSamad</option>
-      <option value="4">Abu Bakr Al-Shatri</option>
-      <option value="5">Saad Al-Ghamdi</option>`;
-  }
+function qFetchSurahReciters(){
+  // Values are everyayah.com folder names — works for all modes
+  document.getElementById('q-reciter').innerHTML=`
+    <option value="Alafasy_128kbps">Mishary Al-Afasy</option>
+    <option value="AbdulSamad_128kbps_ketaballah">AbdulBaset AbdulSamad</option>
+    <option value="abu_bakr_ash-shaatree_128kbps">Abu Bakr Al-Shatri</option>
+    <option value="Ghamadi_40kbps">Saad Al-Ghamdi</option>
+    <option value="Maher_AlMuaiqly_128kbps">Maher Al-Muaiqly</option>
+    <option value="Hani_Rifai_64kbps">Hani Ar-Rifai</option>
+    <option value="Husary_128kbps">Mahmoud Al-Husary</option>`;
 }
 
 function qChangeReciter(){
   if(qMode==='surah') qLoadSurahMode(qPlaying);
-  else qLoadAyahSurah(qPlaying);
+  else if(qMode==='ayah') qLoadAyahSurah(qPlaying);
+  else if(qMode==='memorize') qLoadMemMode();
 }
 
 function qLoadSurah(){
@@ -1835,35 +1831,26 @@ async function qLoadSurahMode(autoplay){
   const n=parseInt(document.getElementById('q-surah').value)||1;
   qCurSurah=n;
   const surah=SURAHS.find(s=>s.n===n);
-  qStopQ(); // stop first, then show loading UI
+  qStopQ();
   qShowLoading(surah.name);
-  const recId=document.getElementById('q-reciter').value||'7';
   const trans=document.getElementById('q-translation').value||'en.sahih';
+  const transEdition=Q_TRANS_MAP[trans]||null;
   try{
-    // Fetch verse text (Uthmani words), audio timings, indopak text, and translation in parallel
-    const fetches=[
-      fetch('https://api.quran.com/api/v4/verses/by_chapter/'+n+'?words=true&word_fields=text_uthmani,char_type_name&per_page=300&fields=text_uthmani'),
-      fetch('https://api.quran.com/api/v4/chapter_recitations/'+recId+'/'+n),
-      fetch('https://api.alquran.cloud/v1/surah/'+n+'/editions/quran-uthmani,quran-indopak'),
-    ];
-    if(trans!=='none') fetches.push(fetch('https://api.alquran.cloud/v1/surah/'+n+'/editions/'+trans));
-    const results=await Promise.all(fetches);
-    const [vJson,aJson,scriptJson]=await Promise.all(results.map(r=>r.json()));
-    qVerses=vJson.verses||[];
-    const af=aJson.audio_file||{};
-    qTimings=af.verse_timings||[];
-    const audioUrl=af.audio_url||null;
-    // scriptJson.data[0] = quran-uthmani ayahs, scriptJson.data[1] = quran-indopak ayahs
-    qUthmaniData=(scriptJson.code===200&&scriptJson.data&&scriptJson.data[0])?scriptJson.data[0].ayahs:[];
-    qIndopakData=(scriptJson.code===200&&scriptJson.data&&scriptJson.data[1])?scriptJson.data[1].ayahs:[];
-    qTransData=[];
-    if(trans!=='none'&&results[3]){
-      const tJson=await results[3].json();
-      qTransData=(tJson.code===200&&tJson.data&&tJson.data[0])?tJson.data[0].ayahs:[];
-    }
+    const [uthArr,ipArr,tArr]=await Promise.all([
+      qCDNFetch('ara-quranuth',n),
+      qCDNFetch('ara-quranindopak',n),
+      transEdition?qCDNFetch(transEdition,n):Promise.resolve([])
+    ]);
+    if(!uthArr.length&&!ipArr.length) throw new Error('Could not load Quran text');
+    const base=uthArr.length?uthArr:ipArr;
+    qVerses=base.map(a=>({verse_number:a.verse,words:[]}));
+    qUthmaniData=uthArr.map(a=>({numberInSurah:a.verse,text:a.text}));
+    qIndopakData=ipArr.map(a=>({numberInSurah:a.verse,text:a.text}));
+    qTransData=tArr.map(a=>({text:a.text}));
+    qTimings=[];
     qRenderSurahVerses();
     qUpdatePlayer(surah.name+' — '+surah.arabic,'Surah '+n+'/114 · '+surah.ayahs+' ayahs');
-    if(autoplay){ if(audioUrl) qPlaySurahAudio(audioUrl); else showToast('No audio for this reciter'); }
+    if(autoplay) qPlaySurahAyahByAyah(0);
   }catch(e){
     document.getElementById('q-ayahs').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-style:italic;font-size:13px">Could not load — check connection</div>';
     qUpdatePlayer('','Error');
@@ -1890,8 +1877,7 @@ function qRenderSurahVerses(){
       const src=(!isIndopak&&qUthmaniData[vi]);
       let wordsHtml;
       if(src){
-        // Use alquran.cloud uthmani text split by space for correct encoding
-        wordsHtml=(qUthmaniData[vi].text||'').split(' ').filter(Boolean)
+          wordsHtml=(qUthmaniData[vi].text||'').split(' ').filter(Boolean)
           .map((w,wi)=>`<span class="q-word" id="qw-${vi}-${wi}">${qWordHtml(w,vi,wi)}</span>`).join('\u200f ');
       } else {
         wordsHtml=words.map((w,wi)=>`<span class="q-word" id="qw-${vi}-${wi}">${qWordHtml(w.text_uthmani||'',vi,wi)}</span>`).join('\u200f ');
@@ -1903,65 +1889,31 @@ function qRenderSurahVerses(){
   el.innerHTML=html;
 }
 
-function qPlaySurahAudio(url){
-  qStopQ();
-  qAudio=new Audio(url);
-  qAudio.volume=qGetVol();
-  qAudio.play().catch(()=>{ showToast('Audio failed — try another reciter'); qSetPlayState(false); });
+// Surah mode: play ayah by ayah using everyayah.com
+function qPlaySurahAyahByAyah(startIdx){
+  if(!qVerses.length) return;
+  qCurAyahIdx=startIdx;
   qSetPlayState(true);
-  qAudio.onloadedmetadata=()=>{ document.getElementById('q-time-dur').textContent=qFmtTime(qAudio.duration); };
-  qAudio.onended=()=>{
-    cancelAnimationFrame(qRafId); qRafId=null; qClearAllHighlights();
-    if(qCurSurah<114){ qCurSurah++; document.getElementById('q-surah').value=qCurSurah; qLoadSurahMode(true); }
-    else{ qStopQ(); showToast('Khatm complete — all 114 surahs finished 🌙'); }
-  };
-  qRafSurah();
+  function playNext(){
+    if(!qPlaying||qCurAyahIdx>=qVerses.length){ qSetPlayState(false); return; }
+    // Highlight current ayah card
+    document.querySelectorAll('.ayah-card').forEach(el=>el.classList.remove('active-ayah'));
+    const ayahEl=document.getElementById('ayah-card-'+qCurAyahIdx);
+    if(ayahEl){ ayahEl.classList.add('active-ayah'); ayahEl.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+    const folder=document.getElementById('q-reciter').value||'Alafasy_128kbps';
+    const globalN=qGlobalNum(qCurSurah,qCurAyahIdx+1);
+    const url='https://everyayah.com/data/'+folder+'/'+String(globalN).padStart(6,'0')+'.mp3';
+    if(qAudio){ qAudio.pause(); qAudio.src=''; }
+    qAudio=new Audio(url);
+    qAudio.volume=qGetVol();
+    qAudio.onended=()=>{ qCurAyahIdx++; setTimeout(playNext,400); };
+    qAudio.onerror=()=>{ qCurAyahIdx++; setTimeout(playNext,400); };
+    qAudio.play().catch(()=>{ qCurAyahIdx++; setTimeout(playNext,400); });
+    qUpdatePlayer(SURAHS.find(s=>s.n===qCurSurah)?.name||'','Ayah '+(qCurAyahIdx+1)+' / '+qVerses.length);
+  }
+  playNext();
 }
 
-function qRafSurah(){
-  if(!qAudio||!qPlaying||qAudio.paused){qRafId=null;return;}
-  const ms=qAudio.currentTime*1000;
-  if(qAudio.duration){
-    document.getElementById('q-progress').style.width=(qAudio.currentTime/qAudio.duration*100)+'%';
-    document.getElementById('q-time-cur').textContent=qFmtTime(qAudio.currentTime);
-  }
-  const vt=qTimings.find(t=>ms>=t.timestamp_from&&ms<t.timestamp_to);
-  if(vt){
-    const vi=parseInt(vt.verse_key.split(':')[1])-1;
-    if(vi!==qCurActiveVerse){
-      qClearAllHighlights();
-      const card=document.getElementById('ayah-card-'+vi);
-      if(card){ card.classList.add('active-ayah'); card.scrollIntoView({behavior:'smooth',block:'center'}); }
-      qCurActiveVerse=vi; qCurActiveWord=-1;
-    }
-    if(vt.segments&&vt.segments.length){
-      let wi=-1, segStart=0, segEnd=0;
-      for(let i=0;i<vt.segments.length;i++){
-        const s=vt.segments[i];
-        if(ms>=s[1]&&ms<s[2]){ wi=s[0]-1; segStart=s[1]; segEnd=s[2]; break; }
-        if(i===vt.segments.length-1&&ms>=s[1]){ wi=s[0]-1; segStart=s[1]; segEnd=s[2]; }
-      }
-      if(wi>=0&&wi!==qCurActiveWord){
-        const prevW=document.getElementById('qw-'+vi+'-'+qCurActiveWord);
-        if(prevW) prevW.querySelectorAll('.q-letter-active').forEach(l=>l.classList.remove('q-letter-active'));
-        qCurActiveWord=wi;
-      }
-      if(wi>=0){
-        const wEl=document.getElementById('qw-'+vi+'-'+wi);
-        if(wEl){
-          const letters=wEl.querySelectorAll('.q-letter');
-          const n=letters.length;
-          if(n>0){
-            const dur=Math.max(segEnd-segStart,1);
-            const li=Math.min(Math.floor((ms-segStart)/dur*n),n-1);
-            letters.forEach((l,i)=>l.classList.toggle('q-letter-active',i===li));
-          }
-        }
-      }
-    }
-  }
-  qRafId=requestAnimationFrame(qRafSurah);
-}
 
 // ── AYAH MODE ─────────────────────────────────────────────────────────
 async function qLoadAyahSurah(autoplay){
@@ -1972,23 +1924,18 @@ async function qLoadAyahSurah(autoplay){
   qShowLoading(surah.name);
   const trans=document.getElementById('q-translation').value||'en.sahih';
   try{
-    // Fetch Quran.com word data + alquran.cloud uthmani+indopak editions in parallel
-    const fetches=[
-      fetch('https://api.quran.com/api/v4/verses/by_chapter/'+n+'?words=true&word_fields=text_uthmani,char_type_name&per_page=300&fields=text_uthmani'),
-      fetch('https://api.alquran.cloud/v1/surah/'+n+'/editions/quran-uthmani,quran-indopak'),
-    ];
-    if(trans!=='none') fetches.push(fetch('https://api.alquran.cloud/v1/surah/'+n+'/editions/'+trans));
-    const results=await Promise.all(fetches);
-    const [vJson,scriptJson]=await Promise.all([results[0].json(),results[1].json()]);
-    qVerses=vJson.verses||[];
-    // data[0]=uthmani, data[1]=indopak
-    qUthmaniData=(scriptJson.code===200&&scriptJson.data&&scriptJson.data[0])?scriptJson.data[0].ayahs:[];
-    qIndopakData=(scriptJson.code===200&&scriptJson.data&&scriptJson.data[1])?scriptJson.data[1].ayahs:[];
-    qTransData=[];
-    if(trans!=='none'&&results[2]){
-      const tJson=await results[2].json();
-      qTransData=(tJson.code===200&&tJson.data&&tJson.data[0])?tJson.data[0].ayahs:[];
-    }
+    const transEdition=Q_TRANS_MAP[trans]||null;
+    const [uthArr,ipArr,tArr]=await Promise.all([
+      qCDNFetch('ara-quranuth',n),
+      qCDNFetch('ara-quranindopak',n),
+      transEdition?qCDNFetch(transEdition,n):Promise.resolve([])
+    ]);
+    if(!uthArr.length&&!ipArr.length) throw new Error('Could not load Quran text');
+    const base=uthArr.length?uthArr:ipArr;
+    qVerses=base.map(a=>({verse_number:a.verse,words:[]}));
+    qUthmaniData=uthArr.map(a=>({numberInSurah:a.verse,text:a.text}));
+    qIndopakData=ipArr.map(a=>({numberInSurah:a.verse,text:a.text}));
+    qTransData=tArr.map(a=>({text:a.text}));
     qAyahData=qVerses.map((v,i)=>({
       numberInSurah:v.verse_number||i+1,
       globalNum:qGlobalNum(n,v.verse_number||i+1)
@@ -2077,19 +2024,17 @@ function qAyahNext(){
 function qGlobalNum(surahN,ayahPos){ let t=0; for(let i=0;i<surahN-1;i++) t+=SURAHS[i].ayahs; return t+ayahPos; }
 
 async function qFetchTrans(n,trans){
-  try{
-    const r=await fetch('https://api.alquran.cloud/v1/surah/'+n+'/editions/'+trans);
-    const j=await r.json();
-    qTransData=(j.code===200&&j.data&&j.data[0])?j.data[0].ayahs:[];
-  }catch(e){ qTransData=[]; }
+  const edition=Q_TRANS_MAP[trans]||null;
+  if(!edition){qTransData=[];return;}
+  const arr=await qCDNFetch(edition,n);
+  qTransData=arr.map(a=>({text:a.text}));
 }
 
 async function qFetchTransRaw(n,trans){
-  try{
-    const r=await fetch('https://api.alquran.cloud/v1/surah/'+n+'/editions/'+trans);
-    const j=await r.json();
-    return (j.code===200&&j.data&&j.data[0])?j.data[0].ayahs:[];
-  }catch(e){ return []; }
+  const edition=Q_TRANS_MAP[trans]||null;
+  if(!edition) return [];
+  const arr=await qCDNFetch(edition,n);
+  return arr.map(a=>({text:a.text}));
 }
 
 async function qReloadText(){
@@ -2140,7 +2085,7 @@ function qClearAllHighlights(){
 }
 function qToggle(){
   if(!qAudio||qAudio.ended){
-    if(qMode==='surah') qLoadSurahMode(true); else qPlayAyah(qCurAyahIdx); return;
+    if(qMode==='surah'){if(!qVerses.length)qLoadSurahMode(true);else qPlaySurahAyahByAyah(qCurAyahIdx);}else qPlayAyah(qCurAyahIdx); return;
   }
   if(qPlaying){
     qAudio.pause();
@@ -2189,24 +2134,40 @@ function qStopQ(){
 }
 
 // ── SHARED DATA HELPER ───────────────────────────────────────────────
+
+// CDN Quran data — fawazahmed0/quran-api on jsDelivr (static, no CORS ever)
+const QCDN='https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/';
+// alquran.cloud edition → CDN edition mapping
+const Q_TRANS_MAP={
+  'en.asad':     'eng-muhammadali',
+  'en.sahih':    'eng-sahihintl',
+  'en.pickthall':'eng-pickthall',
+  'en.yusufali': 'eng-yusufali',
+  'none':        null
+};
+async function qCDNFetch(edition, chapter){
+  try{
+    const url=QCDN+edition+'/'+chapter+'.json';
+    const res=await fetch(url);
+    if(res.ok){ const d=await res.json(); return d.chapter||[]; }
+  }catch(e){}
+  return [];
+}
+
 async function qFetchVerseData(n){
   const trans=document.getElementById('q-translation').value||'en.sahih';
   try{
-    const fetches=[
-      fetch('https://api.quran.com/api/v4/verses/by_chapter/'+n+'?words=true&word_fields=text_uthmani,char_type_name&per_page=300&fields=text_uthmani'),
-      fetch('https://api.alquran.cloud/v1/surah/'+n+'/editions/quran-uthmani,quran-indopak'),
-    ];
-    if(trans!=='none') fetches.push(fetch('https://api.alquran.cloud/v1/surah/'+n+'/editions/'+trans));
-    const results=await Promise.all(fetches);
-    const [vJson,scriptJson]=await Promise.all([results[0].json(),results[1].json()]);
-    qVerses=vJson.verses||[];
-    qUthmaniData=(scriptJson.code===200&&scriptJson.data&&scriptJson.data[0])?scriptJson.data[0].ayahs:[];
-    qIndopakData=(scriptJson.code===200&&scriptJson.data&&scriptJson.data[1])?scriptJson.data[1].ayahs:[];
-    qTransData=[];
-    if(trans!=='none'&&results[2]){
-      const tJson=await results[2].json();
-      qTransData=(tJson.code===200&&tJson.data&&tJson.data[0])?tJson.data[0].ayahs:[];
-    }
+    const transEdition=Q_TRANS_MAP[trans]||null;
+    const fetches=[qCDNFetch('ara-quranuth',n), qCDNFetch('ara-quranindopak',n)];
+    if(transEdition) fetches.push(qCDNFetch(transEdition,n));
+    const [uthArr, ipArr, tArr]=await Promise.all(fetches);
+    if(!uthArr.length&&!ipArr.length) throw new Error('Could not load Quran data');
+    // Normalise to internal format
+    const base=uthArr.length?uthArr:ipArr;
+    qVerses=base.map(a=>({verse_number:a.verse,words:[]}));
+    qUthmaniData=uthArr.map(a=>({numberInSurah:a.verse,text:a.text}));
+    qIndopakData=ipArr.map(a=>({numberInSurah:a.verse,text:a.text}));
+    qTransData=(tArr||[]).map(a=>({text:a.text}));
     qAyahData=qVerses.map((v,i)=>({numberInSurah:v.verse_number||i+1,globalNum:qGlobalNum(n,v.verse_number||i+1)}));
     return true;
   }catch(e){ console.error('qFetchVerseData:',e); return false; }
@@ -2746,19 +2707,40 @@ async function mjGooglePage(token){
 // ── Improved Overpass — broad name-based search catches untagged mosques
 async function mjFetchOverpass(lat,lng){
   const list=document.getElementById('mj-list');
-  const R=mjRadius, q=`[out:json][timeout:30];(
+  const R=mjRadius;
+  // Simple, valid Overpass query - no regex (causes server errors)
+  const q=`[out:json][timeout:25];(
     node["amenity"="place_of_worship"]["religion"="muslim"](around:${R},${lat},${lng});
     way["amenity"="place_of_worship"]["religion"="muslim"](around:${R},${lat},${lng});
     relation["amenity"="place_of_worship"]["religion"="muslim"](around:${R},${lat},${lng});
-    node[~"^name$"~"[Mm]asjid|[Mm]osque|[Ii]slamic [Cc]entre|[Ii]slamic [Cc]enter|[Mm]uslim",i](around:${R},${lat},${lng});
-    way[~"^name$"~"[Mm]asjid|[Mm]osque|[Ii]slamic [Cc]entre|[Ii]slamic [Cc]enter|[Mm]uslim",i](around:${R},${lat},${lng});
-    relation[~"^name$"~"[Mm]asjid|[Mm]osque|[Ii]slamic [Cc]entre|[Ii]slamic [Cc]enter|[Mm]uslim",i](around:${R},${lat},${lng});
+    node["amenity"="place_of_worship"]["denomination"="muslim"](around:${R},${lat},${lng});
+    way["amenity"="place_of_worship"]["denomination"="muslim"](around:${R},${lat},${lng});
+    node["building"="mosque"](around:${R},${lat},${lng});
+    way["building"="mosque"](around:${R},${lat},${lng});
     node["amenity"="community_centre"]["religion"="muslim"](around:${R},${lat},${lng});
     way["amenity"="community_centre"]["religion"="muslim"](around:${R},${lat},${lng});
   );out center tags;`;
+  // Try multiple Overpass endpoints with proper content-type header
+  const overpassEndpoints=[
+    'https://overpass-api.de/api/interpreter',
+    'https://overpass.kumi.systems/api/interpreter',
+    'https://maps.mail.ru/osm/tools/overpass/api/interpreter'
+  ];
+  let data=null;
+  for(const ep of overpassEndpoints){
+    try{
+      const res=await fetch(ep,{
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:'data='+encodeURIComponent(q)
+      });
+      if(!res.ok) continue;
+      const json=await res.json();
+      if(json&&json.elements){data=json; break;}
+    }catch(err){ continue; }
+  }
   try{
-    const res=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(q)});
-    const data=await res.json();
+    if(!data||!data.elements) throw new Error('Could not reach map servers. Check your connection.');
     const seen=new Set();
     mjMosques=data.elements.map(el=>{
       const elLat=el.lat||(el.center&&el.center.lat);
@@ -2781,7 +2763,8 @@ async function mjFetchOverpass(lat,lng){
       showToast('Add a Google Maps key in Settings for better coverage 🗺');
     }
   }catch(e){
-    list.innerHTML='<div class="mj-empty">Could not load — check your connection<br><br><button class="mj-search-btn" style="margin:0 auto;display:block" onclick="mjFetch(mjLat,mjLng)">Retry</button></div>';
+    console.error('Overpass error:', e);
+    list.innerHTML=`<div class="mj-empty">Could not load mosques<br><small style="color:var(--muted);display:block;margin-top:4px">${e.message||'Network error'}</small><br><button class="mj-search-btn" style="margin:0 auto;display:block;margin-top:8px" onclick="mjFetch(mjLat,mjLng)">Retry</button></div>`;
   }
 }
 
@@ -2920,14 +2903,23 @@ async function mjFetchAC(q){
       }
     }catch(e){}
   }
-  // Nominatim fallback
+  // Photon (komoot) — purpose-built OSM autocomplete, much better than Nominatim /search
   try{
-    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=6&addressdetails=1`);
+    const r=await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=6&lang=en`);
     const d=await r.json();
-    mjAcItems=d.map(p=>{
-      const parts=p.display_name.split(',');
-      return{label:parts[0].trim(),sub:parts.slice(1,3).join(',').trim(),full:p.display_name,lat:p.lat,lon:p.lon};
-    });
+    mjAcItems=(d.features||[]).map(f=>{
+      const p=f.properties;
+      // Build a clean primary label: name or street+housenumber
+      let label=p.name||p.city||p.town||p.village||q;
+      // Build secondary: city, state, country
+      const secondary=[p.city||p.town||p.village,p.state,p.country].filter(Boolean).filter(x=>x!==label).join(', ');
+      return{
+        label,
+        sub:secondary,
+        lat:f.geometry.coordinates[1],
+        lon:f.geometry.coordinates[0]
+      };
+    }).filter(item=>item.label);
     mjRenderAC();
   }catch(e){mjCloseAC();}
 }
@@ -2949,17 +2941,18 @@ function mjRenderAC(){
 async function mjSelectAC(idx){
   const item=mjAcItems[idx];
   if(!item) return;
-  document.getElementById('mj-search-input').value=item.label+(item.sub?', '+item.sub:'');
+  document.getElementById('mj-search-input').value=item.sub?item.label+', '+item.sub:item.label;
   mjCloseAC();
   const btn=document.getElementById('mj-search-btn');
   btn.textContent='…'; btn.disabled=true;
   try{
     if(item.lat&&item.lon){
+      // Direct coords (Photon or Nominatim)
       mjLat=parseFloat(item.lat); mjLng=parseFloat(item.lon);
       document.getElementById('mj-city').textContent=item.label;
       await mjFetch(mjLat,mjLng);
     } else if(item.place_id&&gMapsKey){
-      // Resolve place_id to coords via Places Details
+      // Resolve Google place_id to coords
       const endpoint=`https://maps.googleapis.com/maps/api/place/details/json?place_id=${item.place_id}&fields=geometry,name&key=${gMapsKey}`;
       const url=`https://api.allorigins.win/get?url=${encodeURIComponent(endpoint)}`;
       const res=await fetch(url);
@@ -3015,14 +3008,20 @@ async function mjSearchCity(){
   const btn=document.getElementById('mj-search-btn');
   btn.textContent='…'; btn.disabled=true;
   try{
-    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`);
+    // Use Photon for geocoding — returns specific cities/places, not vague regions
+    const r=await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=1&lang=en`);
     const d=await r.json();
-    if(!d.length){showToast('Location not found');btn.textContent='Go';btn.disabled=false;return;}
-    mjLat=parseFloat(d[0].lat); mjLng=parseFloat(d[0].lon);
-    const label=d[0].display_name.split(',').slice(0,2).join(', ');
+    const features=d.features||[];
+    if(!features.length){showToast('Location not found');btn.textContent='Go';btn.disabled=false;return;}
+    const f=features[0];
+    mjLat=f.geometry.coordinates[1];
+    mjLng=f.geometry.coordinates[0];
+    const p=f.properties;
+    const label=p.name||p.city||p.town||q;
     document.getElementById('mj-city').textContent=label;
+    document.getElementById('mj-search-input').value=label;
     await mjFetch(mjLat,mjLng);
-  }catch(e){showToast('Search failed');}
+  }catch(e){showToast('Search failed: '+e.message);}
   btn.textContent='Go'; btn.disabled=false;
 }
 
